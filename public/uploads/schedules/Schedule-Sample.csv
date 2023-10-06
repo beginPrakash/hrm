@@ -1,0 +1,4 @@
+#,Emp No.,Shift Name,Shift Date,Min Start Time,Start Time,Max Start Time,Min End Time,End Time,Max End Time,BreakTime
+1,1001,n1,20-06-2023,10:00,10:30,11:00,17:00,17:30,18:00,30
+2,1143,n2,30-06-2023,12:00,12:30,13:00,21:00,21:30,22:00,30
+3,132,n3,15-06-2023,15:00,15:15,15:30,0:00,0:15,0:30,30

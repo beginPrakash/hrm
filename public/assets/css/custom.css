@@ -1,0 +1,57 @@
+.account-title {
+  font-size: 26px;
+  font-weight: 500;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.account-subtitle {
+    color: #888888;
+    font-size: 18px;
+    text-align: center;
+    margin: 0 0 30px;
+}
+
+.main_button{
+	background: linear-gradient(to right, #ff9b44 0%, #fc6075 100%);
+    border: 0;
+    display: block;
+    font-size: 22px;
+    width: 100%;
+    border-radius: 4px;
+    padding: 10px 26px;
+}
+
+.small-box-line{
+  display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.small-box{
+  height: 10px;
+  width: 10px;
+  margin-right: 6px; 
+}
+.blue
+{
+  background-color: #009efb;
+}
+.yellow
+{
+  background-color: yellow;
+}
+.red
+{
+  background-color: red;
+}
+.black
+{
+  background-color: black;
+}
+.green
+{
+  background-color: green;
+}
+.smmr-6{
+  margin-right: 6px; 
+}

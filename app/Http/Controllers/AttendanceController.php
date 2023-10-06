@@ -1,0 +1,664 @@
+<?php
+
+namespace App\Http\Controllers;
+use DB;
+use Session;
+
+use Illuminate\Http\Request;
+
+use App\Models\Residency;
+use App\Models\Attendance;
+use App\Models\AttendanceDetails;
+use App\Models\User;
+use App\Models\Employee;
+use App\Models\Departments;
+use App\Models\Scheduling;
+use App\Models\Overtime;
+
+use Illuminate\Support\Facades\Hash;
+class AttendanceController extends Controller
+{
+    public function __construct()
+    {
+        $this->title = 'Attendance';
+        $this->current_datetime = date('Y-m-d H:i:s');
+        // date_default_timezone_set("Asia/Calcutta");
+    }
+
+    public function index(Request $request)
+    {
+        $title = $this->title;
+        // $companies    = Residency::where('status','active')->get();
+
+        $year = date('Y');
+        $month = date('m');
+        $emp = '';
+
+        $where = array();
+            // 'status'    =>  'active');
+
+        if(isset($_POST['search']))
+        {
+            if(isset($_POST['year']) && $_POST['year']!='')
+            {
+                $year = $_POST['year'];
+            }
+            if(isset($_POST['month']) && $_POST['month']!='')
+            {
+                $month = $_POST['month'];
+            }
+            if(isset($_POST['employee']) && $_POST['employee']!='')
+            {
+                $where['user_id'] = $_POST['employee'];
+                $emp = $_POST['employee'];
+            }
+        }
+
+        $attEmployees = Employee::where($where)->where('status', '!=', 'deleted')->get();
+        $allEmployees = Employee::where('status', 'active')->get();
+
+        return view('lts.attendance', compact('title', 'attEmployees', 'allEmployees', 'year', 'month', 'emp'));
+    }
+
+   
+    public function store(Request $request)
+    { 
+    	//validate file
+    	$validate = $this->validateCSV($request->file('attendance_file'));
+    	if($validate['status'] == 1)
+    	{
+    		$this->company_id  = Session::get('company_id');
+	        $this->user_id  = Session::get('user_id');
+
+	        $file = $request->file('attendance_file');
+	        $filename = $file->getClientOriginalName();
+
+	        $attnArray = array(
+	            'company_id'    =>  $this->company_id,
+	            'residency_id'	=>	$this->company_id,
+	            'branch_id'     =>  0,//$request->branch,
+	            'file_name'     =>  $filename,
+	            'added_by'      =>  $this->user_id,
+	            'created_at'    =>  $this->current_datetime
+	        );
+	        $attnId = Attendance::create($attnArray)->id;
+
+	        //call excel/csv function
+	        $import = $this->importCSV($request->file('attendance_file'), $attnId);
+	        return redirect()->back()->with("success", 'Attendance imported successfully.');
+    	}
+    	else
+    	{
+    		return redirect()->back()->with("error", $validate['message']);
+    	}
+    }
+
+    private function validateCSV($file)
+    {
+    	// File Details 
+      	$filename = $file->getClientOriginalName();
+      	$extension = $file->getClientOriginalExtension();
+      	$tempPath = $file->getRealPath();
+      	$fileSize = $file->getSize();
+      	$mimeType = $file->getMimeType();
+
+      	// Valid File Extensions
+      	$valid_extension = array("csv");
+
+      	// 5MB in Bytes
+      	$maxFileSize = 5097152; 
+
+      	// Check file extension
+      	if(in_array(strtolower($extension),$valid_extension))
+      	{
+      		// Check file size
+        	if($fileSize <= $maxFileSize)
+        	{
+        		$return['message'] = 'Import Successful.';
+		        $return['status'] = 1;
+	        }
+	        else
+	        {
+	          	$return['message'] = 'File too large. File must be less than 2MB.';
+	          	$return['status'] = 2;
+	        }
+	    }
+	    else
+	    {
+         	$return['message'] = 'Invalid File Extension.';
+         	$return['status'] = 2;
+      	}
+      	return $return;
+    }
+
+    private function importCSV($file, $attnId)
+    {
+    	// File Details 
+      	$filename = $file->getClientOriginalName();
+      	
+		// File upload location
+  		$location = 'uploads/attendance';
+  		// Upload file
+  		$file->move(public_path($location),$filename);
+
+  		// Import CSV to Database
+  		$filepath = public_path($location."/".$filename);
+
+  		// Reading file
+      	$file = fopen($filepath,"r");
+
+      	$importData_arr = array();
+      	$i = 0;
+
+      	while (($filedata = fgetcsv($file, 1000, ",")) !== FALSE) 
+      	{
+     		$num = count($filedata );
+
+     		// Skip first row
+            if($i == 0)
+            {
+                $i++;
+                continue; 
+            }
+
+            for ($c=0; $c < $num; $c++)
+            {
+                $importData_arr[$i][] = $filedata [$c];
+            }
+            $i++;
+  		}
+  		fclose($file);
+
+  		// Insert to MySQL database
+        foreach($importData_arr as $importData)
+        {
+            //if clockin and clockout are empty continue to next
+            // if($importData[9]=='' && $importData[10] == '')
+            // {
+            //     continue;
+            // }
+
+            if($importData[0]==='')
+            {
+                continue;
+            }
+
+            //check empno exists, if not create employee
+            $userDetails = $this->getUserDetailsByEmployeeId($importData[0]);
+            $departmentId = 0;
+            if(empty($userDetails))
+            {
+                //create employee
+                $this->company_id  = Session::get('company_id');
+                $userArray = array(
+                    'company_id'    =>  $this->company_id,
+                    'username'      =>  $importData[3].'@'.rand(9000,999999),
+                    'name'          =>  $importData[3],
+                    'email'         =>  NULL,
+                    'password'      =>  Hash::make(randomPassword()),
+                    'created_at'    =>  date('Y-m-d H:i:s')
+                );
+                $userId = User::create($userArray)->id;
+                if($userId)
+                {
+                    $insertArray = array(
+                        'user_id'       =>  $userId,
+                        'company_id'    =>  $this->company_id,
+                        'first_name'    =>  $importData[3],
+                        'emp_generated_id'  =>  $importData[0]
+                    );
+                    $empId = Employee::create($insertArray);
+                }
+            }
+            else
+            {
+        	    $userId = $userDetails->user_id;//by employee id
+        	    $departmentId = $userDetails->department;
+            }
+        	// $punch = ($importData[5]=='Check In')?'clockin':'clockout';
+
+            $insertData = array(
+                "user_id"       =>  $userId,
+                "employee_id"   =>  $importData[0],
+                "department"    =>  $departmentId,
+                "attendance_on" =>  date('Y-m-d', strtotime(str_replace('/','-',$importData[5]))),
+                // "work_code"     =>  'NULL',
+                "data_source"   =>  'Device',
+                "status"        =>  'active');
+
+
+            if($importData[9] === '' && $importData[10] === '')
+            {
+                
+                $insertData['day_type'] = 'off';
+                $insertData["attendance_time"]   = 0;
+                $insertData["punch_state"]          =  'none';
+                // echo '<pre>';print_r(AttendanceDetails::where($insertData)->count());exit;
+                if(AttendanceDetails::where($insertData)->count() == 0)
+                {
+                    $insertData['attendance_id'] = $attnId;
+                    $insertData["created_at"] = $this->current_datetime;
+                    // echo '<pre>';print_r($insertData);//exit;
+                    AttendanceDetails::updateOrCreate($insertData);
+                    continue;
+                }
+            }
+
+
+            if($importData[9] !== '')
+            {
+                //off or ph
+                if((strtolower($importData[9])==='off' || strtolower($importData[9])==='ph') && (strtolower($importData[10])==='off' || strtolower($importData[10])==='ph'))
+                {
+                    $insertData['day_type'] = strtolower($importData[9]);
+                    $insertData["attendance_time"]   = 0;
+                    $insertData["punch_state"]          =  'none';
+                }
+                else
+                {
+                    $insertData['day_type'] = 'work';
+                    $insertData["attendance_time"] = $importData[9];
+                    $insertData["punch_state"] = 'clockin';
+                }
+                if(AttendanceDetails::where($insertData)->count() == 0)
+                {
+                    $insertData['attendance_id'] = $attnId;
+                    $insertData["created_at"] = $this->current_datetime;
+                    // echo '<pre>';print_r($insertData);//exit;
+                    AttendanceDetails::updateOrCreate($insertData);
+                }                
+            }
+            else
+            {
+                if($importData[10] !== '')
+                {
+                    $insertData['day_type'] = 'work';
+                    $insertData["attendance_time"] =    0;
+                    $insertData["punch_state"]  =   'clockin';
+                    if(AttendanceDetails::where($insertData)->count() == 0)
+                    {
+                        $insertData['attendance_id'] = $attnId;
+                        $insertData["created_at"] = $this->current_datetime;
+                        AttendanceDetails::updateOrCreate($insertData);
+                    }
+                }
+            }
+            
+            
+
+            if($importData[10] !== '')
+            {
+                // if(strtolower($importData[10])==='off' || strtolower($importData[10])==='ph')
+                // {
+                //     $insertData['day_type'] = strtolower($importData[10]);
+                //     $insertData["attendance_time"]   = 0;
+                //     $insertData["punch_state"]          =  'none';
+                // }
+                // else
+                // {
+                    $insertData['day_type'] = 'work';
+                    $insertData["attendance_time"] =    $importData[10];
+                    $insertData["punch_state"]  =   'clockout';
+                // }
+                if(AttendanceDetails::where($insertData)->count() == 0)
+                {
+                    $insertData['attendance_id'] = $attnId;
+                    $insertData["created_at"] = $this->current_datetime;
+                    AttendanceDetails::updateOrCreate($insertData);
+                }
+            }
+            else
+            {
+                if($importData[9] !== '')
+                {
+                    $insertData['day_type'] = 'work';
+                    $insertData["attendance_time"] =    0;
+                    $insertData["punch_state"]  =   'clockout';
+                    if(AttendanceDetails::where($insertData)->count() == 0)
+                    {
+                        $insertData['attendance_id'] = $attnId;
+                        $insertData["created_at"] = $this->current_datetime;
+                        AttendanceDetails::updateOrCreate($insertData);
+                    }
+                }
+            }
+            
+            // echo '<pre>';print_r($insertData);exit;
+            
+        }
+        $return['message'] = 'Import Successful.';
+        $return['status'] = 1;
+      	return $return;
+    }
+
+    private function importCSV_first_fn($file, $attnId)
+    {
+        // File Details 
+        $filename = $file->getClientOriginalName();
+        
+        // File upload location
+        $location = 'uploads/attendance';
+        // Upload file
+        $file->move(public_path($location),$filename);
+
+        // Import CSV to Database
+        $filepath = public_path($location."/".$filename);
+
+        // Reading file
+        $file = fopen($filepath,"r");
+
+        $importData_arr = array();
+        $i = 0;
+
+        while (($filedata = fgetcsv($file, 1000, ",")) !== FALSE) 
+        {
+            $num = count($filedata );
+
+            // Skip first row
+            if($i == 0)
+            {
+                $i++;
+                continue; 
+            }
+
+            for ($c=0; $c < $num; $c++)
+            {
+                $importData_arr[$i][] = $filedata [$c];
+            }
+            $i++;
+        }
+        fclose($file);
+
+        // Insert to MySQL database
+        foreach($importData_arr as $importData)
+        {
+            $userId = $this->getUserIdByEmployeeId($importData[0]);
+            $departmentId = $this->getDepartmentIdByName($importData[2]);
+            $punch = ($importData[5]=='Check In')?'clockin':'clockout';
+            
+            $insertData = array(
+                "attendance_id" =>  $attnId,
+                "user_id"       =>  $userId,
+                "employee_id"   =>  $importData[0],
+                "department"    =>  $departmentId,
+                "attendance_on" =>  date('Y-m-d', strtotime($importData[3])),
+                "attendance_time"=> $importData[4],
+                "punch_state"   =>  $punch,
+                "work_code"     =>  $importData[6],
+                "data_source"   =>  $importData[7],
+                "created_at"    =>  $this->current_datetime,
+                "status"        =>  'active');
+            AttendanceDetails::create($insertData);
+        }
+        $return['message'] = 'Import Successful.';
+        $return['status'] = 1;
+        return $return;
+    }
+
+    private function getUserDetailsByEmployeeId($empid)
+    {
+    	return Employee::where("emp_generated_id", $empid)->first();
+    }
+
+    private function getDepartmentIdByName($department)
+    {
+    	return Departments::where("name", $department)->first()->id;
+    }
+
+    private function getDepartmentIdByEmpId($empid)
+    {
+        return Departments::where("name", $department)->first()->id;
+    }
+
+    public function isAttendanceExists(Request $request)
+    { 
+    	$where['attendance_date'] = date('Y-m-d',strtotime($request['attendance_date']));
+    	$where['company'] = $request['company'];
+    	$where['branch'] = $request['branch'];
+        
+        $count = Attendance::where($where)->get();
+        
+        if(count($count) > 0)
+        {
+            echo "false";
+        }
+        else
+        {
+            echo "true";
+        }
+    }
+
+    public function getAttendanceDetails(Request $request)
+    {
+        $userId = $request->userId;
+        $attnDate = str_replace('"','',preg_replace('/\\\\/', '', $request->attnDate));
+        // $emloyeeAttendance = AttendanceDetails::where(array('user_id' => $userId, 'attendance_on' => $attnDate))->orderBy('attendance_time')->get()->toArray();
+        $emloyeeAttendance = AttendanceDetails::where(array('user_id' => $userId, 'attendance_on' => $attnDate))->get()->toArray();
+        $emloyeeSchedule = Scheduling::where(array('employee' => $userId, 'shift_on' => date('Y-m-d', strtotime($attnDate)), 'status' => 'active'))->get()->toArray();
+        $attendanceHours = $this->attendanceHoursCalculation($userId, $attnDate);
+        // echo '<pre>';print_r($emloyeeAttendance);exit;
+        $html = view('lts.attendancePopup', compact('emloyeeAttendance', 'attendanceHours', 'attnDate', 'emloyeeSchedule', 'userId'))->render();
+        echo json_encode($html);
+    }
+    public function testit()
+    {
+        $x = $this->attendanceHoursCalculation(220, '2023-06-22');
+        echo '<pre>';print_r($x);exit;
+    }
+    public function attendanceHoursCalculation($userid, $attendanceon)
+    {
+        $startTime = 0; $totalWorkTime = 0; 
+        $breakTime = 0; $totalBreakTime = 0;
+        $lastTime = 0;
+
+        $emloyeeAttendance = AttendanceDetails::where(array('user_id' => $userid, 'attendance_on' => $attendanceon))->get()->toArray();
+
+        $punchStates = array_column($emloyeeAttendance, 'punch_state');
+        $count = count($emloyeeAttendance);
+        $lastIndex = $count-1;
+
+        $startTime = 0;
+// echo '<pre>';print_r($punchStates);exit;
+        if(isset($punchStates))
+        {
+            $startIndex = array_search('clockin', $punchStates);
+            $startTime = $emloyeeAttendance[$startIndex]['attendance_time'];
+
+            if(isset($punchStates[$lastIndex]) && $punchStates[$lastIndex] == 'clockout')
+            {
+                $lastTime = $emloyeeAttendance[$lastIndex]['attendance_time'];
+            }
+            else
+            {
+                $lastTime = $startTime;
+            } 
+        }
+
+        foreach($emloyeeAttendance as $key => $ea)
+        {
+            // echo '<--------------start loop - '.$key.'---------------->';
+            // echo '<br>';
+            // echo $ea['punch_state'];
+            // echo '<br>';
+        
+            if($ea['punch_state']=='clockin')
+            {    
+                // echo '$breakTime='.$breakTime;
+                // echo '<br>';
+                if($breakTime != 0)
+                {
+                    
+                    // echo 'Breaktime';
+                    // echo '<br>';
+                    $b_time1 = strtotime($breakTime);
+                    $b_time2 = strtotime($ea['attendance_time']);
+
+                    $totalBreakTime = $totalBreakTime + round(abs($b_time2 - $b_time1) / 3600,2);
+                    
+
+                    // echo $breakTime.'-'.$b_time1;
+                    // echo '<br>';
+                    // echo $ea['attendance_time'].'-'.$b_time2;
+                    // echo '<br>';
+                    // echo '$totalBreakTime- '.$totalBreakTime;
+                    $startTime = $breakTime;
+                    $breakTime = '';
+                }
+                else
+                {
+                    
+                    $time1 = strtotime($startTime);
+                    $time2 = strtotime($ea['attendance_time']);
+                    
+                    $totalWorkTime = $totalWorkTime + round(abs($time2 - $time1) / 3600,2);
+                    // echo $startTime.'-'.$time1;
+                    // echo '<br>';
+                    // echo $ea['attendance_time'].'-'.$time2;
+                    // echo '<br>';
+                    // echo '$totalWorkTime- '.$totalWorkTime;
+
+                }
+                $startTime = $ea['attendance_time'];
+
+                if($key==$lastIndex)
+                { 
+                    // echo 'its last<br>';
+                    if($lastTime==0)
+                    { 
+                        // echo 'still working on <br>';
+                        // $time1 = strtotime($startTime);
+                        // $time2 = strtotime(date('H:i'));
+                        // // $time2 = strtotime($ea['attendance_time']);
+                        $totalWorkTime = 0;
+                        // $totalWorkTime = $totalWorkTime + round(abs($time2 - $time1) / 3600,2);
+                        // echo $startTime.'-'.$time1;
+                        // echo '<br>';
+                        // echo date('d-m-Y H:i').'-'.$time2;
+                        // echo '<br>';
+                        // echo '$totalWorkTime- '.$totalWorkTime;
+                    }
+                }
+            }
+            if($ea['punch_state']=='clockout')
+            { 
+                
+                $time1 = ($startTime!=='0')?strtotime($startTime):strtotime($ea['attendance_time']);
+                $time2 = ($ea['attendance_time']!=='0')?strtotime($ea['attendance_time']):$time1;
+                $totalWorkTime = $totalWorkTime + round(abs($time2 - $time1) / 3600,2);
+                
+                // echo $startTime.'-'.$time1;
+                // echo '<br>';
+                // echo $ea['attendance_time'].'-'.$time2;
+                // echo '<br>';
+                // echo '$totalWorkTime- '.$totalWorkTime;
+
+                $startTime = '';
+                $breakTime = $ea['attendance_time'];
+                // echo '<br>';
+                // echo '$breakTime- '.$breakTime;
+               
+            }
+
+            // echo '<br>';
+            // echo '<br>';
+            // echo '<--------------ended loop - '.$key.'---------------->';
+            // echo '<br>';
+            // echo '<br>';
+        }
+
+        // echo 'totalBreakTime - '.$totalBreakTime; echo '<br> totalWorkTime -'.$totalWorkTime;
+        // echo '<br>';
+
+        // Convert to proper hours minutes
+        // $data['totalWorkTimeHours'] = $this->convertToHoursMinutes($totalWorkTime);
+        // $data['totalBreakTimeHours'] = $this->convertToHoursMinutes($totalBreakTime);
+        $data['totalWorkTimeHours'] = ($totalWorkTime != '')?$this->convertToHoursMinutes($totalWorkTime):'0.00';
+        $data['totalBreakTimeHours'] = ($totalBreakTime!='')?$this->convertToHoursMinutes($totalBreakTime):array();
+        return $data;
+    }
+
+    public static function convertToHoursMinutes($hours)
+    {
+        $whole = floor($hours);
+        // echo '<br>';
+        // echo $whole;
+        // echo '<br>';
+        $fraction = $hours - $whole;
+        $minutesText = '';
+        $secondsText = '';
+        $mn = 0;
+        if($fraction != '')
+        {
+            $minutes = $fraction * 60;
+
+            //check for seconds
+            // $min_whole = floor($minutes);
+            // $min_fraction = $minutes - $min_whole;
+            // if($min_fraction !='')
+            // {
+            //     $secondsText = ceil($min_fraction).' seconds';
+            // }
+            $mn = $minutes;
+            $minutesText = ', '.(int)$minutes.' mns'.$secondsText;
+        }
+        $result['timetext'] = $whole.' hrs'.$minutesText;
+        $result['timevalue'] = $whole.'.'.$mn;
+        // echo '$result - '.$result;
+        // echo '<br>';
+        return $result;
+    }
+
+    public function approveOt(Request $request)
+    {
+        $company_id  = Session::get('company_id');
+        $newSchedule = array(
+            'employee'      =>  $request->attnUserId,
+            'shift_on'      =>  date('Y-m-d', strtotime($request->attnDate)),
+            'status'        =>  'active'
+        );
+        //if schedule exists deactivate it and create new schedule
+        $schedule = Scheduling::where($newSchedule)->first();
+// echo '<pre>';print_r($schedule);exit;
+        if(!empty($schedule))
+        {
+            $shiftid = Scheduling::where('id', $schedule->id)->update(array('status' => 'inactive'));
+        }
+        $newSchedule['company_id'] =  $company_id;
+        $newSchedule['min_start_time']  =  date('h:i:s a', strtotime(str_replace(' pm','',$request->start_time)));
+        $newSchedule['start_time']  =  date('h:i:s a', strtotime(str_replace(' pm','',$request->start_time)));
+        $newSchedule['max_start_time']  =  date('h:i:s a', strtotime(str_replace(' pm','',$request->start_time)));
+        $newSchedule['min_end_time']  =  date('h:i:s a', strtotime(str_replace(' pm','',$request->end_time)));
+        $newSchedule['end_time']  =  date('h:i:s a', strtotime(str_replace(' pm','',$request->end_time)));
+        $newSchedule['max_end_time']  =  date('h:i:s a', strtotime(str_replace(' pm','',$request->end_time)));
+        // $newSchedule['over_time'] = $request->ottime;
+        // echo '<pre>';print_r($_POST);echo '<pre>';print_r($newSchedule);exit;
+        $shiftid = Scheduling::create($newSchedule);
+
+        $updateArray    = array(
+            'ottime'                => $request->ottime,
+            'ot_approve_status'     => (isset($request->approve_status))?$request->approve_status:0,
+            'ot_approve_remark'     => $request->approve_remark,
+            'updated_at'            =>  date('Y-m-d h:i:s')
+        );
+
+        $where = array(
+            'user_id'           =>  $request->attnUserId,
+            'attendance_on'     =>  $request->attnDate,
+        );
+
+        if(isset($request->start_time))
+        {
+            $updateArray['attendance_time'] = date('H:i', strtotime(str_replace(' pm','',$request->start_time)));
+            $where['punch_state'] = 'clockin';
+            AttendanceDetails::where($where)->update($updateArray);
+        }
+        if(isset($request->end_time))
+        {
+            $updateArray['attendance_time'] = date('H:i', strtotime(str_replace(' pm','',$request->end_time)));
+            $where['punch_state'] = 'clockout';
+            AttendanceDetails::where($where)->update($updateArray);
+        }
+        echo json_encode('done');
+        // return redirect('/attendance')->with('success','Attendance updated successfully!');
+    }
+}

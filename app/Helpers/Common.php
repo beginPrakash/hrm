@@ -204,7 +204,7 @@ function getShiftName($id)
     return $shifts[$id];
 }
 
-function getAttendanceText($shiftDetails)
+function getAttendanceText($shiftDetails,$encoded='')
 {
     if(!empty($shiftDetails) && (in_array($shiftDetails->shift, array(1,2,3))))
     {
@@ -212,7 +212,7 @@ function getAttendanceText($shiftDetails)
     }
     else
     {
-        $tdValue = '<span class="text-danger">A</span>';
+        $tdValue = '<a href="javascript:void(0);" class="CreateAttPopup" data-id="'.$encoded.'"><span class="text-danger">A</span></a>';
     }
 
     return $tdValue;

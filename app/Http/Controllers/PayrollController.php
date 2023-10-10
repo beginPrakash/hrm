@@ -34,8 +34,8 @@ class PayrollController extends Controller
         
         $title = $this->title;
 
-        $year = date('Y');
-        $month = date('m');
+        $year = '';
+        $month = '';
         $empname = '';
 
         $where = array();

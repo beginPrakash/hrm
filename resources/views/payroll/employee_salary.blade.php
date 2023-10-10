@@ -36,12 +36,12 @@
             <form action="/employee-salary" method="post">
                 @csrf
                 <div class="row filter-row">
-                   <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
+                   <!-- <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
                         <div class="form-group form-focus">
                             <input type="text" name="employee" class="form-control floating" value="{{$empname ?? ''}}">
                             <label class="focus-label">Employee Name</label>
                         </div>
-                   </div>
+                   </div> -->
                    <!-- <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
                         <div class="form-group form-focus select-focus">
                             <select class="select floating"> 
@@ -93,8 +93,8 @@
                             <label class="focus-label">Select Year</label>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
-                        <button type="submit" class="btn btn-success" name="search" value="search"> Search </button>    
+                    <div class="col-auto">  
+                        <button type="submit" class="btn btn-success" name="search" value="search" style="text-transform:none"> Generate Salary Report </button>    
                     </div>     
                 </div>
             </form>
@@ -106,7 +106,7 @@
                         <table class="table table-striped custom-table datatablex" id="datatable">
                             <thead>
                                 <tr>
-                                    <th>Serial No</th>
+                                    <th>Serial No.</th>
                                     <th>Employee ID</th>
                                     <th>Name</th>
                                     <th>Location</th>
@@ -127,6 +127,7 @@
                             </thead>
                             <tbody>
                             	<?php  
+                                if(!empty($year) && !empty($month)){
                                 $i = 1;
                                 //echo '<pre>';print_r($employees[0]->employee_residency->name);
                             	if(isset($employees))
@@ -142,7 +143,7 @@
                                     </td>
                                     <td>{{$emp->user_id}}</td>
                                     <td>{{$emp->first_name}} {{$emp->last_name}}</td>
-                                    <td>{{$emp->local_address}}</td>
+                                    <td>{{(isset($emp->employee_branch) && !empty($emp->employee_branch)) ? $emp->employee_branch->name : ''}}</td>
                                     <td>{{(isset($emp->employee_designation) && !empty($emp->employee_designation)) ? $emp->employee_designation->name : ''}}</td>
                                     <td>{{(isset($emp->employee_company_details) && !empty($emp->employee_company_details)) ? $emp->employee_company_details->company_name : ''}}</td>
                                     <td>{{(isset($emp->employee_details) && !empty($emp->employee_details)) ? $emp->employee_details->license : ''}}</td>
@@ -160,7 +161,7 @@
                                 <?php
                                 $i++;
                             		}
-                                    
+                                }
                             	}?>
                             </tbody>
                         </table>
@@ -623,7 +624,7 @@ $(document).ready(function() {
     $('#datatable').DataTable( {
         dom: 'Bfrtip',
         buttons: [
-            'pdfHtml5'
+            //'pdfHtml5'
         ]
     } );
 } );

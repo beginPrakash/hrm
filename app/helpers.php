@@ -22,19 +22,22 @@ function getInformation()
 
 function calculateSalaryByFilter($user_id,$empid,$mid,$year)
 {
-    $commonWorkingHoursDetails = Overtime::first();
-    $commonWorkingHours = $commonWorkingHoursDetails->working_hours - 1;
-    $commonWorkingDays = $commonWorkingHoursDetails->working_days;
-    $total_schedule_hours = AttendanceDetails::whereRaw('MONTH(attendance_on) = '.$mid)->where('employee_id',$empid)->sum('schedule_hours');
-    //dd($total_schedule_hours);
-    //find employee salary details
-    $employee = Employee::where('user_id',$user_id)->where('emp_generated_id',$empid)->first();
-    //calculate salary now
-    if(!empty($employee)):
-    $currentMonthSalary = (isset($employee->employee_salary))?$employee->employee_salary->basic_salary:0;
-    $daySalary = ($currentMonthSalary>0)?($currentMonthSalary/$commonWorkingDays):0;
-    $hourlySalary = ($daySalary>0)?($daySalary/$commonWorkingHours):0;
-    $total_calculate_salary = $total_schedule_hours * $hourlySalary;
+    $total_calculate_salary = 0;
+    if(!empty($mid)):
+        $commonWorkingHoursDetails = Overtime::first();
+        $commonWorkingHours = $commonWorkingHoursDetails->working_hours - 1;
+        $commonWorkingDays = $commonWorkingHoursDetails->working_days;
+        $total_schedule_hours = AttendanceDetails::whereRaw('MONTH(attendance_on) = '.$mid)->whereRaw('YEAR(attendance_on) = '.$year)->where('employee_id',$empid)->sum('schedule_hours');
+        //dd($total_schedule_hours);
+        //find employee salary details
+        $employee = Employee::where('user_id',$user_id)->where('emp_generated_id',$empid)->first();
+        //calculate salary now
+        if(!empty($employee)):
+        $currentMonthSalary = (isset($employee->employee_salary))?$employee->employee_salary->basic_salary:0;
+        $daySalary = ($currentMonthSalary>0)?($currentMonthSalary/$commonWorkingDays):0;
+        $hourlySalary = ($daySalary>0)?($daySalary/$commonWorkingHours):0;
+        $total_calculate_salary = $total_schedule_hours * $hourlySalary;
+    endif;
     return $total_calculate_salary;
     endif;
 }

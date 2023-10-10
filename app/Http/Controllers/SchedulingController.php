@@ -280,6 +280,10 @@ class SchedulingController extends Controller
                 $shiftDetails = $this->getShiftDetailsById($explode_shift[1]);//echo $importData[$k];
                 if(!empty($shiftDetails))
                 {
+                    $schedule_date = date('Y-m-d', strtotime(str_replace('/','-',$importHeaderData_arr[$k])));
+                    //check schedule is exist or not for specific date
+                    $is_schedule_exists = Scheduling::where('employee',$userId)->where('shift_on',$schedule_date)->delete();
+                    
                     $shiftid = $shiftDetails->id;
                     $scheduleInsertArray = array(
                         'company_id'        =>  $company_id,

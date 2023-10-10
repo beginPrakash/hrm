@@ -155,13 +155,15 @@ $maxDays=date('t', strtotime($start_date));
                                                     {
                                                         if(empty($emloyeeAttendance))
                                                         {
-                                                            $tdValue = getAttendanceText($shiftDetails);
+                                                            $encoded = base64_encode(json_encode($date.'/'.$employee->user_id));
+                                                            $tdValue = getAttendanceText($shiftDetails,$encoded);
                                                         }
                                                         else
                                                         {
                                                             if($emloyeeAttendance->day_type === 'off' && ($emloyeeAttendance->attendance_time === '0'))
                                                             {
-                                                                $tdValue = getAttendanceText($shiftDetails);
+                                                                $encoded = base64_encode(json_encode($date.'/'.$employee->user_id));
+                                                                $tdValue = getAttendanceText($shiftDetails,$encoded);
                                                             }
                                                             else
                                                             {
@@ -363,6 +365,30 @@ $maxDays=date('t', strtotime($start_date));
             }
       });
     })
+
+    $(document).on('click', '.CreateAttPopup', function()
+    {
+        var row_data = $(this).data('id');
+        var row_decode = atob(row_data);
+        var arr = row_decode.split('/');
+        //console.log(row_decode);
+        var userId = arr[1];
+        var attnDate = arr[0];
+        $.ajax({
+            type: "POST",
+            url: "{{ url('getAttendanceDetails/') }}",
+            data: { userId: userId, attnDate:attnDate,'popup_type':'create_attn', "_token": "{{ csrf_token() }}"},
+            dataType: 'json',
+            success: function(res) { 
+                if(res !='')
+                {
+                    $('#popup_body').empty().append(res);
+                    $('#attendance_info').modal('show');
+                }
+            }
+      });
+    })
+
 </script>
 
 <script type="text/javascript">
@@ -385,4 +411,5 @@ $maxDays=date('t', strtotime($start_date));
            }
        });
    }
+
 </script>

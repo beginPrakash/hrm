@@ -166,6 +166,8 @@ Route::post('/attendanceInsert',[App\Http\Controllers\AttendanceController::clas
 Route::post('/isAttendanceExists', [App\Http\Controllers\AttendanceController::class, 'isAttendanceExists'])->name('isAttendanceExists');
 Route::post('/getAttendanceDetails',[App\Http\Controllers\AttendanceController::class, 'getAttendanceDetails']);
 Route::get('/getAttendanceTime',[App\Http\Controllers\AttendanceController::class, 'attendanceHoursCalculation']);
+Route::post('/create_attendance_by_date',[App\Http\Controllers\AttendanceController::class, 'create_attendance_by_date'])->name('create_attendance_by_date');
+
 
 Route::post('/approveOt',[App\Http\Controllers\AttendanceController::class, 'approveOt'])->name('approveOt');
 Route::get('/testit',[App\Http\Controllers\AttendanceController::class, 'testit'])->name('testit');

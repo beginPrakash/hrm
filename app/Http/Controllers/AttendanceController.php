@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 use DB;
 use Session;
-
+use DateTime;
 use Illuminate\Http\Request;
 
 use App\Models\Residency;
@@ -239,7 +239,7 @@ class AttendanceController extends Controller
                     $insertData['attendance_id'] = $attnId;
                     $insertData["created_at"] = $this->current_datetime;
                     // echo '<pre>';print_r($insertData);//exit;
-                    AttendanceDetails::updateOrCreate($insertData);
+                    $in_data = AttendanceDetails::updateOrCreate($insertData);
                     continue;
                 }
             }
@@ -265,7 +265,7 @@ class AttendanceController extends Controller
                     $insertData['attendance_id'] = $attnId;
                     $insertData["created_at"] = $this->current_datetime;
                     // echo '<pre>';print_r($insertData);//exit;
-                    AttendanceDetails::updateOrCreate($insertData);
+                    $in_data = AttendanceDetails::updateOrCreate($insertData);
                 }                
             }
             else
@@ -279,7 +279,7 @@ class AttendanceController extends Controller
                     {
                         $insertData['attendance_id'] = $attnId;
                         $insertData["created_at"] = $this->current_datetime;
-                        AttendanceDetails::updateOrCreate($insertData);
+                        $in_data = AttendanceDetails::updateOrCreate($insertData);
                     }
                 }
             }
@@ -322,7 +322,23 @@ class AttendanceController extends Controller
                     }
                 }
             }
-            
+            //dd($insertData);
+            if(!empty($insertData)):
+                // /dd('sds');
+                $att_date = date('Y-m-d', strtotime($insertData['attendance_on']));
+                $shiftDetails = Scheduling::where('employee', $insertData['user_id'])->where('shift_on', $att_date)->where('status', 'active')->first();
+                if(!empty($shiftDetails)):
+                    $flag = _check_green_icon_attendance($insertData['attendance_on'],$insertData['user_id']);
+                    if($flag === 0):
+                        $save_data = save_schedule_overtime_hours($insertData['user_id'],$att_date,$importData[9],$importData[10]);
+                    else:
+                        $save_data = AttendanceDetails::where('user_id',$insertData['user_id'])->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
+                        $save_data->schedule_hours = NULL;
+                        $save_data->overtime_hours = NULL;
+                        $save_data->save();
+                    endif;  
+                endif;
+            endif;
             // echo '<pre>';print_r($insertData);exit;
             
         }
@@ -431,14 +447,19 @@ class AttendanceController extends Controller
     public function getAttendanceDetails(Request $request)
     {
         $userId = $request->userId;
+        $popup_type = $request->popup_type ?? '';
         $attnDate = str_replace('"','',preg_replace('/\\\\/', '', $request->attnDate));
         // $emloyeeAttendance = AttendanceDetails::where(array('user_id' => $userId, 'attendance_on' => $attnDate))->orderBy('attendance_time')->get()->toArray();
         $emloyeeAttendance = AttendanceDetails::where(array('user_id' => $userId, 'attendance_on' => $attnDate))->get()->toArray();
         $emloyeeSchedule = Scheduling::where(array('employee' => $userId, 'shift_on' => date('Y-m-d', strtotime($attnDate)), 'status' => 'active'))->get()->toArray();
-        $attendanceHours = $this->attendanceHoursCalculation($userId, $attnDate);
         // echo '<pre>';print_r($emloyeeAttendance);exit;
-        $html = view('lts.attendancePopup', compact('emloyeeAttendance', 'attendanceHours', 'attnDate', 'emloyeeSchedule', 'userId'))->render();
-        echo json_encode($html);
+        if($popup_type == 'create_attn'):
+            $html = view('lts.createattendancePopup', compact('attnDate', 'emloyeeSchedule', 'userId'))->render();
+        else:
+            $attendanceHours = $this->attendanceHoursCalculation($userId, $attnDate);
+            $html = view('lts.attendancePopup', compact('emloyeeAttendance', 'attendanceHours', 'attnDate', 'emloyeeSchedule', 'userId','popup_type'))->render();
+        endif;
+            echo json_encode($html);
     }
     public function testit()
     {
@@ -658,7 +679,81 @@ class AttendanceController extends Controller
             $where['punch_state'] = 'clockout';
             AttendanceDetails::where($where)->update($updateArray);
         }
+        $end_time = date('H:i', strtotime(str_replace(' pm','',$request->end_time)));
+        $start_time = date('H:i', strtotime(str_replace(' pm','',$request->start_time)));
+        //get schedule data
+        $att_date = date('Y-m-d', strtotime($request->attnDate));
+        $shiftDetails = Scheduling::where('employee', $request->attnUserId)->where('shift_on', $att_date)->where('status', 'active')->first();
+        if(!empty($shiftDetails)):
+            $flag = _check_green_icon_attendance($request->attnDate,$request->attnUserId);
+            if($flag === 0):
+                $save_data = save_schedule_overtime_hours($request->attnUserId,$att_date,$start_time,$end_time);
+            else:
+                $save_data = AttendanceDetails::where('user_id',$request->attnUserId)->where('attendance_on',$request->attnDate)->where('punch_state','clockin')->first();
+                $save_data->schedule_hours = NULL;
+                $save_data->overtime_hours = NULL;
+                $save_data->save();
+            endif;  
+        endif;
         echo json_encode('done');
         // return redirect('/attendance')->with('success','Attendance updated successfully!');
+    }
+
+    public function create_attendance_by_date(Request $request){
+        //dd($request->all());
+        $userDetails = Employee::where("user_id", $request->attnUserId)->first();
+        $userId = $userDetails->emp_generated_id;//by employee id
+        $departmentId = $userDetails->department;
+        $end_time = date('H:i', strtotime(str_replace(' pm','',$request->end_time)));
+        $start_time = date('H:i', strtotime(str_replace(' pm','',$request->start_time)));
+        if(isset($request->start_time))
+        {
+            $attnId = 1;
+            $insertData = array(
+            "user_id"       =>  $request->attnUserId,
+            "employee_id"   =>  $userId,
+            "department"    =>  $departmentId,
+            "attendance_on" =>  date('Y-m-d', strtotime($request->attnDate)),
+            "attendance_time"=> $start_time,
+            "punch_state"   =>  'clockin',
+            "day_type"     =>  'work',
+            "data_source"   =>  'Device',
+            "created_at"    =>  $this->current_datetime,
+            "status"        =>  'active');
+            $in_data = AttendanceDetails::create($insertData);
+            $in_id = $in_data->id ?? '';
+            }
+        if(isset($request->end_time))
+        {
+            $insertData = array(
+            "user_id"       =>  $request->attnUserId,
+            "employee_id"   =>  $userId,
+            "department"    =>  $departmentId,
+            "attendance_on" =>  date('Y-m-d', strtotime($request->attnDate)),
+            "attendance_time"=> $end_time,
+            "punch_state"   =>  'clockout',
+            "day_type"     =>  'work',
+            "data_source"   =>  'Device',
+            "created_at"    =>  $this->current_datetime,
+            "status"        =>  'active');
+
+            $out_data = AttendanceDetails::create($insertData);
+            $out_id = $out_data->id ?? '';
+        }
+        //get schedule data
+        $att_date = date('Y-m-d', strtotime($request->attnDate));
+        $shiftDetails = Scheduling::where('employee', $request->attnUserId)->where('shift_on', $att_date)->where('status', 'active')->first();
+        if(!empty($shiftDetails)):
+            $flag = _check_green_icon_attendance($request->attnDate,$request->attnUserId);
+            if($flag === 0):
+                $save_data = save_schedule_overtime_hours($request->attnUserId,$att_date,$start_time,$end_time);
+            else:
+                $save_data = AttendanceDetails::find($in_id);
+                $save_data->schedule_hours = NULL;
+                $save_data->overtime_hours = NULL;
+                $save_data->save();
+            endif;  
+        endif;
+        return redirect()->back()->with('success','Attendance created successfully');
     }
 }

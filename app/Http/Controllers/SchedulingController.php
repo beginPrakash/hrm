@@ -10,6 +10,7 @@ use App\Models\Shifting;
 use App\Models\Scheduling;
 use App\Models\Overtime;
 use App\Models\Holidays;
+use APp\Models\AttendanceDetails;
 
 class SchedulingController extends Controller
 {
@@ -136,6 +137,23 @@ class SchedulingController extends Controller
         );
         //echo '<pre>';print_r($request->schedule_id);exit;
         $shiftid = Scheduling::where('id', $request->schedule_id)->update($insertArray);
+        //get schedule data
+        $shiftDetails = Scheduling::find($request->schedule_id);
+        if(!empty($shiftDetails)):
+            $att_date = date('Y-m-d', strtotime($shiftDetails->shift_on));
+            $flag = _check_green_icon_attendance($att_date,$shiftDetails->employee);
+            if($flag === 0):
+                $att_details = AttendanceDetails::where('user_id',$shiftDetails->employee)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
+                $save_data = save_schedule_overtime_hours($shiftDetails->employee,$att_date,$att_details->start_time,$att_details->end_time);
+            else:
+                $save_data = AttendanceDetails::where('user_id',$shiftDetails->employee)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
+                if(!empty($save_data)):
+                    $save_data->schedule_hours = NULL;
+                    $save_data->overtime_hours = NULL;
+                    $save_data->save();
+                endif;
+            endif;  
+        endif;
         return redirect('/scheduling')->with('success', 'Schedule updated successfully!')->with('sdate' , $request->add_start_from_date);
     }
 

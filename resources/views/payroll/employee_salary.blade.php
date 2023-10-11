@@ -114,6 +114,7 @@
                                     <th>Company</th>
                                     <th>License</th>
                                     <th>Basic Salary</th>
+                                    <th>Salary</th>
                                     <th>Travel Allowance</th>
                                     <th>House Allowance</th>
                                     <th>Position Allowance</th>
@@ -135,6 +136,7 @@
                             		foreach($employees as $emp)
                             		{ 
                                         $salary_calc = calculateSalaryByFilter($emp->user_id,$emp->emp_generated_id,$month,$year);
+                                        $total_allowence = calculate_employee_allowence($emp->id);
                             		?>
                                     
                                 <tr>
@@ -148,6 +150,7 @@
                                     <td>{{(isset($emp->employee_company_details) && !empty($emp->employee_company_details)) ? $emp->employee_company_details->company_name : ''}}</td>
                                     <td>{{(isset($emp->employee_details) && !empty($emp->employee_details)) ? $emp->employee_details->license : ''}}</td>
                                     <td>{{(isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->basic_salary : 0}}</td>
+                                    <td>{{$salary_calc ?? 0}}</td>
                                     <td>{{(isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->travel_allowance : 0}}</td>
                                     <td>{{(isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->house_allowance : 0}}</td>
                                     <td>{{(isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->position_allowance : 0}}</td>
@@ -155,7 +158,7 @@
                                     <td>{{(isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->food_allowance : 0}}</td>
                                     <td>{{(isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->other_allowance : 0}}</td>
                                     <td>0</td>
-                                    <td>{{$salary_calc ?? 0}}</td>
+                                    <td>{{$salary_calc + $total_allowence}}</td>
                                     <td>Cash</td>
                                 </tr>
                                 <?php

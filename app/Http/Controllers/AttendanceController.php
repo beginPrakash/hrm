@@ -640,20 +640,18 @@ class AttendanceController extends Controller
         //if schedule exists deactivate it and create new schedule
         $schedule = Scheduling::where($newSchedule)->first();
 // echo '<pre>';print_r($schedule);exit;
-        if(!empty($schedule))
-        {
-            $shiftid = Scheduling::where('id', $schedule->id)->update(array('status' => 'inactive'));
-        }
-        $newSchedule['company_id'] =  $company_id;
-        $newSchedule['min_start_time']  =  date('h:i:s a', strtotime(str_replace(' pm','',$request->start_time)));
-        $newSchedule['start_time']  =  date('h:i:s a', strtotime(str_replace(' pm','',$request->start_time)));
-        $newSchedule['max_start_time']  =  date('h:i:s a', strtotime(str_replace(' pm','',$request->start_time)));
-        $newSchedule['min_end_time']  =  date('h:i:s a', strtotime(str_replace(' pm','',$request->end_time)));
-        $newSchedule['end_time']  =  date('h:i:s a', strtotime(str_replace(' pm','',$request->end_time)));
-        $newSchedule['max_end_time']  =  date('h:i:s a', strtotime(str_replace(' pm','',$request->end_time)));
-        // $newSchedule['over_time'] = $request->ottime;
-        // echo '<pre>';print_r($_POST);echo '<pre>';print_r($newSchedule);exit;
-        $shiftid = Scheduling::create($newSchedule);
+        // if(!empty($schedule))
+        // {
+        //     $shiftid = Scheduling::where('id', $schedule->id)->update(array('status' => 'inactive'));
+        // }
+        // $newSchedule['company_id'] =  $company_id;
+        // $newSchedule['min_start_time']  =  _convert_time_to_12hour_format(str_replace(' pm','',$request->start_time));
+        // $newSchedule['start_time']  =  _convert_time_to_12hour_format(str_replace(' pm','',$request->start_time));
+        // $newSchedule['max_start_time']  =  _convert_time_to_12hour_format(str_replace(' pm','',$request->start_time));
+        // $newSchedule['min_end_time']  =  _convert_time_to_12hour_format(str_replace(' pm','',$request->end_time));
+        // $newSchedule['end_time']  =  _convert_time_to_12hour_format(str_replace(' pm','',$request->end_time));
+        // $newSchedule['max_end_time']  =  _convert_time_to_12hour_format(str_replace(' pm','',$request->end_time));
+        // $shiftid = Scheduling::create($newSchedule);
 
         $updateArray    = array(
             'ottime'                => $request->ottime,

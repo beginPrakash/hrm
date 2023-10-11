@@ -178,34 +178,39 @@ $maxDays=date('t', strtotime($start_date));
 
                                                                 $minStartTime_24 = (isset($shiftDetails->min_start_time))?date('H:i', strtotime($shiftDetails->min_start_time)):'0';
                                                                 $maxStartTime_24 = (isset($shiftDetails->max_start_time))?date('H:i', strtotime($shiftDetails->max_start_time)):'0';
-                                                                if(isset($firstclockin->attendance_time) && checkDateTimeInBetween($firstclockin->attendance_time, $minStartTime_24, $maxStartTime_24)==2)
-                                                                {
-                                                                    $flag = 1;
-                                                                    $shcolor = 'text-warning';
-                                                                    $shicon = 'fa-info-circle';
-                                                                }
-
-                                                                if((empty($firstclockin) || empty($lastclockout)) || ($firstclockin->attendance_time ==='0' || $lastclockout->attendance_time ==='0'))
-                                                                {
-                                                                    $flag = 1;
-                                                                    $shcolor = 'text-danger';
-                                                                    $shicon = 'fa-info-circle';
-                                                                }
-
-                                                                if(empty($shiftDetails))
-                                                                {
-                                                                    $shcolor = 'text-info';
-                                                                    $shicon = 'fa-info-circle';
-                                                                    $flag = 1;
-                                                                    $overtimeDetails = App\Models\Overtime::first();
-                                                                    $workingHours = $overtimeDetails->working_hours;
-                                                                }
-
-                                                                if($flag === 0)
+                                                                $minEndTime_24 = (isset($shiftDetails->min_end_time))?date('H:i', strtotime($shiftDetails->min_end_time)):'0';
+                                                                $maxEndTime_24 = (isset($shiftDetails->max_end_time))?date('H:i', strtotime($shiftDetails->max_end_time)):'0';
+                                                                if((isset($firstclockin->attendance_time) && checkDateTimeInBetween($firstclockin->attendance_time, $minStartTime_24, $maxStartTime_24)==1) && (isset($lastclockout->attendance_time) && checkDateTimeInBetween($lastclockout->attendance_time, $minEndTime_24, $maxEndTime_24)==1))
                                                                 {
                                                                     $shcolor = 'text-success';
                                                                     $shicon = 'fa-check';
+                                                                }else{
+                                                                    $shcolor = 'text-warning';
+                                                                    $shicon = 'fa-info-circle';
+                                                                    $flag = 1;
                                                                 }
+
+                                                                // if((empty($firstclockin) || empty($lastclockout)) || ($firstclockin->attendance_time ==='0' || $lastclockout->attendance_time ==='0'))
+                                                                // {
+                                                                //     $flag = 1;
+                                                                //     $shcolor = 'text-danger';
+                                                                //     $shicon = 'fa-info-circle';
+                                                                // }
+
+                                                                // if(empty($shiftDetails))
+                                                                // {
+                                                                //     $shcolor = 'text-info';
+                                                                //     $shicon = 'fa-info-circle';
+                                                                //     $flag = 1;
+                                                                //     $overtimeDetails = App\Models\Overtime::first();
+                                                                //     $workingHours = $overtimeDetails->working_hours;
+                                                                // }
+
+                                                                // if($flag === 0)
+                                                                // {
+                                                                //     $shcolor = 'text-success';
+                                                                //     $shicon = 'fa-check';
+                                                                // }
                                                                 
                                                                 $tdValue = '<a href="javascript:void(0);" class="popupAttn" data-id="'.$encoded.'"><i class="fa '.$shicon.' '.$shcolor.'"></i></a>';
                                                             }

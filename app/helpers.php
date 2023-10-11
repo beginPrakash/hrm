@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Support\Facades\DB;
 use App\Models\Employee;
 use App\Models\EmployeeSalary;
 use App\Models\EmployeeLoan;
@@ -22,12 +23,15 @@ function getInformation()
 
 function calculateSalaryByFilter($user_id,$empid,$mid,$year)
 {
+    $endDateOrg = $year.'-'.$mid.'-'.'19';//date('Y-m-20');
+    $startDateOrg =  date('Y-m-d', strtotime('-1 month', strtotime($endDateOrg)));
+    $startDateOrg = date('Y-m-d', strtotime('+1 days', strtotime($startDateOrg)));
     $total_calculate_salary = 0;
     if(!empty($mid)):
         $commonWorkingHoursDetails = Overtime::first();
         $commonWorkingHours = $commonWorkingHoursDetails->working_hours - 1;
         $commonWorkingDays = $commonWorkingHoursDetails->working_days;
-        $total_schedule_hours = AttendanceDetails::whereRaw('MONTH(attendance_on) = '.$mid)->whereRaw('YEAR(attendance_on) = '.$year)->where('employee_id',$empid)->sum('schedule_hours');
+        $total_schedule_hours = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('employee_id',$empid)->sum('schedule_hours');
         //dd($total_schedule_hours);
         //find employee salary details
         $employee = Employee::where('user_id',$user_id)->where('emp_generated_id',$empid)->first();
@@ -149,18 +153,15 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
 
         $minStartTime_24 = (isset($shiftDetails->min_start_time))?date('H:i', strtotime($shiftDetails->min_start_time)):'0';
         $maxStartTime_24 = (isset($shiftDetails->max_start_time))?date('H:i', strtotime($shiftDetails->max_start_time)):'0';
-        if(isset($firstclockin->attendance_time) && checkDateTimeInBetween($firstclockin->attendance_time, $minStartTime_24, $maxStartTime_24)==2)
+        $minEndTime_24 = (isset($shiftDetails->min_end_time))?date('H:i', strtotime($shiftDetails->min_end_time)):'0';
+        $maxEndTime_24 = (isset($shiftDetails->max_end_time))?date('H:i', strtotime($shiftDetails->max_end_time)):'0';
+        if((isset($firstclockin->attendance_time) && checkDateTimeInBetween($firstclockin->attendance_time, $minStartTime_24, $maxStartTime_24)==1) && (isset($lastclockout->attendance_time) && checkDateTimeInBetween($lastclockout->attendance_time, $minEndTime_24, $maxEndTime_24)==1))
         {
-            $flag = 1;
-        }
-
-        if((empty($firstclockin) || empty($lastclockout)) || ($firstclockin->attendance_time ==='0' || $lastclockout->attendance_time ==='0'))
-        {
-            $flag = 1;
-        }
-
-        if(empty($shiftDetails))
-        {
+            $shcolor = 'text-success';
+            $shicon = 'fa-check';
+        }else{
+            $shcolor = 'text-warning';
+            $shicon = 'fa-info-circle';
             $flag = 1;
         }
         return $flag;
@@ -189,8 +190,13 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
             //save schedule hours and overtime data in attanedance detail yable
             $save_data = AttendanceDetails::where('user_id',$user_id)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
             $save_data->schedule_hours = $commonWorkingHours-1;
-            $save_data->overtime_hours = $final_diff;
+            $save_data->overtime_hours = 0;
             $save_data->save();
             return true;
         endif;
+    }
+
+    function calculate_employee_allowence($emp_id){
+        $total_allowence = EmployeeSalary::where('emp_id',$emp_id)->sum(DB::raw('travel_allowance + food_allowance + house_allowance + position_allowance +phone_allowance + other_allowance'));
+        return $total_allowence;
     }

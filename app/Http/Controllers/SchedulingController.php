@@ -145,6 +145,13 @@ class SchedulingController extends Controller
             if($flag === 0):
                 $att_details = AttendanceDetails::where('user_id',$shiftDetails->employee)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
                 $save_data = save_schedule_overtime_hours($shiftDetails->employee,$att_date,$att_details->start_time,$att_details->end_time);
+            // elseif($flag == 2):
+            //     $save_data = AttendanceDetails::where('user_id',$shiftDetails->employee)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
+            //     if(!empty($save_data)):
+            //         $save_data->schedule_hours = 8;
+            //         $save_data->overtime_hours = 0;
+            //         $save_data->save();
+            //     endif;
             else:
                 $save_data = AttendanceDetails::where('user_id',$shiftDetails->employee)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
                 if(!empty($save_data)):

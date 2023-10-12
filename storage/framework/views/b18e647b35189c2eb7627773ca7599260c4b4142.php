@@ -183,10 +183,10 @@ if(isset($emloyeeAttendance))
                         <br><br>
                     Punch Timings <br>
                     <div class="input-group timex timepickerx">
-                        Start Time : <input type="text" class="form-control addsched att_timepicker" name="start_time" id="start_time" value="<?php echo $scheduleStart; ?>"><span class="input-group-text"><i class="fa fa-clock-o"></i></span><br>
+                        Start Time : <input type="time" class="form-control addsched" name="start_time" id="start_time" value="<?php echo $scheduleStart; ?>"><span class="input-group-text"><i class="fa fa-clock-o"></i></span><br>
                     </div>
                     <div class="input-group timex timepickerx">
-                        End Time : <input type="text" class="form-control addsched att_timepicker" name="end_time" id="end_time" value="<?php echo $scheduleEnd; ?>"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                        End Time : <input type="time" class="form-control addsched" name="end_time" id="end_time" value="<?php echo $scheduleEnd; ?>"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
                     </div>
                         <br>
                     Worked Hours : <span><?php echo (isset($attendanceHours['totalWorkTimeHours']))?$attendanceHours['totalWorkTimeHours']['timetext']:'0hrs'; ?></span><br>
@@ -205,11 +205,6 @@ if(isset($emloyeeAttendance))
 </div>
 
 <script type="text/javascript">
-    var dateNow = new Date();
-    $(".att_timepicker").datetimepicker({
-        format: 'HH:mm a',
-        defaultDate:moment(dateNow).hours(0).minutes(0)
-    });
 $(document).on('change', '#start_time, #end_time', function()
 {
     var start_time = $('#start_time').val();

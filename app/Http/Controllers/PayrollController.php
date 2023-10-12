@@ -17,6 +17,7 @@ use App\Models\EmployeeLoan;
 use App\Models\AttendanceDetails;
 use App\Http\Controllers\Auth;
 use App\Http\Controllers\EmployeeController;
+use App\Models\Branch;
 // use App\Helper\Helper;
 
 use Illuminate\Http\Request;
@@ -37,17 +38,16 @@ class PayrollController extends Controller
         $year = '';
         $month = '';
         $empname = '';
-
+        $is_generate_report = 0;
         $where = array();
         $employees = Employee::with('employee_salary');
-        if(isset($_POST['search']))
-        {
-            if(isset($_POST['year']) && $_POST['year']!='')
+         if(isset($_POST['year']) && $_POST['year']!='')
             {
                 $year = $_POST['year'];
             }
             if(isset($_POST['month']) && $_POST['month']!='')
             {
+                $is_generate_report = 1;
                 $month = $_POST['month'];
             }
             if(isset($_POST['employee']) && $_POST['employee']!='')
@@ -57,7 +57,6 @@ class PayrollController extends Controller
                             ->orWhere('last_name', 'like', '%'.$_POST['employee'].'%')
                             ->orWhere(DB::raw("CONCAT(first_name, ' ', last_name)") , 'like', '%'.$_POST['employee'].'%');
             }
-        }
 
         $breadButton = 0;
         // $month = 07;//date('m');
@@ -68,7 +67,7 @@ class PayrollController extends Controller
         // echo '<pre>';print_r($salaryDetails);exit;
         $salaryCount = EmployeeMonthlySalary::where('salary_type','salary')->where('es_month',$month)->where('status','active')->get()->count();
         $employees = $employees->where('status', 'active')->get();
-        return view('payroll.employee_salary', compact('title', 'salaryDetails', 'additions', 'deductions', 'breadButton', 'salaryCount', 'year', 'month','employees','empname'));
+        return view('payroll.employee_salary', compact('title', 'salaryDetails', 'additions', 'deductions', 'breadButton', 'salaryCount', 'year', 'month','employees','empname','is_generate_report'));
     }
 
     public function employee_salary_details(Request $request)
@@ -663,5 +662,29 @@ class PayrollController extends Controller
         $employees = Employee::with(["employee_designation", "employee_salary_details", "employee_residency"])->where('user_id', $salaryDetails->emp_id)->where('status','active')->get();
         // echo '<pre>';print_r($employees);exit;
         return view('payroll.employee_overtime_slip', compact('title', 'salaryDetails', 'employees'));
+    }
+
+    public function employee_salary_pdf(Request $request)
+    {
+
+        $year = '';
+        $month = '';
+        $empname = '';
+         if(isset($request->year) && $request->year!='')
+            {
+                $year = $request->year;
+            }
+            if(isset($request->month) && $request->month!='')
+            {
+                $month = $request->month;
+            }
+        //for search query
+        // $employee_branch = Branch::with(['employee_list' => function($query) use ($company)
+        // {
+        //     $query->where('company', $company);
+        // }])->whereHas('employee_list')->where('status','active')->orderBy('name','asc')->get();
+
+        $employee_branch = Branch::with('employee_list')->where('status','active')->orderBy('name','asc')->get();
+        return view('payroll.employee_salary_pdf', compact('employee_branch','month','year'));
     }
 }

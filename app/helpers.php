@@ -32,7 +32,8 @@ function calculateSalaryByFilter($user_id,$empid,$mid,$year)
         $commonWorkingHours = $commonWorkingHoursDetails->working_hours - 1;
         $commonWorkingDays = $commonWorkingHoursDetails->working_days;
         $total_schedule_hours = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('employee_id',$empid)->sum('schedule_hours');
-        //dd($total_schedule_hours);
+        $find_fs_days = Scheduling::whereBetween('shift_on', [$startDateOrg, $endDateOrg])->where('employee',$user_id)->where('shift',3)->count();
+        $find_fs_hours = $find_fs_days * 8;
         //find employee salary details
         $employee = Employee::where('user_id',$user_id)->where('emp_generated_id',$empid)->first();
         //calculate salary now
@@ -40,7 +41,7 @@ function calculateSalaryByFilter($user_id,$empid,$mid,$year)
         $currentMonthSalary = (isset($employee->employee_salary))?$employee->employee_salary->basic_salary:0;
         $daySalary = ($currentMonthSalary>0)?($currentMonthSalary/$commonWorkingDays):0;
         $hourlySalary = ($daySalary>0)?($daySalary/$commonWorkingHours):0;
-        $total_calculate_salary = $total_schedule_hours * $hourlySalary;
+        $total_calculate_salary = ($total_schedule_hours + $find_fs_hours) * $hourlySalary;
     endif;
     return $total_calculate_salary;
     endif;
@@ -115,6 +116,11 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         endif;
     }
 
+    function _convert_time_to_12hour_format_bydate($date){
+        $convert_date = date("h:i a", strtotime($date));
+        return $convert_date;
+    }
+
     function get_total_hours($start_time,$end_time){
         $start  = new \Carbon\Carbon($start_time);
         $end    = new \Carbon\Carbon($end_time);
@@ -155,14 +161,19 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $maxStartTime_24 = (isset($shiftDetails->max_start_time))?date('H:i', strtotime($shiftDetails->max_start_time)):'0';
         $minEndTime_24 = (isset($shiftDetails->min_end_time))?date('H:i', strtotime($shiftDetails->min_end_time)):'0';
         $maxEndTime_24 = (isset($shiftDetails->max_end_time))?date('H:i', strtotime($shiftDetails->max_end_time)):'0';
-        if((isset($firstclockin->attendance_time) && checkDateTimeInBetween($firstclockin->attendance_time, $minStartTime_24, $maxStartTime_24)==1) && (isset($lastclockout->attendance_time) && checkDateTimeInBetween($lastclockout->attendance_time, $minEndTime_24, $maxEndTime_24)==1))
+        if(!empty($shiftDetails) && (in_array($shiftDetails->shift, array(3))))
         {
-            $shcolor = 'text-success';
-            $shicon = 'fa-check';
+            $flag = 2;
         }else{
-            $shcolor = 'text-warning';
-            $shicon = 'fa-info-circle';
-            $flag = 1;
+            if((isset($firstclockin->attendance_time) && checkDateTimeInBetween($firstclockin->attendance_time, $minStartTime_24, $maxStartTime_24)==1) && (isset($lastclockout->attendance_time) && checkDateTimeInBetween($lastclockout->attendance_time, $minEndTime_24, $maxEndTime_24)==1))
+            {
+                $shcolor = 'text-success';
+                $shicon = 'fa-check';
+            }else{
+                $shcolor = 'text-warning';
+                $shicon = 'fa-info-circle';
+                $flag = 1;
+            }
         }
         return $flag;
     }

@@ -33,7 +33,7 @@
             
             
             <!-- Search Filter -->
-            <form action="/employee-salary" method="post">
+            <form action="/employee-salary" method="post" id="salary_form">
                 @csrf
                 <div class="row filter-row">
                    <!-- <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
@@ -73,7 +73,7 @@
                                 '10'    =>  'Oct', '11' => 'Nov', '12' => 'Dec',
                             );
                             ?>
-                            <select class="select floating" name="month"> 
+                            <select class="select floating" name="month" id="report_month"> 
                                 <option value="">-</option>
                                 <?php foreach($monthArray as $makey => $ma) { ?>
                                     <option value="<?php echo $makey; ?>" <?php echo ($makey==$month)?'selected':''; ?>><?php echo $ma; ?></option>
@@ -84,7 +84,7 @@
                     </div>
                    <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
                         <div class="form-group form-focus">
-                            <select class="select floating" name="year"> 
+                            <select class="select floating" name="year" id="report_year"> 
                                 <option value="">-</option>
                                 <?php for($y=date('Y');$y>=2015;$y--) { ?>
                                     <option value="<?php echo $y; ?>" <?php echo ($year==$y)?'selected':''; ?>><?php echo $y; ?></option>
@@ -93,20 +93,28 @@
                             <label class="focus-label">Select Year</label>
                         </div>
                     </div>
+                    <input type="hidden" name="report_type" id="report_type" value="">
                     <div class="col-auto">  
                         <button type="submit" class="btn btn-success" name="search" value="search" style="text-transform:none"> Generate Salary Report </button>    
                     </div>     
                 </div>
             </form>
             <!-- /Search Filter -->
-            
+            <form action="/employee-salary-pdf" method="get" id="salary_form">
+                @csrf
+                <input type="hidden" name="month" id="pdf_month" value="">
+                <input type="hidden" name="year" id="pdf_year" value="">
+                @if(!empty($is_generate_report))
+                    <button type="submit" class="btn btn-success generate_pdf_btn" style="text-transform:none;"> Generate PDF </button>    
+                @endif
+            <form>
             <div class="row">
                 <div class="col-md-12">
                     <div class="table-responsive">
                         <table class="table table-striped custom-table datatablex" id="datatable">
                             <thead>
                                 <tr>
-                                    <th>Serial No.</th>
+                                    <th>No</th>
                                     <th>Employee ID</th>
                                     <th>Name</th>
                                     <th>Location</th>
@@ -143,7 +151,7 @@
                                     <td>
                                         {{$i}}
                                     </td>
-                                    <td>{{$emp->user_id}}</td>
+                                    <td>{{$emp->emp_generated_id}}</td>
                                     <td>{{$emp->first_name}} {{$emp->last_name}}</td>
                                     <td>{{(isset($emp->employee_branch) && !empty($emp->employee_branch)) ? $emp->employee_branch->name : ''}}</td>
                                     <td>{{(isset($emp->employee_designation) && !empty($emp->employee_designation)) ? $emp->employee_designation->name : ''}}</td>
@@ -630,5 +638,10 @@ $(document).ready(function() {
             //'pdfHtml5'
         ]
     } );
+
+    $('#pdf_month').val($('#report_month').val());
+    $('#pdf_year').val($('#report_year').val());
 } );
+
+    
 </script>

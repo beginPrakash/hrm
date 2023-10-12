@@ -22,4 +22,8 @@ class Branch extends Model
     {
 	    return $this->hasOne('App\Models\Company', 'id','company_id');
 	}  
+
+    public function employee_list(){
+		return $this->hasMany(Employee::class, 'branch', 'id')->where('employees.status','active')->with('employee_designation','employee_company_details','employee_details','employee_salary');
+	}  
 }

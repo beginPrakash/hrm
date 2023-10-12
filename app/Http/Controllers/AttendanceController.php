@@ -331,6 +331,11 @@ class AttendanceController extends Controller
                     $flag = _check_green_icon_attendance($insertData['attendance_on'],$insertData['user_id']);
                     if($flag === 0):
                         $save_data = save_schedule_overtime_hours($insertData['user_id'],$att_date,$importData[9],$importData[10]);
+                    elseif($flag == 2):
+                        $save_data = AttendanceDetails::where('user_id',$insertData['user_id'])->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
+                        $save_data->schedule_hours = 8;
+                        $save_data->overtime_hours = 0;
+                        $save_data->save();
                     else:
                         $save_data = AttendanceDetails::where('user_id',$insertData['user_id'])->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
                         $save_data->schedule_hours = NULL;
@@ -640,18 +645,20 @@ class AttendanceController extends Controller
         //if schedule exists deactivate it and create new schedule
         $schedule = Scheduling::where($newSchedule)->first();
 // echo '<pre>';print_r($schedule);exit;
-        // if(!empty($schedule))
-        // {
-        //     $shiftid = Scheduling::where('id', $schedule->id)->update(array('status' => 'inactive'));
-        // }
-        // $newSchedule['company_id'] =  $company_id;
-        // $newSchedule['min_start_time']  =  _convert_time_to_12hour_format(str_replace(' pm','',$request->start_time));
-        // $newSchedule['start_time']  =  _convert_time_to_12hour_format(str_replace(' pm','',$request->start_time));
-        // $newSchedule['max_start_time']  =  _convert_time_to_12hour_format(str_replace(' pm','',$request->start_time));
-        // $newSchedule['min_end_time']  =  _convert_time_to_12hour_format(str_replace(' pm','',$request->end_time));
-        // $newSchedule['end_time']  =  _convert_time_to_12hour_format(str_replace(' pm','',$request->end_time));
-        // $newSchedule['max_end_time']  =  _convert_time_to_12hour_format(str_replace(' pm','',$request->end_time));
-        // $shiftid = Scheduling::create($newSchedule);
+        if(!empty($schedule))
+        {
+            $shiftid = Scheduling::where('id', $schedule->id)->update(array('status' => 'inactive'));
+        }
+        $newSchedule['company_id'] =  $company_id;
+        $newSchedule['min_start_time']  =  date('h:i:s a', strtotime(str_replace(' pm','',$request->start_time)));
+        $newSchedule['start_time']  =  date('h:i:s a', strtotime(str_replace(' pm','',$request->start_time)));
+        $newSchedule['max_start_time']  =  date('h:i:s a', strtotime(str_replace(' pm','',$request->start_time)));
+        $newSchedule['min_end_time']  =  date('h:i:s a', strtotime(str_replace(' pm','',$request->end_time)));
+        $newSchedule['end_time']  =  date('h:i:s a', strtotime(str_replace(' pm','',$request->end_time)));
+        $newSchedule['max_end_time']  =  date('h:i:s a', strtotime(str_replace(' pm','',$request->end_time)));
+        // $newSchedule['over_time'] = $request->ottime;
+        // echo '<pre>';print_r($_POST);echo '<pre>';print_r($newSchedule);exit;
+        $shiftid = Scheduling::create($newSchedule);
 
         $updateArray    = array(
             'ottime'                => $request->ottime,
@@ -686,6 +693,11 @@ class AttendanceController extends Controller
             $flag = _check_green_icon_attendance($request->attnDate,$request->attnUserId);
             if($flag === 0):
                 $save_data = save_schedule_overtime_hours($request->attnUserId,$att_date,$start_time,$end_time);
+            elseif($flag == 2):
+                $save_data = AttendanceDetails::where('user_id',$request->attnUserId)->where('attendance_on',$request->attnDate)->where('punch_state','clockin')->first();
+                $save_data->schedule_hours = 8;
+                $save_data->overtime_hours = 0;
+                $save_data->save();
             else:
                 $save_data = AttendanceDetails::where('user_id',$request->attnUserId)->where('attendance_on',$request->attnDate)->where('punch_state','clockin')->first();
                 $save_data->schedule_hours = NULL;
@@ -745,6 +757,11 @@ class AttendanceController extends Controller
             $flag = _check_green_icon_attendance($request->attnDate,$request->attnUserId);
             if($flag === 0):
                 $save_data = save_schedule_overtime_hours($request->attnUserId,$att_date,$start_time,$end_time);
+            elseif($flag == 2):
+                $save_data = AttendanceDetails::find($in_id);
+                $save_data->schedule_hours = 8;
+                $save_data->overtime_hours = 0;
+                $save_data->save();
             else:
                 $save_data = AttendanceDetails::find($in_id);
                 $save_data->schedule_hours = NULL;

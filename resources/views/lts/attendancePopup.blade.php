@@ -183,10 +183,10 @@ if(isset($emloyeeAttendance))
                         <br><br>
                     Punch Timings <br>
                     <div class="input-group timex timepickerx">
-                        Start Time : <input type="text" class="form-control addsched att_timepicker" name="start_time" id="start_time" value="<?php echo $scheduleStart; ?>"><span class="input-group-text"><i class="fa fa-clock-o"></i></span><br>
+                        Start Time : <input type="time" class="form-control addsched" name="start_time" id="start_time" value="<?php $date = date("H:i", strtotime($scheduleStart)); echo $date; ?>"><span class="input-group-text"><i class="fa fa-clock-o"></i></span><br>
                     </div>
                     <div class="input-group timex timepickerx">
-                        End Time : <input type="text" class="form-control addsched att_timepicker" name="end_time" id="end_time" value="<?php echo $scheduleEnd; ?>"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                        End Time : <input type="time" class="form-control addsched" name="end_time" id="end_time" value="<?php $date = date("H:i", strtotime($scheduleEnd)); echo $date; ?>"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
                     </div>
                         <br>
                     Worked Hours : <span><?php echo (isset($attendanceHours['totalWorkTimeHours']))?$attendanceHours['totalWorkTimeHours']['timetext']:'0hrs'; ?></span><br>

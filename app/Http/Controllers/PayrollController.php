@@ -18,6 +18,8 @@ use App\Models\AttendanceDetails;
 use App\Http\Controllers\Auth;
 use App\Http\Controllers\EmployeeController;
 use App\Models\Branch;
+use PDF;
+use App\Models\EmployeeSalaryData;
 // use App\Helper\Helper;
 
 use Illuminate\Http\Request;
@@ -67,8 +69,68 @@ class PayrollController extends Controller
         // echo '<pre>';print_r($salaryDetails);exit;
         $salaryCount = EmployeeMonthlySalary::where('salary_type','salary')->where('es_month',$month)->where('status','active')->get()->count();
         $employees = $employees->where('status', 'active')->get();
-        return view('payroll.employee_salary', compact('title', 'salaryDetails', 'additions', 'deductions', 'breadButton', 'salaryCount', 'year', 'month','employees','empname','is_generate_report'));
-    }
+        if(isset($_POST['report_type']) && $_POST['report_type']!=''):
+            //save employee salary data
+            $employees = Employee::with('employee_salary')->where('status', 'active')->get();
+            $total_earning = 0;
+            //delete same tear or month data if already create
+            EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->delete();
+            if(!empty($employees) && count($employees) > 0):
+                foreach($employees as $key => $val):
+                    $salary_calc = calculateSalaryByFilter($val->user_id,$val->emp_generated_id,$month,$year,'report_pdf');
+                    $total_allowence = calculate_employee_allowence($val->id);
+                    $total_sal = $salary_calc['total_salary'] ?? 0;
+                    $total_earning = $total_sal + $total_allowence;
+                    $save_data = new EmployeeSalaryData();
+                    $save_data->employee_id = $val->id;
+                    $save_data->branch_id = $val->branch;
+                    $save_data->branch_name = (isset($val->employee_branch) && !empty($val->employee_branch)) ? $val->employee_branch->name : '';
+                    $save_data->name = $val->first_name.' '.$val->last_name;
+                    $save_data->position = (isset($val->employee_designation) && !empty($val->employee_designation)) ? $val->employee_designation->name : '';
+                    $save_data->company_id =$val->company_id;
+                    $save_data->company_name = (isset($val->employee_company_details) && !empty($val->employee_company_details)) ? $val->employee_company_details->company_name : '';
+                    $save_data->license = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->license : '';
+                    $save_data->total_schedule_hours = $salary_calc['total_schedule_hours'] ?? 0;
+                    $save_data->total_fs_hours = $salary_calc['find_fs_hours'] ?? 0;
+                    $save_data->hourly_salary = $salary_calc['hourly_salary'] ?? 0;
+                    $save_data->day_salary = $salary_calc['day_salary'] ?? 0;
+                    $save_data->basic_salary = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->basic_salary : 0;
+                    $save_data->salary = $salary_calc['total_salary'] ?? 0;;
+                    $save_data->travel_allowence = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->travel_allowance : 0;
+                    $save_data->house_allowence = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->house_allowance : 0;
+                    $save_data->position_allowence = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->position_allowance : 0;
+                    $save_data->phone_allowence = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->phone_allowance : 0;
+                    $save_data->other_allowence = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->other_allowance : 0;
+                    $save_data->deduction = 0;
+                    $save_data->total_earning = $total_earning;
+                    $save_data->es_year = $year;
+                    $save_data->es_month = $month;
+                    $save_data->dates_between = $salary_calc['dates_between'] ?? '';
+                    $save_data->type = 'cash';
+                    $save_data->save();
+                endforeach;
+            endif;
+        //get pdf data 
+            $emp_salary_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->orderBy('branch_name')->whereNotNUll('branch_id')->get();
+            $emp_branch_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->orderBy('branch_name')->whereNotNUll('branch_id')->groupBy('branch_name')->select('branch_name','branch_id as id')->get();
+            $emp_company_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->orderBy('company_name')->whereNotNUll('branch_id')->groupBy('company_name')->get();
+            //dd($emp_branch_data);
+            $pass_array = array(
+                "emp_salary_data" => $emp_salary_data,
+                "emp_branch_data"=>$emp_branch_data,
+                "emp_company_data"=> $emp_company_data,
+                "month" => $month,
+                "year" => $year,
+            );
+            $cdate = date('Y-m-d');
+            $rname = $cdate.'_salaryreport.pdf';
+            $pdf = PDF::loadView('payroll.employee_salary_pdf', $pass_array)->setPaper('a4', 'landscape')->setWarnings(false);
+            //print_r($pdf);
+            return $pdf->download($rname);
+        else:
+            return view('payroll.employee_salary', compact('title', 'salaryDetails', 'additions', 'deductions', 'breadButton', 'salaryCount', 'year', 'month','employees','empname','is_generate_report'));
+        endif;
+        }
 
     public function employee_salary_details(Request $request)
     {
@@ -678,13 +740,64 @@ class PayrollController extends Controller
             {
                 $month = $request->month;
             }
-        //for search query
-        // $employee_branch = Branch::with(['employee_list' => function($query) use ($company)
-        // {
-        //     $query->where('company', $company);
-        // }])->whereHas('employee_list')->where('status','active')->orderBy('name','asc')->get();
 
-        $employee_branch = Branch::with('employee_list')->where('status','active')->orderBy('name','asc')->get();
-        return view('payroll.employee_salary_pdf', compact('employee_branch','month','year'));
+        //save employee salary data
+        $employees = Employee::with('employee_salary')->where('status', 'active')->get();
+        $total_earning = 0;
+        //delete same tear or month data if already create
+        EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->delete();
+        if(!empty($employees) && count($employees) > 0):
+            foreach($employees as $key => $val):
+                $salary_calc = calculateSalaryByFilter($val->user_id,$val->emp_generated_id,$month,$year,'report_pdf');
+                $total_allowence = calculate_employee_allowence($val->id);
+                $total_sal = $salary_calc['total_salary'] ?? 0;
+                $total_earning = $total_sal + $total_allowence;
+                $save_data = new EmployeeSalaryData();
+                $save_data->employee_id = $val->id;
+                $save_data->branch_id = $val->branch;
+                $save_data->branch_name = (isset($val->employee_branch) && !empty($val->employee_branch)) ? $val->employee_branch->name : '';
+                $save_data->name = $val->first_name.' '.$val->last_name;
+                $save_data->position = (isset($val->employee_designation) && !empty($val->employee_designation)) ? $val->employee_designation->name : '';
+                $save_data->company_id =$val->company_id;
+                $save_data->company_name = (isset($val->employee_company_details) && !empty($val->employee_company_details)) ? $val->employee_company_details->company_name : '';
+                $save_data->license = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->license : '';
+                $save_data->total_schedule_hours = $salary_calc['total_schedule_hours'] ?? 0;
+                $save_data->total_fs_hours = $salary_calc['find_fs_hours'] ?? 0;
+                $save_data->hourly_salary = $salary_calc['hourly_salary'] ?? 0;
+                $save_data->day_salary = $salary_calc['day_salary'] ?? 0;
+                $save_data->basic_salary = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->basic_salary : 0;
+                $save_data->salary = $salary_calc['total_salary'] ?? 0;;
+                $save_data->travel_allowence = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->travel_allowance : 0;
+                $save_data->house_allowence = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->house_allowance : 0;
+                $save_data->position_allowence = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->position_allowance : 0;
+                $save_data->phone_allowence = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->phone_allowance : 0;
+                $save_data->other_allowence = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->other_allowance : 0;
+                $save_data->deduction = 0;
+                $save_data->total_earning = $total_earning;
+                $save_data->es_year = $year;
+                $save_data->es_month = $month;
+                $save_data->dates_between = $salary_calc['dates_between'] ?? '';
+                $save_data->type = 'cash';
+                $save_data->save();
+            endforeach;
+        endif;
+       //get pdf data 
+        $emp_salary_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->orderBy('branch_name')->whereNotNUll('branch_id')->get();
+        $emp_branch_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->orderBy('branch_name')->whereNotNUll('branch_id')->groupBy('branch_name')->select('branch_name','branch_id as id')->get();
+        $emp_company_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->orderBy('company_name')->whereNotNUll('branch_id')->groupBy('company_name')->get();
+        //dd($emp_branch_data);
+        $pass_array = array(
+            "emp_salary_data" => $emp_salary_data,
+            "emp_branch_data"=>$emp_branch_data,
+            "emp_company_data"=> $emp_company_data,
+            "month" => $month,
+            "year" => $year,
+        );
+        $cdate = date('Y-m-d');
+        $rname = $cdate.'_salaryreport.pdf';
+        $pdf = PDF::loadView('payroll.employee_salary_pdf', $pass_array)->setPaper('a4', 'landscape')->setWarnings(false);
+        //print_r($pdf);
+        return $pdf->download($rname);
+        //return view('payroll.employee_salary_pdf', compact('employee_branch','month','year'));
     }
 }

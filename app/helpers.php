@@ -8,6 +8,7 @@ use App\Models\Overtime;
 use App\Models\AttendanceDetails;
 use App\Models\Scheduling;
 use App\Models\Leaves;
+use App\Models\EmployeeSalaryData;
 
 function getLastId()
 {
@@ -21,7 +22,7 @@ function getInformation()
     return 'hi';
 }
 
-function calculateSalaryByFilter($user_id,$empid,$mid,$year)
+function calculateSalaryByFilter($user_id,$empid,$mid,$year,$type='')
 {
     $endDateOrg = $year.'-'.$mid.'-'.'19';//date('Y-m-20');
     $startDateOrg =  date('Y-m-d', strtotime('-1 month', strtotime($endDateOrg)));
@@ -38,12 +39,24 @@ function calculateSalaryByFilter($user_id,$empid,$mid,$year)
         $employee = Employee::where('user_id',$user_id)->where('emp_generated_id',$empid)->first();
         //calculate salary now
         if(!empty($employee)):
-        $currentMonthSalary = (isset($employee->employee_salary))?$employee->employee_salary->basic_salary:0;
-        $daySalary = ($currentMonthSalary>0)?($currentMonthSalary/$commonWorkingDays):0;
-        $hourlySalary = ($daySalary>0)?($daySalary/$commonWorkingHours):0;
-        $total_calculate_salary = ($total_schedule_hours + $find_fs_hours) * $hourlySalary;
-    endif;
-    return $total_calculate_salary;
+            $currentMonthSalary = (isset($employee->employee_salary))?$employee->employee_salary->basic_salary:0;
+            $daySalary = ($currentMonthSalary>0)?($currentMonthSalary/$commonWorkingDays):0;
+            $hourlySalary = ($daySalary>0)?($daySalary/$commonWorkingHours):0;
+            $total_calculate_salary = ($total_schedule_hours + $find_fs_hours) * $hourlySalary;
+            
+        endif;
+        $res_arr = [];
+        if($type=='report_pdf'):
+            $res_arr['total_schedule_hours'] = $total_schedule_hours;
+            $res_arr['find_fs_hours'] = $find_fs_hours;
+            $res_arr['hourly_salary'] = $hourlySalary;
+            $res_arr['day_salary'] = $daySalary;
+            $res_arr['total_salary'] = $total_calculate_salary;
+            $res_arr['dates_between'] = $startDateOrg.','.$endDateOrg;
+            return $res_arr;
+        else:
+            return $total_calculate_salary;
+        endif;
     endif;
 }
 
@@ -210,4 +223,14 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
     function calculate_employee_allowence($emp_id){
         $total_allowence = EmployeeSalary::where('emp_id',$emp_id)->sum(DB::raw('travel_allowance + food_allowance + house_allowance + position_allowance +phone_allowance + other_allowance'));
         return $total_allowence;
+    }
+
+    function calcualte_total_earning_by_month_company($month,$year,$company_id,$branch_id,$type,$atype=''){
+        if($atype == 'total'):
+            $total = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->where('branch_id',$branch_id)->groupBy('branch_id')->sum('total_earning');
+        //dd($company_id.'---'.$branch_id);
+        else:
+            $total = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->where('company_id',$company_id)->where('branch_id',$branch_id)->groupBy('branch_id','company_id')->where('type',$type)->sum('total_earning');
+        endif;
+            return $total;
     }

@@ -100,8 +100,9 @@
                 </div>
             </form>
             <!-- /Search Filter -->
-            <form action="/employee-salary-pdf" method="get" id="salary_form">
+            <form action="/employee-salary" method="post" id="salary_form">
                 <?php echo csrf_field(); ?>
+                <input type="hidden" name="report_type" value="pdf">
                 <input type="hidden" name="month" id="pdf_month" value="">
                 <input type="hidden" name="year" id="pdf_year" value="">
                 <?php if(!empty($is_generate_report)): ?>

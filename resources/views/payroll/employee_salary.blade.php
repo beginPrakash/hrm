@@ -100,12 +100,13 @@
                 </div>
             </form>
             <!-- /Search Filter -->
-            <form action="/employee-salary-pdf" method="get" id="salary_form">
+            <form action="/employee-salary" method="post" id="salary_form">
                 @csrf
+                <input type="hidden" name="report_type" value="pdf">
                 <input type="hidden" name="month" id="pdf_month" value="">
                 <input type="hidden" name="year" id="pdf_year" value="">
                 @if(!empty($is_generate_report))
-                    <button type="submit" class="btn btn-success generate_pdf_btn" style="text-transform:none;"> Generate PDF </button>    
+                    <button type="submit" class="btn btn-success generate_pdf_btn d-none" style="text-transform:none;"> Generate PDF </button>    
                 @endif
             <form>
             <div class="row">

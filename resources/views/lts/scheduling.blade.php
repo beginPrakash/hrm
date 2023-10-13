@@ -721,6 +721,7 @@
 
 <script type="text/javascript">
     function convert12HourTo24Hour(time12) {
+        console.log(time12);
         var [time, modifier] = time12.split(" ");
         var [hours, minutes] = time.split(":");
 

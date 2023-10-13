@@ -646,7 +646,10 @@
                 if(key=='shift_details')
                 { 
                     var shdetails = JSON.parse(value);
-                    console.log('here-'+shdetails.shift);
+                    console.log('here-'+shdetails.min_start_time);
+                    var convertedTime = convert12HourTo24Hour(shdetails.min_start_time);
+                                    // var sp = value.split(':');
+                                    $('#min_start_time').val('18:00:00');
                     // alert(parseInt(shdetails.shift));
                     if(parseInt(shdetails.shift) <= 2)
                     { 

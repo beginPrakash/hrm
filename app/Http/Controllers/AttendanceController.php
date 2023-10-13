@@ -700,9 +700,11 @@ class AttendanceController extends Controller
                 $save_data->save();
             else:
                 $save_data = AttendanceDetails::where('user_id',$request->attnUserId)->where('attendance_on',$request->attnDate)->where('punch_state','clockin')->first();
+                if(!empty($save_data)):
                 $save_data->schedule_hours = NULL;
                 $save_data->overtime_hours = NULL;
                 $save_data->save();
+                endif;
             endif;  
         endif;
         echo json_encode('done');
@@ -716,6 +718,9 @@ class AttendanceController extends Controller
         $departmentId = $userDetails->department;
         $end_time = date('H:i', strtotime(str_replace(' pm','',$request->end_time)));
         $start_time = date('H:i', strtotime(str_replace(' pm','',$request->start_time)));
+        $att_date = date('Y-m-d', strtotime($request->attnDate));
+        AttendanceDetails::where('user_id',$request->attnUserId)->where('employee_id',$userId)->where('attendance_on',$att_date)->delete();
+
         if(isset($request->start_time))
         {
             $attnId = 1;

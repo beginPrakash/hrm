@@ -108,7 +108,26 @@ class SchedulingController extends Controller
                 'created_at'        =>  date('Y-m-d h:i:s'),
                 'status'			=>	'active'
             );//echo '<pre>';print_r($insertArray);
+            $schedule_date = date('Y-m-d', strtotime(str_replace('/','-',$request->shift_date)));
+            $is_schedule_exists = Scheduling::where('employee',$emp)->where('shift_on',$schedule_date)->delete();
             $shiftid = Scheduling::create($insertArray);
+            //get schedule data
+            $shiftDetails = Scheduling::find($shiftid->id ?? '');
+            if(!empty($shiftDetails)):
+                $att_date = date('Y-m-d', strtotime($shiftDetails->shift_on));
+                $flag = _check_green_icon_attendance($att_date,$shiftDetails->employee);
+                if($flag === 0):
+                    $att_details = AttendanceDetails::where('user_id',$shiftDetails->employee)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
+                    $save_data = save_schedule_overtime_hours($shiftDetails->employee,$att_date,$att_details->start_time,$att_details->end_time);
+                else:
+                    $save_data = AttendanceDetails::where('user_id',$shiftDetails->employee)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
+                    if(!empty($save_data)):
+                        $save_data->schedule_hours = NULL;
+                        $save_data->overtime_hours = NULL;
+                        $save_data->save();
+                    endif;
+                endif;  
+            endif;
         }
         // exit;
         return redirect('/scheduling')->with('success', 'Schedule created successfully!')->with('sdate' , $request->add_start_from_date);
@@ -136,7 +155,9 @@ class SchedulingController extends Controller
             'status'            =>  'active'
         );
         //echo '<pre>';print_r($request->schedule_id);exit;
+        $schedule_date = date('Y-m-d', strtotime(str_replace('/','-',$request->shift_date)));
         $shiftid = Scheduling::where('id', $request->schedule_id)->update($insertArray);
+        $is_schedule_exists = Scheduling::where('employee',$request->employee_addschedule_id ?? '')->where('shift_on',$schedule_date)->where('shift','!=',$request->shift_addschedule)->delete();
         //get schedule data
         $shiftDetails = Scheduling::find($request->schedule_id);
         if(!empty($shiftDetails)):
@@ -359,6 +380,23 @@ class SchedulingController extends Controller
                     // }
                     // echo '<pre>';print_r($scheduleInsertArray);exit;
                     $shiftid = Scheduling::create($scheduleInsertArray);
+                    //get schedule data
+                    $shiftDetails = Scheduling::find($shiftid->id ?? '');
+                    if(!empty($shiftDetails)):
+                        $att_date = date('Y-m-d', strtotime($shiftDetails->shift_on));
+                        $flag = _check_green_icon_attendance($att_date,$shiftDetails->employee);
+                        if($flag === 0):
+                            $att_details = AttendanceDetails::where('user_id',$shiftDetails->employee)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
+                            $save_data = save_schedule_overtime_hours($shiftDetails->employee,$att_date,$att_details->start_time,$att_details->end_time);
+                        else:
+                            $save_data = AttendanceDetails::where('user_id',$shiftDetails->employee)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
+                            if(!empty($save_data)):
+                                $save_data->schedule_hours = NULL;
+                                $save_data->overtime_hours = NULL;
+                                $save_data->save();
+                            endif;
+                        endif;  
+                    endif;
                 }
             }
             

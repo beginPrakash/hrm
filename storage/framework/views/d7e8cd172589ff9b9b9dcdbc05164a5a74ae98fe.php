@@ -417,7 +417,7 @@
                                         <div class="form-group" >
                                             <label>Min Start Time <span class="text-danger">*</span></label>
                                             <div class="input-group timex timepickerx">
-                                                <input type="time" class="form-control editsched" id="min_start_time" name="min_start_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                                <input type="time" class="form-control editsched edit_min_s_time" id="min_start_time" name="min_start_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
                                             </div>
                                         </div>
                                     </div>
@@ -425,7 +425,7 @@
                                         <div class="form-group">
                                             <label>Start Time <span class="text-danger">*</span></label>
                                             <div class="input-group timex timepickerx">
-                                                <input type="time" class="form-control editsched" name="start_time" id="start_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                                <input type="time" class="form-control editsched edit_s_time" name="start_time" id="start_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
                                             </div>                                  
                                         </div>
                                     </div>
@@ -433,7 +433,7 @@
                                         <div class="form-group">
                                             <label>Max Start Time <span class="text-danger">*</span></label>
                                             <div class="input-group timex timepickerx">
-                                                <input type="time" class="form-control editsched" name="max_start_time" id="max_start_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                                <input type="time" class="form-control editsched edit_max_s_time" name="max_start_time" id="max_start_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
                                             </div>                                          
                                         </div>
                                     </div>      
@@ -441,7 +441,7 @@
                                         <div class="form-group" >
                                             <label>Min End Time <span class="text-danger">*</span></label>
                                             <div class="input-group timex timepickerx">
-                                                <input type="time" class="form-control editsched" name="min_end_time" id="min_end_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                                <input type="time" class="form-control editsched edit_min_e_time" name="min_end_time" id="min_end_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
                                             </div>
                                         </div>
                                     </div>
@@ -449,7 +449,7 @@
                                         <div class="form-group">
                                             <label>End Time <span class="text-danger">*</span></label>
                                             <div class="input-group timex timepickerx">
-                                                <input type="time" class="form-control editsched" name="end_time" id="end_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                                <input type="time" class="form-control editsched edit_e_time" name="end_time" id="end_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
                                             </div>                                  
                                         </div>
                                     </div>
@@ -457,7 +457,7 @@
                                         <div class="form-group">
                                             <label>Max End Time <span class="text-danger">*</span></label>
                                             <div class="input-group timex timepickerx">
-                                                <input type="time" class="form-control editsched" name="max_end_time" id="max_end_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                                <input type="time" class="form-control editsched edit_max_e_time" name="max_end_time" id="max_end_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
                                             </div>                                          
                                         </div>
                                     </div>  
@@ -646,10 +646,7 @@
                 if(key=='shift_details')
                 { 
                     var shdetails = JSON.parse(value);
-                    console.log('here-'+shdetails.min_start_time);
-                    var convertedTime = convert12HourTo24Hour(shdetails.min_start_time);
-                                    // var sp = value.split(':');
-                                    $('#min_start_time').val('18:00:00');
+                    console.log('here-'+shdetails.shift);
                     // alert(parseInt(shdetails.shift));
                     if(parseInt(shdetails.shift) <= 2)
                     { 
@@ -659,11 +656,19 @@
                     {
                         $('#timedivedit').css('display', 'flex');
                     }
+                    $('#edit_shift_addschedule').val(shdetails.shift).select2();
                     $('#schedule_id').val(shdetails.id);
+                    $('.edit_s_time').val(shdetails.start_time);
+                    $('.edit_min_s_time').val(shdetails.min_start_time);
+                    $('.edit_max_s_time').val(shdetails.max_start_time);
+                    $('.edit_e_time').val(shdetails.end_time);
+                    $('.edit_min_e_time').val(shdetails.min_end_time);
+                    $('.edit_max_e_time').val(shdetails.max_end_time);
+                    
                     // $.each(JSON.parse(value), function(k,v)
                     // {
                     //     console.log(k+'-'+v);
-                        $('#edit_shift_addschedule').val(shdetails.shift).trigger('change');
+                        //$('#edit_shift_addschedule').val(shdetails.shift).trigger('change');
                     // });
                 }
             });
@@ -724,7 +729,6 @@
 
 <script type="text/javascript">
     function convert12HourTo24Hour(time12) {
-        console.log(time12);
         var [time, modifier] = time12.split(" ");
         var [hours, minutes] = time.split(":");
 

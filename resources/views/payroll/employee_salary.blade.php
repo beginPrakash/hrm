@@ -156,7 +156,7 @@
                                     <td>{{$emp->first_name}} {{$emp->last_name}}</td>
                                     <td>{{(isset($emp->employee_branch) && !empty($emp->employee_branch)) ? $emp->employee_branch->name : ''}}</td>
                                     <td>{{(isset($emp->employee_designation) && !empty($emp->employee_designation)) ? $emp->employee_designation->name : ''}}</td>
-                                    <td>{{(isset($emp->employee_company_details) && !empty($emp->employee_company_details)) ? $emp->employee_company_details->company_name : ''}}</td>
+                                    <td>{{(isset($emp->employee_company) && !empty($emp->employee_company)) ? $emp->employee_company->name : ''}}</td>
                                     <td>{{(isset($emp->employee_details) && !empty($emp->employee_details)) ? $emp->employee_details->license : ''}}</td>
                                     <td>{{(isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->basic_salary : 0}}</td>
                                     <td>{{$salary_calc ?? 0}}</td>

@@ -106,7 +106,7 @@
                 <input type="hidden" name="month" id="pdf_month" value="">
                 <input type="hidden" name="year" id="pdf_year" value="">
                 <?php if(!empty($is_generate_report)): ?>
-                    <button type="submit" class="btn btn-success generate_pdf_btn" style="text-transform:none;"> Generate PDF </button>    
+                    <button type="submit" class="btn btn-success generate_pdf_btn d-none" style="text-transform:none;"> Generate PDF </button>    
                 <?php endif; ?>
             <form>
             <div class="row">
@@ -157,7 +157,7 @@
                                     <td><?php echo e($emp->first_name); ?> <?php echo e($emp->last_name); ?></td>
                                     <td><?php echo e((isset($emp->employee_branch) && !empty($emp->employee_branch)) ? $emp->employee_branch->name : ''); ?></td>
                                     <td><?php echo e((isset($emp->employee_designation) && !empty($emp->employee_designation)) ? $emp->employee_designation->name : ''); ?></td>
-                                    <td><?php echo e((isset($emp->employee_company_details) && !empty($emp->employee_company_details)) ? $emp->employee_company_details->company_name : ''); ?></td>
+                                    <td><?php echo e((isset($emp->employee_company) && !empty($emp->employee_company)) ? $emp->employee_company->name : ''); ?></td>
                                     <td><?php echo e((isset($emp->employee_details) && !empty($emp->employee_details)) ? $emp->employee_details->license : ''); ?></td>
                                     <td><?php echo e((isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->basic_salary : 0); ?></td>
                                     <td><?php echo e($salary_calc ?? 0); ?></td>

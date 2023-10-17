@@ -87,8 +87,8 @@ class PayrollController extends Controller
                     $save_data->branch_name = (isset($val->employee_branch) && !empty($val->employee_branch)) ? $val->employee_branch->name : '';
                     $save_data->name = $val->first_name.' '.$val->last_name;
                     $save_data->position = (isset($val->employee_designation) && !empty($val->employee_designation)) ? $val->employee_designation->name : '';
-                    $save_data->company_id =$val->company_id;
-                    $save_data->company_name = (isset($val->employee_company_details) && !empty($val->employee_company_details)) ? $val->employee_company_details->company_name : '';
+                    $save_data->company_id =$val->company;
+                    $save_data->company_name = (isset($val->employee_company) && !empty($val->employee_company)) ? $val->employee_company->name : '';
                     $save_data->license = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->license : '';
                     $save_data->total_schedule_hours = $salary_calc['total_schedule_hours'] ?? 0;
                     $save_data->total_fs_hours = $salary_calc['find_fs_hours'] ?? 0;

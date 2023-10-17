@@ -195,4 +195,4 @@
     </div>
 </body>
 </html>
-<?php //exit; ?><?php /**PATH C:\wamp64_new\www\hrm\resources\views/payroll/employee_salary_pdf.blade.php ENDPATH**/ ?>
+<?php exit; ?><?php /**PATH C:\wamp64_new\www\hrm\resources\views/payroll/employee_salary_pdf.blade.php ENDPATH**/ ?>

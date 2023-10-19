@@ -240,7 +240,7 @@
                                                     <?php
                                                     if(((isset($userdetails[0]->employee_designation)) && $userdetails[0]->employee_designation->priority_level > 0) || $user->is_admin == 1)
                                                     { ?>
-                                                        <td><?php echo $leave->leave_user->first_name.' '.$leave->leave_user->last_name; ?></td>
+                                                        <td><?php echo e($leave->leave_user->first_name ?? ''); ?> <?php echo e($leave->leave_user->last_name ?? ''); ?></td>
                                                     <?php } ?>
                                                     <td><?php echo $leave->leaves_leavetype->name; ?></td>
                                                     <td><?php echo date('d-m-Y', strtotime($leave->leave_from)); ?></td>

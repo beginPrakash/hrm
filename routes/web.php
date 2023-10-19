@@ -208,6 +208,14 @@ Route::post('/holidayInsert',[App\Http\Controllers\HolidaysController::class, 's
 Route::post('/holidayUpdate', [App\Http\Controllers\HolidaysController::class, 'update']);
 Route::post('/holidayDelete', [App\Http\Controllers\HolidaysController::class, 'delete']);
 
+//admin leaves
+Route::match(array('GET','POST'),'/admin_leaves',[App\Http\Controllers\AdminLeaveController::class, 'index'])->name('admin_leaves');
+Route::post('/store',[App\Http\Controllers\AdminLeaveController::class, 'store'] )->name('admin_leaves.store');
+Route::post('/leaveApprove',[App\Http\Controllers\AdminLeaveController::class, 'leaveApprove'] );
+Route::post('/leaveReject',[App\Http\Controllers\AdminLeaveController::class, 'leaveReject'] );
+Route::post('/leaveCancel',[App\Http\Controllers\AdminLeaveController::class, 'leaveCancel'] );
+Route::post('/getLeaveDetails',[App\Http\Controllers\AdminLeaveController::class, 'getLeaveDetails'] );
+Route::post('/getLeaveDetailsById',[App\Http\Controllers\AdminLeaveController::class, 'getLeaveDetailsById'] );
 
 // Leave Settings
 Route::get('/leave-settings', [App\Http\Controllers\LeaveTypeController::class, 'index'])->name('leave-settings');

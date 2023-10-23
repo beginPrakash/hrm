@@ -117,6 +117,7 @@ $maxDays=date('t', strtotime($start_date));
                                             $image = "assets/img/profiles/avatar-09.jpg";
                                             foreach($attEmployees as $employee)
                                             { 
+                                                //dd($employee);
                                                 if($employee->resigned_date !== NULL && (int)date('m', strtotime($employee->resigned_date)) < (int)$month)
                                                 {
                                                     continue;
@@ -140,7 +141,7 @@ $maxDays=date('t', strtotime($start_date));
                                                 { 
                                                     $date = $year."-".$currentMonthNum."-".$i;
 
-                                                    $emloyeeAttendance = App\Models\AttendanceDetails::where('user_id', $employee->user_id)->whereDate('attendance_on', $date)->first();
+                                                    $emloyeeAttendance = App\Models\AttendanceDetails::where('user_id', $employee->user_id)->where('employee_id', $employee->emp_generated_id)->whereDate('attendance_on', $date)->first();
 
                                                     // get shift details
                                                     $shiftDetails = App\Models\Scheduling::where('employee',$employee->user_id)->where('shift_on', date('Y-m-d',strtotime($date)))->where('status','active')->get()->first();
@@ -155,6 +156,7 @@ $maxDays=date('t', strtotime($start_date));
                                                     {
                                                         if(empty($emloyeeAttendance))
                                                         {
+                                                           
                                                             $encoded = base64_encode(json_encode($date.'/'.$employee->user_id));
                                                             $tdValue = getAttendanceText($shiftDetails,$encoded);
                                                         }
@@ -162,6 +164,7 @@ $maxDays=date('t', strtotime($start_date));
                                                         {
                                                             if($emloyeeAttendance->day_type === 'off' && ($emloyeeAttendance->attendance_time === '0'))
                                                             {
+                                                                echo($emloyeeAttendance->id);
                                                                 $encoded = base64_encode(json_encode($date.'/'.$employee->user_id));
                                                                 $tdValue = getAttendanceText($shiftDetails,$encoded);
                                                             }
@@ -169,8 +172,8 @@ $maxDays=date('t', strtotime($start_date));
                                                             {
                                                                 $encoded = base64_encode(json_encode($date.'/'.$employee->user_id));
 
-                                                                $firstclockin = App\Models\AttendanceDetails::where('user_id', $employee->user_id)->where('punch_state', 'clockin')->whereDate('attendance_on', $date)->first();
-                                                                $lastclockout = App\Models\AttendanceDetails::where('user_id', $employee->user_id)->where('punch_state', 'clockout')->whereDate('attendance_on', $date)->limit(1)->orderBy('id', 'desc')->first();
+                                                                $firstclockin = App\Models\AttendanceDetails::where('user_id', $employee->user_id)->where('employee_id', $employee->emp_generated_id)->where('punch_state', 'clockin')->whereDate('attendance_on', $date)->first();
+                                                                $lastclockout = App\Models\AttendanceDetails::where('user_id', $employee->user_id)->where('employee_id', $employee->emp_generated_id)->where('punch_state', 'clockout')->whereDate('attendance_on', $date)->limit(1)->orderBy('id', 'desc')->first();
                                                                 
                                                                 $shcolor = '';
                                                                 $shicon = '';

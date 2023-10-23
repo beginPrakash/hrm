@@ -12,6 +12,10 @@ class Employee extends Model
 		'user_id', 'company_id', 'first_name' , 'last_name' , 'email', 'password' ,'conf_password' ,'emp_generated_id' ,'joining_date', 'passport_no' ,'passport_expiry' , 'local_address', 'phone' ,'visa_no'  ,'company' , 'branch', 'subcompany', 'department','designation' , 'username', 'opening_leave_days', 'opening_leave_amount', 'public_holidays_balance', 'public_holidays_amount'
 	];
 
+	public function getFullNameAttribute(){
+        return ucfirst($this->first_name).' '.ucfirst($this->last_name);
+    }
+	
 	public function employee(){
 		return $this->hasOne('App\Models\Employee','id','employee_id');
 	}  

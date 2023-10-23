@@ -165,7 +165,7 @@ class EmployeeController extends Controller
                         ->groupBy('a.user_id', 'a.attendance_on','h.holiday_day', 'h.holiday_date','h.title', 'sh.shift')
                         ->get();
         $indemnityDetails = EmployeeIndemnity::where('user_id', $employee->user_id)->get();
-        $annualleavedetails = $this->getAnnualLeaveDetails($employee->user_id);
+        $annualleavedetails = getAnnualLeaveDetails($employee->user_id);
         $financalYear = FinancialYear::get();
         // echo '<pre>';print_r($employee);exit;
         return view('edbr.profile', [
@@ -549,7 +549,7 @@ class EmployeeController extends Controller
             'status' => 'deleted',
             'updated_at'  =>  date('Y-m-d h:i:s')
         );
-        Employee::where('id', $request->employee_id)->update($deleteArray);
+        Employee::where('id', $request->employee_id)->delete();
         return redirect('/employee')->with('success','Employee deleted successfully!');
 
     }
@@ -642,7 +642,7 @@ class EmployeeController extends Controller
 
     public function employeeOpeningLeaveUpdate(Request $request)
     {
-        $details = $this->getAnnualLeaveDetails($request->id);
+        $details = getAnnualLeaveDetails($request->id);
 
         $updateArray = array(
             'opening_leave_days' => $request->leave_balance_days,
@@ -655,7 +655,7 @@ class EmployeeController extends Controller
 
     public function employeephUpdate(Request $request)
     {
-        $details = $this->getAnnualLeaveDetails($request->id);
+        $details = getAnnualLeaveDetails($request->id);
 
         $updateArray = array(
             'public_holidays_balance' => (isset($request->ph_balance_days))?$request->ph_balance_days:0,
@@ -664,37 +664,6 @@ class EmployeeController extends Controller
         );
         Employee::where('id', $request->id)->update($updateArray);
         return redirect()->back()->with('success','Employee PH updated successfully!');
-    }
-
-    public function getAnnualLeaveDetails($id)
-    {
-        $employee = Employee::where('user_id', $id)->first();
-        $todaydate = date('Y-m-d');
-        if((isset($employee->resigned_date)) &&$employee->resigned_date!=null)
-        {
-            $todaydate = $employee->resigned_date;
-        }
-        $joining_date = (isset($employee->joining_date)) ? $employee->joining_date : $todaydate;
-        $totalLeaveYearMonths = getDateDiff($joining_date, $todaydate);
-        // echo $totalLeaveYearMonths;
-        $exYM = explode('.', $totalLeaveYearMonths);
-        $totalLeaveMonths = ($exYM[0] * 12) +$exYM[1];
-        // echo $employee->opening_leave_days;
-        $totalLeaveDays = $totalLeaveMonths * 2.5;
-        $balance = (!empty($employee) && (isset($employee->opening_leave_days)))?$employee->opening_leave_days:0;
-        $used = ($balance > 0 && $totalLeaveDays > 0)?$totalLeaveDays - $balance:0;
-        $leaveBalance = $totalLeaveDays - $used;
-        $sal = (isset($employee->employee_salary->total_salary))?$employee->employee_salary->total_salary:0;
-        $perday = $sal / 26;
-        $leaveAmount = $perday * $leaveBalance;
-
-        $result = array(
-            'totalLeaveDays'    =>  $totalLeaveDays,
-            'used'              =>  $used,
-            'leaveBalance'      =>  $leaveBalance,
-            'leaveAmount'       =>  $leaveAmount);
-
-        return $result;
     }
 
     public function employeeLeaveAmountUpdate(Request $request)

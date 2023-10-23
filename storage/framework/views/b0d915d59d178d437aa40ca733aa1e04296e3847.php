@@ -172,67 +172,6 @@
                                             foreach($leaveApplications as $leave)
                                             {
                                                 $i++;
-                                                if(((isset($userdetails[0]->employee_designation)) && $userdetails[0]->employee_designation->priority_level == 3) && $leave->leave_user->department!==$userdepartment)
-                                                {
-                                                    continue;
-                                                }
-                                                //for info icon
-                                                $color = App\Models\LeaveStatus::where('name', $leave->leave_status)->get()->first()->color;
-                                                $gm_approval = 'Pending';
-                                                if($leave->gm_approval > 0)
-                                                {
-                                                    $leave_status = App\Models\LeaveStatus::where('id', $leave->gm_approval)->get()->first();
-                                                    $gm_approval = $leave_status->name;
-                                                }
-
-                                                $hr_approval = 'Pending';
-                                                if($leave->hr_approval > 0)
-                                                {
-                                                    $leave_status = App\Models\LeaveStatus::where('id', $leave->hr_approval)->get()->first();
-                                                    $hr_approval = $leave_status->name;
-                                                }
-
-                                                $dm_approval = 'Pending';
-                                                if($leave->dm_approval > 0)
-                                                {
-                                                    $leave_status = App\Models\LeaveStatus::where('id', $leave->dm_approval)->get()->first();
-                                                    $dm_approval = $leave_status->name;
-                                                    // echo $dm_approval;exit;
-                                                }
-
-                                                $approval = 'GM : '.ucwords($gm_approval).'&#010;'.'HR : '.ucwords($hr_approval).'&#010;'.'DM : '.ucwords($dm_approval);
-
-                                                //for approve/reject options
-                                                $aflag = 0;
-                                                if(isset($userdetails[0]->employee_designation) && $userdetails[0]->employee_designation->priority_level == 1)
-                                                {
-                                                    if($leave->gm_approval != 4 && $leave->hr_approval == 4)
-                                                    {
-                                                        $aflag = 1;
-                                                    }
-                                                    // else
-                                                    // {
-                                                    //     echo 'HR Approval pending.';
-                                                    // }
-                                                }
-                                                if(isset($userdetails[0]->employee_designation) && $userdetails[0]->employee_designation->priority_level == 2)
-                                                {
-                                                    if($leave->hr_approval != 4 && $leave->dm_approval == 4)
-                                                    {
-                                                        $aflag = 2;
-                                                    }
-                                                    // else
-                                                    // {
-                                                    //     echo 'DM Approval pending.';
-                                                    // }
-                                                }
-                                                if(isset($userdetails[0]->employee_designation) && $userdetails[0]->employee_designation->priority_level == 3)
-                                                {
-                                                    if($leave->dm_approval != 4)
-                                                    {
-                                                        $aflag = 3;
-                                                    }
-                                                }
                                                 
                                             ?>
                                                 <tr>
@@ -248,41 +187,18 @@
                                                     <td><?php echo $leave->leave_days; ?></td>
                                                     <td><?php echo $leave->leave_reason; ?></td>
                                                     <td>
-                                                        <div class="dropdown action-label">
+                                                    <?php echo ucwords($leave->leave_status); ?>
+                                                        <!-- <div class="dropdown action-label">
                                                             <a class="btn btn-white btn-sm btn-rounded dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <i class="fa fa-dot-circle-o text-<?php echo $color; ?>"></i> <?php echo ucwords($leave->leave_status); ?>
+                                                                <?php echo ucwords($leave->leave_status); ?>
                                                             </a>
-                                                            <?php if($aflag > 0) { ?>
-                                                                <div class="dropdown-menu dropdown-menu-right">
-                                                                    <a class="dropdown-item approveButton" href="#" data-bs-toggle="modal" data-bs-target="#approve_leave" data-id="<?php echo $aflag; ?>" data-data="<?php echo $leave->id; ?>"><i class="fa fa-dot-circle-o text-success"></i> Approve</a>
-                                                                    <a class="dropdown-item rejectButton" href="#" data-bs-toggle="modal" data-bs-target="#reject_leave" data-id="<?php echo $aflag; ?>" data-data="<?php echo $leave->id; ?>"><i class="fa fa-dot-circle-o text-danger"></i> Reject</a>
-                                                                </div>
-                                                            <?php } ?>
-
-                                                            <?php if($leave->leave_status != 'cancelled') { ?>
-                                                                <i class="fa fa-info-circle" data-bs-toggle="tooltip" title="<?php echo $approval; ?>"></i>
-                                                            <?php } ?>
-
-                                                            <?php if($leave->leave_status=='rejected') { ?>
-                                                                <br><strong>Reason : </strong><?php echo $leave->reject_reason; ?>
-                                                            <?php } ?>
-                                                        </div>
+                                                            <div class="dropdown-menu dropdown-menu-right">
+                                                                <a class="dropdown-item approveButton" href="#" data-bs-toggle="modal" data-bs-target="#approve_leave" data-id="<?php echo e($leave->id); ?>" data-data="<?php echo $leave->id; ?>"><i class="fa fa-dot-circle-o text-success"></i> Approve</a>
+                                                                <a class="dropdown-item rejectButton" href="#" data-bs-toggle="modal" data-bs-target="#reject_leave" data-id="<?php echo e($leave->id); ?>" data-data="<?php echo $leave->id; ?>"><i class="fa fa-dot-circle-o text-danger"></i> Reject</a>
+                                                            </div>
+                                                            
+                                                        </div> -->
                                                     </td>
-                                                    <?php if(((isset($userdetails[0]->employee_designation)) && $userdetails[0]->employee_designation->priority_level == 0)) { 
-                                                        $encodedData = base64_encode(json_encode($leave));
-                                                        ?>
-                                                        <td>
-                                                            <?php if($leave->leave_status == 'new') { ?>
-                                                                <div class="dropdown action-label">
-                                                                    <!-- <div class="dropdown-menux dropdown-menu-rightx"> -->
-                                                                        <a class="btn btn-white btn-sm btn-rounded cancelButton" href="#" data-bs-toggle="modal" data-bs-target="#cancel_leave" data-data="<?php echo $leave->id; ?>"><i class="fa fa-dot-circle-o text-danger"></i> Cancel</a>
-                                                                    <!-- </div> -->
-                                                                </div>
-
-                                                                <!-- <a class="editButton" href="#" data-bs-toggle="modal" data-bs-target="#edit_leave" data-data="<?php //echo $encodedData; ?>"><i class="fa fa-edit text-info"></i> Edit</a> -->
-                                                            <?php } ?>
-                                                        </td>
-                                                    <?php } ?>
                                                 </tr>
                                             <?php
                                             }
@@ -296,6 +212,9 @@
                 <!-- /Page Content -->
                 
                 <!-- Add Leave Modal -->
+                <input type="hidden" id="request_leave" value="<?php echo e($userdetails[0]->request_leave_days ?? 0); ?>">
+                <input type="hidden" id="emp_remaining_leave" value="<?php echo e($leave_details['remaining_leave'] ?? 0); ?>">
+                <input type="hidden" id="emp_remainingsick_leave" value="<?php echo e($sick_leave_details['remaining_leave'] ?? 0); ?>">
                 <div id="add_leave" class="modal custom-modal fade" role="dialog">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
@@ -340,11 +259,11 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Number of days <span class="text-danger">*</span></label>
-                                        <input class="form-control" value="1" readonly type="text" name="days" id="no_of_days">
+                                        <input class="form-control" value="0" readonly type="text" name="days" id="no_of_days">
                                     </div>
                                     <div class="form-group">
                                         <label>Remaining Leaves <span class="text-danger">*</span></label>
-                                        <input class="form-control" readonly type="text" name="remaining_leaves" id="remaining_leaves" value="">
+                                        <input class="form-control remaining_leaves" readonly type="text" name="remaining_leaves" id="remaining_leaves" value="<?php echo e($leave_details['remaining_leave'] ?? 0); ?>">
                                         <span class="text-danger" id="rl_count_err"></span>
                                     </div>
                                     <div class="form-group">
@@ -400,7 +319,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Remaining Leaves <span class="text-danger">*</span></label>
-                                        <input class="form-control" readonly value="12" type="text" id="leave_remaining_leave" name="remaining_leaves">
+                                        <input class="form-control" readonly value="" type="text" id="leave_remaining_leave" name="remaining_leaves">
                                     </div>
                                     <div class="form-group">
                                         <label>Leave Reason <span class="text-danger">*</span></label>
@@ -531,10 +450,10 @@
                 days:  {
                     required : true},
                 remaining_leaves:  {
-                    required : true},
-
-                remaining_leaves:  {
-                    required : true},
+                    required : true,
+                    number:true,
+                    min:1,
+                },
                     leave_reason:  {
                     required : true},
             },
@@ -554,6 +473,7 @@
                 },
                 remaining_leaves: {
                     required : 'Remaining Leaves is required',
+                    min:'Remaing leave balance is 0.Please select unpaid leave',
                 },
                 leave_reason: {
                     required : 'Leaves reason is required',
@@ -597,23 +517,31 @@
         var max_leaves = $(this).find(':selected').data('id');
         $('#addLeaveBtn').attr('disabled', false);
         $('#rl_count_err').text('');
-        $.ajax({
-           url: '/getLeaveDetails/',
-           type: "POST",
-           dataType: "json",
-           data: {"_token": "<?php echo e(csrf_token()); ?>", leave_type:leave_type},
-           success:function(response)
-            {
-                //response = taken leaves
-                var remaining_leave = max_leaves - response;
-                $('#remaining_leaves').val(remaining_leave);
-                if(remaining_leave == 0)
+        if(leave_type != '8'){
+            $.ajax({
+            url: '/getLeaveDetails/',
+            type: "POST",
+            dataType: "json",
+            data: {"_token": "<?php echo e(csrf_token()); ?>", leave_type:leave_type},
+            success:function(response)
                 {
-                    $('#addLeaveBtn').attr('disabled', true);
-                    $('#rl_count_err').text('Insufficient no of leaves');
+                    //response = taken leaves
+                    if(leave_type == 1){
+                        var emp_remaining_leave = $('#emp_remaining_leave').val();
+                    }else if(leave_type == 2){
+                        var emp_remaining_leave = $('#emp_remainingsick_leave').val();
+                    }  
+                    //console.log(emp_remaining_leave);
+                    var remaining_leave = emp_remaining_leave;
+                    $('#remaining_leaves').val(remaining_leave);
+                    if(remaining_leave == 0)
+                    {
+                        $('#addLeaveBtn').attr('disabled', true);
+                        $('#rl_count_err').text('Insufficient no of leaves');
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 </script>
 
@@ -631,8 +559,20 @@
 
         var no_days = (result >= 0 )?result+1:0;
         $('#no_of_days').val(no_days);
+        var request_leave = $('#request_leave').val();
+        var remaining_leave = $('#emp_remaining_leave').val();
+        var total_rem_leave = remaining_leave - request_leave;
+        //var remaining_leave = $('#remaining_leaves').val();
+        if(total_rem_leave >= no_days){
+            var total_req_leave = total_rem_leave - no_days;
+            $('#remaining_leaves').val(total_req_leave);
+        }
+        
     });
-
+    var request_leave = $('#request_leave').val();
+    var remaining_leave = $('#emp_remaining_leave').val();
+    var total_rem_leave = remaining_leave - request_leave;
+    $('#remaining_leaves').val(total_rem_leave);
     $(document).on('change','#leave_leave_from, #leave_leave_to',function(){
         var from_date = $('#leave_leave_from').val();
         $('#leave_leave_to').attr('min', from_date);

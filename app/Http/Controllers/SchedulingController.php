@@ -70,7 +70,7 @@ class SchedulingController extends Controller
         $shifts       = Shifting::where('status', 'active')->get();
         // $scheduling   = Scheduling::with('employees')->where($where)->get();
     	$scheduling   = Employee::with('schedules')->where($where)->get();
-    	$allEmployees = Employee::with(["employee_designation", 'employee_department'])->where($empwhere)->get();
+    	$allEmployees = Employee::with(["employee_designation", 'employee_department'])->where('status','active')->where($empwhere)->get();
         // echo '<pre>';print_r($scheduling);exit;
     	return view('lts.scheduling', compact('title', 'allEmployees', 'department', 'shifts', 'scheduling', 'search', 'overtimeDetails', 'phDetails', 'startDate'));
     }
@@ -96,15 +96,15 @@ class SchedulingController extends Controller
                 'employee'        	=>  $emp,//($request->employee_addschedule!='')?$request->employee_addschedule:$request->employee_addschedule_id,
                 'shift_on'        	=>  date('Y-m-d', strtotime(str_replace('/','-',$request->shift_date))),
                 'shift'        		=>  $request->shift_addschedule,
-                'min_start_time'    =>  ($request->shift_addschedule >2)?_convert_time_to_12hour_format(str_replace(' pm','',$request->min_start_time)):NULL,
-                'start_time'        =>  ($request->shift_addschedule >2)?_convert_time_to_12hour_format(str_replace(' pm','',$request->start_time)):NULL,
-                'max_start_time'    =>  ($request->shift_addschedule >2)?_convert_time_to_12hour_format(str_replace(' pm','',$request->max_start_time)):NULL,
-                'min_end_time'      =>  ($request->shift_addschedule >2)?_convert_time_to_12hour_format(str_replace(' pm','',$request->min_end_time)):NULL,
-                'end_time'          =>  ($request->shift_addschedule >2)?_convert_time_to_12hour_format(str_replace(' pm','',$request->end_time)):NULL,
-                'max_end_time'      =>  ($request->shift_addschedule >2)?_convert_time_to_12hour_format(str_replace(' pm','',$request->max_end_time)):NULL,
-                'break_time'        =>  ($request->shift_addschedule >2)?$request->break_time:NULL,
-                'extra_hours'   	=>  ($request->shift_addschedule >2)?$request->extra_hours:0,
-                'publish'      		=>  ($request->shift_addschedule >2)?$request->publish:0,
+                'min_start_time'    =>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6)?_convert_time_to_12hour_format(str_replace(' pm','',$request->min_start_time)):NULL,
+                'start_time'        =>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6)?_convert_time_to_12hour_format(str_replace(' pm','',$request->start_time)):NULL,
+                'max_start_time'    =>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6)?_convert_time_to_12hour_format(str_replace(' pm','',$request->max_start_time)):NULL,
+                'min_end_time'      =>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6)?_convert_time_to_12hour_format(str_replace(' pm','',$request->min_end_time)):NULL,
+                'end_time'          =>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6)?_convert_time_to_12hour_format(str_replace(' pm','',$request->end_time)):NULL,
+                'max_end_time'      =>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6)?_convert_time_to_12hour_format(str_replace(' pm','',$request->max_end_time)):NULL,
+                'break_time'        =>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6)?$request->break_time:NULL,
+                'extra_hours'   	=>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6)?$request->extra_hours:0,
+                'publish'      		=>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6)?$request->publish:0,
                 'created_at'        =>  date('Y-m-d h:i:s'),
                 'status'			=>	'active'
             );//echo '<pre>';print_r($insertArray);
@@ -142,15 +142,15 @@ class SchedulingController extends Controller
             'employee'          =>  ($request->employee_addschedule!='')?$request->employee_addschedule:$request->employee_addschedule_id,
             'shift_on'          =>  date('Y-m-d', strtotime(str_replace('/','-',$request->shift_date))),
             'shift'             =>  $request->shift_addschedule,
-            'min_start_time'    =>  ($request->shift_addschedule >2)?_convert_time_to_12hour_format(str_replace(' pm','',$request->min_start_time)):NULL,
-            'start_time'        =>  ($request->shift_addschedule >2)?_convert_time_to_12hour_format(str_replace(' pm','',$request->start_time)):NULL,
-            'max_start_time'    =>  ($request->shift_addschedule >2)?_convert_time_to_12hour_format(str_replace(' pm','',$request->max_start_time)):NULL,
-            'min_end_time'      =>  ($request->shift_addschedule >2)?_convert_time_to_12hour_format(str_replace(' pm','',$request->min_end_time)):NULL,
-            'end_time'          =>  ($request->shift_addschedule >2)?_convert_time_to_12hour_format(str_replace(' pm','',$request->end_time)):NULL,
-            'max_end_time'      =>  ($request->shift_addschedule >2)?_convert_time_to_12hour_format(str_replace(' pm','',$request->max_end_time)):NULL,
-            'break_time'        =>  ($request->shift_addschedule >2)?$request->break_time:NULL,
-            'extra_hours'       =>  ($request->shift_addschedule >2)?$request->extra_hours:0,
-            'publish'           =>  ($request->shift_addschedule >2)?$request->publish:0,
+            'min_start_time'    =>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6)?_convert_time_to_12hour_format(str_replace(' pm','',$request->min_start_time)):NULL,
+            'start_time'        =>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6)?_convert_time_to_12hour_format(str_replace(' pm','',$request->start_time)):NULL,
+            'max_start_time'    =>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6)?_convert_time_to_12hour_format(str_replace(' pm','',$request->max_start_time)):NULL,
+            'min_end_time'      =>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6)?_convert_time_to_12hour_format(str_replace(' pm','',$request->min_end_time)):NULL,
+            'end_time'          =>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6)?_convert_time_to_12hour_format(str_replace(' pm','',$request->end_time)):NULL,
+            'max_end_time'      =>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6)?_convert_time_to_12hour_format(str_replace(' pm','',$request->max_end_time)):NULL,
+            'break_time'        =>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6)?$request->break_time:NULL,
+            'extra_hours'       =>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6)?$request->extra_hours:0,
+            'publish'           =>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6)?$request->publish:0,
             'updated_at'        =>  date('Y-m-d h:i:s'),
             'status'            =>  'active'
         );

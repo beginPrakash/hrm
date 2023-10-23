@@ -200,13 +200,17 @@ function getShiftName($id)
     $shifts = array(
         1   =>  'OFF',
         2   =>  'PH',
-        3   =>  'FS');
+        3   =>  'FS',
+        7   =>  'AL',
+        8   =>  'SL',
+        9   =>  'EL',
+        10   =>  'COD');
     return $shifts[$id];
 }
 
 function getAttendanceText($shiftDetails,$encoded='')
 {
-    if(!empty($shiftDetails) && (in_array($shiftDetails->shift, array(1,2,3))))
+    if(!empty($shiftDetails) && (in_array($shiftDetails->shift, array(1,2,3,7,8,9,10))))
     {
         $tdValue = getShiftName($shiftDetails->shift);
     }

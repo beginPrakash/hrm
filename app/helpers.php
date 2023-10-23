@@ -33,7 +33,7 @@ function calculateSalaryByFilter($user_id,$empid,$mid,$year,$type='')
         $commonWorkingHours = $commonWorkingHoursDetails->working_hours - 1;
         $commonWorkingDays = $commonWorkingHoursDetails->working_days;
         $total_schedule_hours = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('employee_id',$empid)->sum('schedule_hours');
-        $find_fs_days = Scheduling::whereBetween('shift_on', [$startDateOrg, $endDateOrg])->where('employee',$user_id)->where('shift',3)->count();
+        $find_fs_days = Scheduling::whereBetween('shift_on', [$startDateOrg, $endDateOrg])->where('employee',$user_id)->whereIn('shift',[3,8])->count();
         $find_fs_hours = $find_fs_days * 8;
         //find employee salary details
         $employee = Employee::where('user_id',$user_id)->where('emp_generated_id',$empid)->first();
@@ -234,3 +234,70 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         endif;
             return $total;
     }
+
+    function getAnnualLeaveDetails($id)
+    {
+        $employee = Employee::where('user_id', $id)->where('status','!=','deleted')->first();
+        $todaydate = date('Y-m-d');
+        if((isset($employee->resigned_date)) &&$employee->resigned_date!=null)
+        {
+            $todaydate = $employee->resigned_date;
+        }
+        $joining_date = (isset($employee->joining_date)) ? $employee->joining_date : $todaydate;
+        $totalLeaveYearMonths = getDateDiff($joining_date, $todaydate);
+        // echo $totalLeaveYearMonths;
+        $exYM = explode('.', $totalLeaveYearMonths);
+        
+        $totalLeaveMonths = ($exYM[0] * 12) +$exYM[1];
+        // echo $employee->opening_leave_days;
+        $totalLeaveDays = $totalLeaveMonths * 2.5;
+        $balance = (!empty($employee) && (isset($employee->opening_leave_days)))?$employee->opening_leave_days:0;
+        $used = ($balance > 0 && $totalLeaveDays > 0)?$totalLeaveDays - $balance:0;
+        $leaveBalance = $totalLeaveDays - $used;
+        $remaining_leave = $totalLeaveDays - $balance;
+        $sal = (isset($employee->employee_salary->total_salary))?$employee->employee_salary->total_salary:0;
+        $perday = $sal / 26;
+        $leaveAmount = $perday * $leaveBalance;
+
+        $result = array(
+            'totalLeaveDays'    =>  $totalLeaveDays,
+            'used'              =>  $used,
+            'leaveBalance'      =>  $leaveBalance,
+            'leaveAmount'       =>  $leaveAmount,
+            'remaining_leave'   =>  $remaining_leave);
+
+        return $result;
+    }
+
+    function getSickLeaveDetails($id)
+    {
+        $employee = Employee::where('user_id', $id)->where('status','!=','deleted')->first();
+        $todaydate = date('Y-m-d');
+        if((isset($employee->resigned_date)) &&$employee->resigned_date!=null)
+        {
+            $todaydate = $employee->resigned_date;
+        }
+        $joining_date = (isset($employee->joining_date)) ? $employee->joining_date : $todaydate;
+        $totalLeaveYearMonths = getDateDiff($joining_date, $todaydate);
+        // echo $totalLeaveYearMonths;
+        $exYM = explode('.', $totalLeaveYearMonths);
+        $totalLeaveMonths = ($exYM[0] * 12) +$exYM[1];
+        // echo $employee->opening_leave_days;
+        $totalLeaveDays = $totalLeaveMonths * 1;
+        $balance = (!empty($employee) && (isset($employee->sick_leave_days)))?$employee->sick_leave_days:0;
+        $used = ($balance > 0 && $totalLeaveDays > 0)?$totalLeaveDays - $balance:0;
+        $leaveBalance = $totalLeaveDays - $used;
+        $remaining_leave = $totalLeaveDays - $balance;
+        $sal = (isset($employee->employee_salary->total_salary))?$employee->employee_salary->total_salary:0;
+        $perday = $sal / 26;
+        $leaveAmount = $perday * $leaveBalance;
+
+        $result = array(
+            'totalLeaveDays'    =>  $totalLeaveDays,
+            'used'              =>  $used,
+            'leaveBalance'      =>  $leaveBalance,
+            'leaveAmount'       =>  $leaveAmount,
+            'remaining_leave'   =>  $remaining_leave);
+        return $result;
+    }
+    

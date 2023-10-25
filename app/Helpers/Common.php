@@ -203,7 +203,7 @@ function getShiftName($id)
         3   =>  'FS',
         7   =>  'AL',
         8   =>  'SL',
-        9   =>  'EL',
+        9   =>  'UL',
         10   =>  'COD');
     return $shifts[$id];
 }

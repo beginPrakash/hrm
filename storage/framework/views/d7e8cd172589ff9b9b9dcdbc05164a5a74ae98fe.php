@@ -153,7 +153,11 @@
                                                                 }
                                                                 else if($emloyeeScheduleToday->shift==9)
                                                                 {
-                                                                    $sched = 'EL';
+                                                                    $sched = 'UL';
+                                                                }
+                                                                else if($emloyeeScheduleToday->shift==10)
+                                                                {
+                                                                    $sched = 'COD';
                                                                 }
                                                                 else
                                                                 {

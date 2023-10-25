@@ -30,6 +30,20 @@
             $(this).closest('div').parent().remove();
         });
 
+        $(document).on('change', '.title_select', function() {
+
+            // for department hide/show
+            var prio = $(this).find(":selected").data("priority");
+            $(this).find('.department_div').show();
+            if(prio == '1' || prio == '2')
+            {
+                $(this).find('.department_div').hide();
+                $(this).find('.dep_hid').val(1);
+            }
+
+            //for multi user check
+        });
+
         $("#add_leave").on("hidden.bs.modal", function(){
         
             $(".select").val(null).trigger("change");
@@ -133,6 +147,18 @@
                                     @else
                                     <div class="row add_dept_div">
                                         <div class="col-md-5">
+                                            <div class="form-group department_div">
+                                                <select class="select title_select" name="sub_title[]">
+                                                    <option value="">Select Title</option>
+                                                    @if(isset($designations) && count($designations) > 0)
+                                                        @foreach($designations as $key => $val)
+                                                            <option value="{{$val->id}}" data-priority="{{$val->priority_level}}">{{$val->name}}</option>
+                                                        @endforeach
+                                                    @endif
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
                                             <div class="form-group">
                                                 <select class="select dept_select" name="sub_department[]">
                                                     <option value="">Select Department</option>
@@ -142,20 +168,10 @@
                                                         @endforeach
                                                     @endif
                                                 </select>
+                                                <input type="hidden" name="dep_hid" value="0" class="dep_hid">
                                             </div>
                                         </div>
-                                        <div class="col-md-5">
-                                            <div class="form-group">
-                                                <select class="select title_select" name="sub_title[]">
-                                                    <option value="">Select Title</option>
-                                                    @if(isset($designations) && count($designations) > 0)
-                                                        @foreach($designations as $key => $val)
-                                                            <option value="{{$val->id}}">{{$val->name}}</option>
-                                                        @endforeach
-                                                    @endif
-                                                </select>
-                                            </div>
-                                        </div>
+                                        
                                         <div class="col-md-2 add_btn_div">
                                             <button type="button" class="btn btn-success add_more_dept_btn"><i class="fa fa-plus"></i></button>
                                         </div>

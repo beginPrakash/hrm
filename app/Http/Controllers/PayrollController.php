@@ -96,11 +96,11 @@ class PayrollController extends Controller
                     $save_data->day_salary = $salary_calc['day_salary'] ?? 0;
                     $save_data->basic_salary = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->basic_salary : 0;
                     $save_data->salary = $salary_calc['total_salary'] ?? 0;;
-                    $save_data->travel_allowence = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->travel_allowance : 0;
-                    $save_data->house_allowence = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->house_allowance : 0;
-                    $save_data->position_allowence = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->position_allowance : 0;
-                    $save_data->phone_allowence = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->phone_allowance : 0;
-                    $save_data->other_allowence = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->other_allowance : 0;
+                    $save_data->travel_allowence = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->travel_allowance : 0;
+                    $save_data->house_allowence = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->house_allowance : 0;
+                    $save_data->position_allowence = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->position_allowance : 0;
+                    $save_data->phone_allowence = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->phone_allowance : 0;
+                    $save_data->other_allowence = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->other_allowance : 0;
                     $save_data->deduction = 0;
                     $save_data->total_earning = $total_earning;
                     $save_data->es_year = $year;

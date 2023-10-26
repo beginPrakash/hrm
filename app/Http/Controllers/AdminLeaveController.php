@@ -52,15 +52,17 @@ class AdminLeaveController extends Controller
         $hir_arr = [];
         if(isset($request->sub_department) && count($request->sub_department) > 0):
             foreach($request->sub_department as $key => $val):
-                $hir_arr[$key]['dept'] = $val;
-                $hir_arr[$key]['desig'] = $request->sub_title[$key];
+                if(!empty($request->sub_title[$key])):
+                    $hir_arr[$key]['dept'] = $val;
+                    $hir_arr[$key]['desig'] = $request->sub_title[$key];
+                endif;
             endforeach;
         endif;
         $insertArray = array(
             'leave_type'     =>  $request->leave_type,
             'main_dept_id'     =>  $request->main_department,
             'main_desig_id'       =>  $request->main_title,
-            'leave_hierarchy'     =>  json_encode($hir_arr),
+            'leave_hierarchy'     =>  (!empty($hir_arr)) ? json_encode($hir_arr) : Null,
         );
         if(isset($request->id) && !empty($request->id)):
             LeaveHierarchy::where('id', $request->id)->update($insertArray);

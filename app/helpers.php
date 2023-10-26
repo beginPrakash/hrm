@@ -256,17 +256,19 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $balance = (!empty($employee) && (isset($employee->opening_leave_days)))?$employee->opening_leave_days:0;
         $used = ($balance > 0 && $totalLeaveDays > 0)?$totalLeaveDays - $balance:0;
         $leaveBalance = $totalLeaveDays - $used;
-        $remaining_leave = $totalLeaveDays - $balance;
         $sal = (isset($employee->employee_salary->total_salary))?$employee->employee_salary->total_salary:0;
         $perday = $sal / 26;
         $leaveAmount = $perday * $leaveBalance;
-
+        $total_request_leave = $employee->request_leave_days ?? 0;
+        $remaining_leave = $totalLeaveDays - ($balance + $total_request_leave);
+        $remaining_leave_withoutreq = $totalLeaveDays - $balance;
         $result = array(
             'totalLeaveDays'    =>  $totalLeaveDays,
             'used'              =>  $used,
             'leaveBalance'      =>  $leaveBalance,
             'leaveAmount'       =>  $leaveAmount,
-            'remaining_leave'   =>  $remaining_leave);
+            'remaining_leave'   =>  $remaining_leave,
+            'remaining_leave_withoutreq'   =>  $remaining_leave_withoutreq);
 
         return $result;
     }
@@ -285,21 +287,24 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $exYM = explode('.', $totalLeaveYearMonths);
         $totalLeaveMonths = ($exYM[0] * 12) +$exYM[1];
         // echo $employee->opening_leave_days;
-        $totalLeaveDays = $totalLeaveMonths * 1;
+        $totalLeaveDays = 15;
         $balance = (!empty($employee) && (isset($employee->sick_leave_days)))?$employee->sick_leave_days:0;
         $used = ($balance > 0 && $totalLeaveDays > 0)?$totalLeaveDays - $balance:0;
         $leaveBalance = $totalLeaveDays - $used;
-        $remaining_leave = $totalLeaveDays - $balance;
+        
         $sal = (isset($employee->employee_salary->total_salary))?$employee->employee_salary->total_salary:0;
         $perday = $sal / 26;
         $leaveAmount = $perday * $leaveBalance;
-
+        $total_request_leave = $employee->sick_leave_request_days ?? 0;
+        $remaining_leave = $totalLeaveDays - ($balance + $total_request_leave);
+        $remaining_leave_withoutreq = $totalLeaveDays - $balance;
         $result = array(
             'totalLeaveDays'    =>  $totalLeaveDays,
             'used'              =>  $used,
             'leaveBalance'      =>  $leaveBalance,
             'leaveAmount'       =>  $leaveAmount,
-            'remaining_leave'   =>  $remaining_leave);
+            'remaining_leave'   =>  $remaining_leave,
+            'remaining_leave_withoutreq' => $remaining_leave_withoutreq);
         return $result;
     }
     

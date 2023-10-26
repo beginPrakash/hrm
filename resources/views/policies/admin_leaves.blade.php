@@ -78,11 +78,18 @@
         // Add More Dept
         $('.add_more_dept_btn').click(function() {
            
-            var element = $('.add_dept_div:last').clone();
+            var element = $('.add_dept_div:first').clone();
             var j = $('.add_dept_div').length;
+            element.find('.dept_select').val('');
+            element.find('.title_select').val('');
             element.insertAfter($(this).parents().find('.add_dept_div:last'));
-            
-            if(j>=1){
+//             $('.select').select2({
+//     //-^^^^^^^^--- update here
+//     //tags: true,
+//     allowClear: true,
+//     width: '100%'
+//   });
+            if(j>1){
                 $('.dept_select:last').attr('id','dept_select'+j);
                 $('#dept_select'+j).select2('destroy');
                 $('#dept_select'+j).select2();
@@ -146,6 +153,34 @@
        });
        
     });
+
+    $(document).on('change', '.title_select', function() {
+            // for department hide/show
+            var prio = $(this).find(":selected").data("priority");
+            $(this).parent().parent().parent().find('.department_div').show();
+            if(prio == '1' || prio == '2')
+            {
+                //console.log($(this).parent().parent().parent().find('.department_div'));
+                $(this).parent().parent().parent().find('.department_div').hide();
+                $(this).find('.dep_hid').val(1);
+            }
+
+            //for multi user check
+        });
+
+        $(document).on('change', '.main_title', function() {
+            // for department hide/show
+            var prio = $(this).find(":selected").data("priority");
+            $('.main_department').show();
+            if(prio == '1' || prio == '2')
+            {
+                $('#main_department').val('').trigger('change');
+                $('.main_department').hide();
+                $(this).find('.dep_hid').val(1);
+            }
+
+            //for multi user check
+        });
 
     $(document).on('click','.edit_hierarchy',function(){
         $('#add_leave').html('');

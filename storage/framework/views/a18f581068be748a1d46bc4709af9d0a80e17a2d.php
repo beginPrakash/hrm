@@ -189,10 +189,17 @@
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 <?php endif; ?>
+                <tr>
+                    <td colspan="1">HR Manager Sign.</td>
+                    <td colspan="2">Sr. Accountant Sign.</td>
+                    <td colspan="2">Finanace Manager Sign.</td>
+                    <td colspan="2">General Manager Sign.</td>
+                    <td>CEO Sign.</td>
+                </tr>
             </tbody>
         </table>
     <?php endif; ?>
     </div>
 </body>
 </html>
-<?php //exit; ?><?php /**PATH C:\wamp64_new\www\hrm\resources\views/payroll/employee_salary_pdf.blade.php ENDPATH**/ ?>
+<?php exit; ?><?php /**PATH C:\wamp64_new\www\hrm\resources\views/payroll/employee_salary_pdf.blade.php ENDPATH**/ ?>

@@ -166,7 +166,10 @@ class EmployeeController extends Controller
                         ->get();
         $indemnityDetails = EmployeeIndemnity::where('user_id', $employee->user_id)->get();
         $annualleavedetails = getAnnualLeaveDetails($employee->user_id);
+        $sickleavedetails = getSickLeaveDetails($employee->user_id);
         $financalYear = FinancialYear::get();
+        $sal = (isset($employee->employee_salary->total_salary))?$employee->employee_salary->total_salary:0;
+        $perday = $sal / 26;
         // echo '<pre>';print_r($employee);exit;
         return view('edbr.profile', [
             'user'                 => $employee,
@@ -184,7 +187,9 @@ class EmployeeController extends Controller
             'additions'            => $additions,
             'deductions'           => $deductions,
             'financial_year'        => $financalYear,
-            'annualleavedetails'   => $annualleavedetails
+            'annualleavedetails'   => $annualleavedetails,
+            'sickleavedetails' => $sickleavedetails,
+            'perday'=>$perday
         ]);
     }
 

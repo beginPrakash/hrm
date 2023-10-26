@@ -263,12 +263,12 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Remaining Leaves <span class="text-danger">*</span></label>
-                                        <input class="form-control remaining_leaves" readonly type="text" name="remaining_leaves" id="remaining_leaves" value="<?php echo e($leave_details['remaining_leave'] ?? 0); ?>">
+                                        <input class="form-control remaining_leaves" readonly type="text" name="remaining_leaves" id="remaining_leaves" value="0">
                                         <span class="text-danger" id="rl_count_err"></span>
                                     </div>
                                     <div class="form-group">
                                         <label>Leave Reason <span class="text-danger">*</span></label>
-                                        <textarea rows="4" class="form-control" name="leave_reason"></textarea>
+                                        <textarea rows="4" class="form-control" name="leave_reason" id="leave_reason"></textarea>
                                     </div>
                                     <div class="submit-section">
                                         <button class="btn btn-primary submit-btn" type="submit" id="addLeaveBtn">Submit</button>
@@ -438,7 +438,26 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        
+        $.validator.addMethod("checkreleave", function (value, element) {
+                var result = true;
+
+                if($('#leave_type').val() == 1){
+                            var emp_remaining_leave = $('#emp_remaining_leave').val();
+                        }else if($('#leave_type').val() == 2){
+                            var emp_remaining_leave = $('#emp_remainingsick_leave').val();
+                        }
+                        var days = $('#no_of_days').val();
+                        console.log(days+'<= '+emp_remaining_leave);
+                        if(parseInt(days) <= parseInt(emp_remaining_leave)){
+                            console.log('if');
+                            result =  true;
+                        }else{
+                            //$('#rl_count_err').text('Remaing leave balance is 0.Please select unpaid leave');
+                            result = false;
+                        }
+
+              return this.optional(element) || result;
+          }, "Insufficient no of leaves.");
         $("#addEditForm").validate({
             rules: {
                 leave_type: {
@@ -450,9 +469,7 @@
                 days:  {
                     required : true},
                 remaining_leaves:  {
-                    required : true,
-                    number:true,
-                    min:1,
+                    checkreleave: true,
                 },
                     leave_reason:  {
                     required : true},
@@ -472,16 +489,26 @@
                     required : 'Days is required',
                 },
                 remaining_leaves: {
-                    required : 'Remaining Leaves is required',
-                    min:'Remaing leave balance is 0.Please select unpaid leave',
+                    required : 'Remaining leave balance is 0.Please select unpaid leave',
                 },
                 leave_reason: {
                     required : 'Leaves reason is required',
                 }
             },
        });
+
+       $('#add_leave').on('hidden.bs.modal', function () {
+            $('#leave_type').val('').trigger('change');
+            $('#from_date').val('');
+            $('#to_date').val('');
+            $('#remaining_leaves').val(0);
+            $('#no_of_days').val(0);
+            $('#leave_reason').val('');
+        });
        
     });
+
+    
 </script>
 
 <script>
@@ -537,7 +564,7 @@
                     if(remaining_leave == 0)
                     {
                         $('#addLeaveBtn').attr('disabled', true);
-                        $('#rl_count_err').text('Insufficient no of leaves');
+                        //$('#rl_count_err').text('Insufficient no of leaves');
                     }
                 }
             });
@@ -560,19 +587,28 @@
         var no_days = (result >= 0 )?result+1:0;
         $('#no_of_days').val(no_days);
         var request_leave = $('#request_leave').val();
-        var remaining_leave = $('#emp_remaining_leave').val();
-        var total_rem_leave = remaining_leave - request_leave;
+        var leave_type = $('#leave_type').val();
+        if(leave_type == 1){
+                        var emp_remaining_leave = $('#emp_remaining_leave').val();
+                    }else if(leave_type == 2){
+                        var emp_remaining_leave = $('#emp_remainingsick_leave').val();
+                    }  
+                    //console.log(emp_remaining_leave);
+                    var remaining_leave = emp_remaining_leave;
+        //var total_rem_leave = remaining_leave - request_leave;
+        //console.log(total_rem_leave);
         //var remaining_leave = $('#remaining_leaves').val();
-        if(total_rem_leave >= no_days){
-            var total_req_leave = total_rem_leave - no_days;
+        if(remaining_leave >= no_days){
+            var total_req_leave = remaining_leave - no_days;
+            //console.log(total_req_leave);
             $('#remaining_leaves').val(total_req_leave);
         }
         
     });
-    var request_leave = $('#request_leave').val();
-    var remaining_leave = $('#emp_remaining_leave').val();
-    var total_rem_leave = remaining_leave - request_leave;
-    $('#remaining_leaves').val(total_rem_leave);
+    // var request_leave = $('#request_leave').val();
+    // var remaining_leave = $('#emp_remaining_leave').val();
+    // var total_rem_leave = remaining_leave - request_leave;
+    // $('#remaining_leaves').val(total_rem_leave);
     $(document).on('change','#leave_leave_from, #leave_leave_to',function(){
         var from_date = $('#leave_leave_from').val();
         $('#leave_leave_to').attr('min', from_date);

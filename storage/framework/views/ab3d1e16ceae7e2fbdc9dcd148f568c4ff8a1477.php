@@ -814,7 +814,6 @@ if ($currentMonth >= 4) {
                                                 <Hr/>
                                                     <h4>Annual Leave Information</h4>
                                                 <Hr/>
-
                                                 <?php
                                                 $al_balance = (isset($user->opening_leave_days))?$user->opening_leave_days:$annualleavedetails['leaveBalance'];
                                                 $al_used = (isset($annualleavedetails['totalLeaveDays']) && $annualleavedetails['totalLeaveDays']>0 && isset($al_balance) && $al_balance > 0)?$annualleavedetails['totalLeaveDays'] - $al_balance:0;
@@ -826,11 +825,11 @@ if ($currentMonth >= 4) {
                                                 </li>
                                                 <li>
                                                     <div class="title">Used Leave Days</div>
-                                                    <div class="text"><?php echo $al_used; ?></div>
+                                                    <div class="text"><?php echo e((isset($user->opening_leave_days) && !empty($user->opening_leave_days)) ? $user->opening_leave_days : 0); ?></div>
                                                 </li>
                                                 <li>
                                                     <div class="title">Balance Days</div>
-                                                    <div class="text"><?php echo $al_balance; ?></div>
+                                                    <div class="text"><?php echo e($annualleavedetails['remaining_leave_withoutreq']  ?? 0); ?></div>
                                                 </li>
                                                 <li>
                                                     <div class="title">Balance Amount</div>
@@ -860,35 +859,130 @@ if ($currentMonth >= 4) {
                                                         <th>No. of Days</th>
                                                         <th>Amount</th>
                                                         <th>Status</th>
-                                                        <th>Action</th>
+                                                        <!-- <th>Action</th> -->
                                                     </tr>
 
                                                     <?php //echo '<pre>';print_r($user->employee_leaves); 
                                                     if(isset($user->employee_leaves)) { 
                                                         foreach($user->employee_leaves as $el) { 
-                                                            if($el->leave_type == 1) { ?>
-                                                        <tr>
-                                                            <td><?php echo $el->leave_from; ?> to <?php echo $el->leave_to; ?></td>
-                                                            <td><?php echo $el->leave_days; ?></td>
-                                                            <td><?php echo number_format($perday * $el->leave_days , 2); ?></td>
-                                                            <td><?php echo $el->leave_status; ?></td>
-                                                            <td>
-                                                                <?php if($el->leave_status!=='paid' && $el->leave_status!=='hold'){ ?>
-                                                                    <form method="post" action="/employeeLeaveAmountUpdate/<?php echo $el->id; ?>">
-                                                                        <?php echo csrf_field(); ?>
-                                                                        <input type="hidden" name="userid" value="<?php echo $user->id; ?>">
-                                                                        <input type="hidden" name="nodays" value="<?php echo $el->leave_days; ?>">
-                                                                        <input type="hidden" name="lamount" value="<?php echo $perday * $el->leave_days; ?>">
-                                                                        <button type="submit" name="status_type" value="paid" class="btn btn-success text-white">Paid</button>
-                                                                        <button type="submit" name="status_type" value="hold" class="btn btn-warning text-white">Hold</button>
-                                                                    </form>
-                                                                <?php } if($el->leave_status=='paid'){ ?>
-                                                                    <span class="badge bg-inverse-success">Paid</span>
-                                                                <?php } if($el->leave_status=='hold'){ ?>
-                                                                    <span class="badge bg-inverse-warning">Hold</span>
-                                                                <?php } ?>
-                                                            </td>
-                                                        </tr>
+                                                            if($el->leave_type == 1) { 
+                                                                $cur_year = date('Y');
+                                                                $leave_year = date('Y', strtotime($el->leave_to)); 
+                                                                ?>
+                                                        <?php if($cur_year == $leave_year): ?>
+                                                            <tr>
+                                                                <td><?php echo $el->leave_from; ?> to <?php echo $el->leave_to; ?></td>
+                                                                <td><?php echo $el->leave_days; ?></td>
+                                                                <td><?php echo number_format($perday * $el->leave_days , 2); ?></td>
+                                                                <td><?php echo $el->leave_status; ?></td>
+                                                                <!-- <td>
+                                                                    <?php if($el->leave_status!=='paid' && $el->leave_status!=='hold'){ ?>
+                                                                        <form method="post" action="/employeeLeaveAmountUpdate/<?php echo $el->id; ?>">
+                                                                            <?php echo csrf_field(); ?>
+                                                                            <input type="hidden" name="userid" value="<?php echo $user->id; ?>">
+                                                                            <input type="hidden" name="nodays" value="<?php echo $el->leave_days; ?>">
+                                                                            <input type="hidden" name="lamount" value="<?php echo $perday * $el->leave_days; ?>">
+                                                                            <button type="submit" name="status_type" value="paid" class="btn btn-success text-white">Paid</button>
+                                                                            <button type="submit" name="status_type" value="hold" class="btn btn-warning text-white">Hold</button>
+                                                                        </form>
+                                                                    <?php } if($el->leave_status=='paid'){ ?>
+                                                                        <span class="badge bg-inverse-success">Paid</span>
+                                                                    <?php } if($el->leave_status=='hold'){ ?>
+                                                                        <span class="badge bg-inverse-warning">Hold</span>
+                                                                    <?php } ?>
+                                                                </td> -->
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                    <?php } } } ?>
+                                                </table>
+
+                                            </ul>
+                                            
+                                            <div class="col-md-12">
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 d-flex">
+                                <div class="card profile-box flex-fill">
+                                    <div class="card-body">
+                                       
+                                        <div class="row">
+                                            <ul class="personal-info">
+                                                <Hr/>
+                                                    <h4>Sick Leave Information</h4>
+                                                <Hr/>
+
+                                                <li>
+                                                    <div class="title">Total Leave Days</div>
+                                                    <div class="text"><?php echo (isset($sickleavedetails) && $sickleavedetails['totalLeaveDays']>0 )?$sickleavedetails['totalLeaveDays']:0; ?></div>
+                                                </li>
+                                                <li>
+                                                    <div class="title">Used Leave Days</div>
+                                                    <div class="text"><?php echo e((isset($user->sick_leave_days) && !empty($user->sick_leave_days)) ? $user->sick_leave_days : 0); ?></div>
+                                                </li>
+                                                <li>
+                                                    <div class="title">Balance Days</div>
+                                                    <div class="text"><?php echo e($sickleavedetails['remaining_leave_withoutreq']  ?? 0); ?></div>
+                                                </li>
+                                                <li>
+                                                    <div class="title">Balance Amount</div>
+                                                    <div class="text">KWD 
+                                                        <?php 
+                                                        $sick_days = $sickleavedetails['remaining_leave_withoutreq']  ?? 0;
+                                                        $total_amount = $sick_days * $perday;
+                                                        echo number_format($total_amount, 2);
+                                                         ?>
+                                                    </div>
+                                                </li>
+
+                                                <Hr/>
+                                                    <h4>Leave Requests - <?php echo date('Y'); ?></h4>
+                                                <Hr/>
+
+                                                <table class="table">
+                                                    <tr>
+                                                        <th>Dates</th>
+                                                        <th>No. of Days</th>
+                                                        <th>Amount</th>
+                                                        <th>Status</th>
+                                                        <!-- <th>Action</th> -->
+                                                    </tr>
+
+                                                    <?php //echo '<pre>';print_r($user->employee_leaves); 
+                                                    if(isset($user->employee_leaves)) { 
+                                                        foreach($user->employee_leaves as $el) { 
+                                                            if($el->leave_type == 2) { 
+                                                                $cur_year = date('Y');
+                                                                $leave_year = date('Y', strtotime($el->leave_to)); 
+                                                                ?>
+                                                        <?php if($cur_year == $leave_year): ?>
+                                                            <tr>
+                                                                <td><?php echo $el->leave_from; ?> to <?php echo $el->leave_to; ?></td>
+                                                                <td><?php echo $el->leave_days; ?></td>
+                                                                <td><?php echo number_format($perday * $el->leave_days , 2); ?></td>
+                                                                <td><?php echo $el->leave_status; ?></td>
+                                                                <!-- <td>
+                                                                    <?php if($el->leave_status!=='paid' && $el->leave_status!=='hold'){ ?>
+                                                                        <form method="post" action="/employeeLeaveAmountUpdate/<?php echo $el->id; ?>">
+                                                                            <?php echo csrf_field(); ?>
+                                                                            <input type="hidden" name="userid" value="<?php echo $user->id; ?>">
+                                                                            <input type="hidden" name="nodays" value="<?php echo $el->leave_days; ?>">
+                                                                            <input type="hidden" name="lamount" value="<?php echo $perday * $el->leave_days; ?>">
+                                                                            <button type="submit" name="status_type" value="paid" class="btn btn-success text-white">Paid</button>
+                                                                            <button type="submit" name="status_type" value="hold" class="btn btn-warning text-white">Hold</button>
+                                                                        </form>
+                                                                    <?php } if($el->leave_status=='paid'){ ?>
+                                                                        <span class="badge bg-inverse-success">Paid</span>
+                                                                    <?php } if($el->leave_status=='hold'){ ?>
+                                                                        <span class="badge bg-inverse-warning">Hold</span>
+                                                                    <?php } ?>
+                                                                </td> -->
+                                                            </tr>
+                                                        <?php endif; ?>
                                                     <?php } } } ?>
                                                 </table>
 
@@ -979,6 +1073,7 @@ if ($currentMonth >= 4) {
                                 </div>
                             </div>
                         </div>
+                        
                     </div>
 
 

@@ -271,7 +271,7 @@ class SchedulingController extends Controller
         $importData_arr = array();
         $i = 0;
 
-        while (($filedata = fgetcsv($file, 1000, ",")) !== FALSE) 
+        while (($filedata = fgetcsv($file)) !== FALSE) 
         {
             $num = count($filedata );
 
@@ -289,7 +289,7 @@ class SchedulingController extends Controller
             $i++;
         }
         fclose($file);
-
+//dd($importData_arr);
         //count details
         $totalColumns = count($importHeaderData_arr);
 

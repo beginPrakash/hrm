@@ -1,12 +1,15 @@
-<head> <script type="text/javascript" src="{{ asset('assets/js/app.js') }}"></script>
+<head> 
+    <!-- <script type="text/javascript" src="{{ asset('assets/js/app.js') }}"></script> -->
         <script>$(document).ready(function() {
         // Add More Dept
         $('.add_more_dept_btn').click(function() {
             console.log('sds');
             var element = $('.add_dept_div:last').clone();
+            element.find('.dept_select').val('');
+            element.find('.title_select').val('');
             var j = $('.add_dept_div').length;
             element.insertAfter($(this).parents().find('.add_dept_div:last'));
-            if(j>=1){
+            if(j>1){
                 //$('.dept_select:last').select2('destroy');
                 $('.dept_select:last').attr('id','dept_select'+j);
                 $('#dept_select'+j).select2('destroy');
@@ -75,32 +78,68 @@
                                         </select>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label>Department <span class="text-danger">*</span></label>
-                                                <select class="select shift_addschedule addsched" id="main_department" name="main_department">
-                                                    <option value="">Select Department</option>
-                                                    @if(isset($departments) && count($departments) > 0)
-                                                        @foreach($departments as $key => $val)
-                                                            <option value="{{$val->id}}" {{(isset($leaveData->main_dept_id) && !empty($leaveData->main_dept_id) && ($leaveData->main_dept_id == $val->id)) ? 'selected' : ''}}>{{$val->name}}</option>
-                                                        @endforeach
-                                                    @endif
-                                                </select>
-                                            </div>
-                                        </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>Title<span class="text-danger">*</span></label>
-                                                <select class="select" id="main_title" name="main_title">
+                                                <select class="select main_title" id="main_title" name="main_title">
                                                     <option value="">Select Title</option>
                                                     @if(isset($designations) && count($designations) > 0)
                                                         @foreach($designations as $key => $val)
-                                                            <option value="{{$val->id}}" {{(isset($leaveData->main_desig_id) && !empty($leaveData->main_desig_id) && ($leaveData->main_desig_id == $val->id)) ? 'selected' : ''}}>{{$val->name}}</option>
+                                                            <option value="{{$val->id}}" data-priority="{{$val->priority_level}}" {{(isset($leaveData->main_desig_id) && !empty($leaveData->main_desig_id) && ($leaveData->main_desig_id == $val->id)) ? 'selected' : ''}}>{{$val->name}}</option>
                                                         @endforeach
                                                     @endif
                                                 </select>
                                             </div>
                                         </div>
+                                        @if(isset($leaveData->id) && !empty($leaveData->id))
+                                            @if(isset($leaveData->main_dept_id) && !empty($leaveData->main_dept_id))
+                                                <div class="col-sm-6">
+                                                    <div class="form-group main_department">
+                                                        <label>Department <span class="text-danger">*</span></label>
+                                                        <select class="select shift_addschedule addsched" id="main_department" name="main_department">
+                                                            <option value="">Select Department</option>
+                                                            @if(isset($departments) && count($departments) > 0)
+                                                                @foreach($departments as $key => $val)
+                                                                    <option value="{{$val->id}}" {{(isset($leaveData->main_dept_id) && !empty($leaveData->main_dept_id) && ($leaveData->main_dept_id == $val->id)) ? 'selected' : ''}}>{{$val->name}}</option>
+                                                                @endforeach
+                                                            @endif
+                                                        </select>
+                                                        <input type="hidden" name="main_dep_hid" value="0" class="main_dep_hid">
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <div class="col-sm-6">
+                                                    <div class="form-group main_department" style="display:none">
+                                                        <label>Department <span class="text-danger">*</span></label>
+                                                        <select class="select shift_addschedule addsched" id="main_department" name="main_department">
+                                                            <option value="">Select Department</option>
+                                                            @if(isset($departments) && count($departments) > 0)
+                                                                @foreach($departments as $key => $val)
+                                                                    <option value="{{$val->id}}">{{$val->name}}</option>
+                                                                @endforeach
+                                                            @endif
+                                                        </select>
+                                                        <input type="hidden" name="main_dep_hid" value="0" class="main_dep_hid">
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @else
+                                            <div class="col-sm-6">
+                                                    <div class="form-group main_department">
+                                                        <label>Department <span class="text-danger">*</span></label>
+                                                        <select class="select shift_addschedule addsched" id="main_department" name="main_department">
+                                                            <option value="">Select Department</option>
+                                                            @if(isset($departments) && count($departments) > 0)
+                                                                @foreach($departments as $key => $val)
+                                                                    <option value="{{$val->id}}">{{$val->name}}</option>
+                                                                @endforeach
+                                                            @endif
+                                                        </select>
+                                                        <input type="hidden" name="main_dep_hid" value="0" class="main_dep_hid">
+                                                    </div>
+                                                </div>
+                                        @endif
+                                        
                                     </div>
                                     <div class="form-group">
                                         <label>Select Approver Title and Department</label>
@@ -112,6 +151,19 @@
                                                 <div class="row add_dept_div">
                                                     <div class="col-md-5">
                                                         <div class="form-group">
+                                                            <select class="select title_select" name="sub_title[]">
+                                                                <option value="">Select Title</option>
+                                                                @if(isset($designations) && count($designations) > 0)
+                                                                    @foreach($designations as $key => $val)
+                                                                        <option value="{{$val->id}}" data-priority="{{$val->priority_level}}" {{($dval->desig == $val->id) ? 'selected' : ''}}>{{$val->name}}</option>
+                                                                    @endforeach
+                                                                @endif
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    @if(isset($dval->dept) && !empty($dval->dept))
+                                                    <div class="col-md-5 department_div">
+                                                        <div class="form-group">
                                                             <select class="select dept_select" name="sub_department[]">
                                                                 <option value="">Select Department</option>
                                                                 @if(isset($departments) && count($departments) > 0)
@@ -120,20 +172,10 @@
                                                                     @endforeach
                                                                 @endif
                                                             </select>
+                                                            <input type="hidden" name="dep_hid" value="0" class="dep_hid">
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-5">
-                                                        <div class="form-group">
-                                                            <select class="select title_select" name="sub_title[]">
-                                                                <option value="">Select Title</option>
-                                                                @if(isset($designations) && count($designations) > 0)
-                                                                    @foreach($designations as $key => $val)
-                                                                        <option value="{{$val->id}}" {{($dval->desig == $val->id) ? 'selected' : ''}}>{{$val->name}}</option>
-                                                                    @endforeach
-                                                                @endif
-                                                            </select>
-                                                        </div>
-                                                    </div>
+                                                    @endif
                                                     <div class="col-md-2 add_btn_div">
                                                         @if($dkey == 0)
                                                             <button type="button" class="btn btn-success {{(isset($leaveData->id) && !empty($leaveData->id)) ? 'add_more_dept_btn' : 'add_more_dept_btn'}}"><i class="fa fa-plus"></i></button>
@@ -147,8 +189,8 @@
                                     @else
                                     <div class="row add_dept_div">
                                         <div class="col-md-5">
-                                            <div class="form-group department_div">
-                                                <select class="select title_select" name="sub_title[]">
+                                            <div class="form-group">
+                                                <select class="title_select" name="sub_title[]">
                                                     <option value="">Select Title</option>
                                                     @if(isset($designations) && count($designations) > 0)
                                                         @foreach($designations as $key => $val)
@@ -158,9 +200,9 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-5">
+                                        <div class="col-md-5 department_div">
                                             <div class="form-group">
-                                                <select class="select dept_select" name="sub_department[]">
+                                                <select class="dept_select" name="sub_department[]">
                                                     <option value="">Select Department</option>
                                                     @if(isset($departments) && count($departments) > 0)
                                                         @foreach($departments as $key => $val)

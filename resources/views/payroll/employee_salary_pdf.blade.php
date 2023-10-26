@@ -188,6 +188,13 @@
                         </tr>
                     @endforeach
                 @endif
+                <tr>
+                    <td colspan="1">HR Manager Sign.</td>
+                    <td colspan="2">Sr. Accountant Sign.</td>
+                    <td colspan="2">Finanace Manager Sign.</td>
+                    <td colspan="2">General Manager Sign.</td>
+                    <td>CEO Sign.</td>
+                </tr>
             </tbody>
         </table>
     @endif

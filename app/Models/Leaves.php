@@ -19,7 +19,8 @@ class Leaves extends Model
         'leave_days',
         'remaining_leave',
         'leave_reason',
-        'leave_status'
+        'leave_status',
+        'leave_hierarchy',
 	];
 
     public function status()

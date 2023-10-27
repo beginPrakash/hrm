@@ -7,7 +7,7 @@
 
                 <!-- Page Content -->
                 <div class="content container-fluid">
-                    
+                @include('flash-message') 
                     <!-- Page Header -->
                     <div class="page-header">
                         <div class="row align-items-center">
@@ -56,7 +56,7 @@
                         }
                     }?>
                     <!-- Leave Statistics -->
-                    <div class="row">
+                    {{--<div class="row">
                         <div class="col-md-3">
                             <div class="stats-info">
                                 <h6>Today Absent</h6>
@@ -81,11 +81,11 @@
                                 <h4><?php echo $pending; ?></h4>
                             </div>
                         </div>
-                    </div>
+                    </div>--}}
                     <!-- /Leave Statistics -->
                     
                     <!-- Search Filter -->
-                    <form action="/leaves" method="post">
+                    {{--<form action="/leaves" method="post">
                         @csrf
                         <div class="row filter-row">
                            <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
@@ -137,7 +137,7 @@
                                 <button type="submit" name="search" class="btn btn-success w-100"> Search </button>  
                            </div>     
                         </div>
-                    </form>
+                    </form>--}}
                     <!-- /Search Filter -->
                 <?php } ?>
                     
@@ -493,6 +493,13 @@
                 },
                 leave_reason: {
                     required : 'Leaves reason is required',
+                }
+            },
+            errorPlacement: function (error, element) {
+                if (element.prop("type") == "text" || element.prop("type") == "textarea") {
+                    error.insertAfter(element);
+                } else {
+                    error.insertAfter(element.parent());
                 }
             },
        });

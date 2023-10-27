@@ -7,7 +7,7 @@
 
                 <!-- Page Content -->
                 <div class="content container-fluid">
-                    
+                <?php echo $__env->make('flash-message', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?> 
                     <!-- Page Header -->
                     <div class="page-header">
                         <div class="row align-items-center">
@@ -56,88 +56,11 @@
                         }
                     }?>
                     <!-- Leave Statistics -->
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="stats-info">
-                                <h6>Today Absent</h6>
-                                <h4><?php echo $todayLeave; ?></h4>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="stats-info">
-                                <h6>New Requests</h6>
-                                <h4><?php echo $newLeave; ?><!--  <span>Today</span> --></h4>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="stats-info">
-                                <h6>Rejected Requests</h6>
-                                <h4><?php echo $rejectLeave; ?></h4>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="stats-info">
-                                <h6>Pending Requests</h6>
-                                <h4><?php echo $pending; ?></h4>
-                            </div>
-                        </div>
-                    </div>
+                    
                     <!-- /Leave Statistics -->
                     
                     <!-- Search Filter -->
-                    <form action="/leaves" method="post">
-                        <?php echo csrf_field(); ?>
-                        <div class="row filter-row">
-                           <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
-                                <div class="form-group form-focus">
-                                    <input type="text" class="form-control floating" name="employee" value="<?php echo (isset($where['user_id']))?$where['user_id']:''; ?>">
-                                    <label class="focus-label">Employee Name</label>
-                                </div>
-                           </div>
-                           <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
-                                <div class="form-group form-focus select-focus">
-                                    <select class="select floating" name="leavetype"> 
-                                        <option value="">Select</option>
-                                        <?php foreach ($leavetype as $value) {?>
-                                        <option value="<?php echo $value->id?>" data-id="<?php echo $value->days?>" <?php echo (isset($where['leave_type']) && $where['leave_type']==$value->id)?'selected':''; ?>><?php echo $value->name?></option>
-                                        <?php } ?>
-                                    </select>
-                                    <label class="focus-label">Leave Type</label>
-                                </div>
-                           </div>
-                           <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12"> 
-                                <div class="form-group form-focus select-focus">
-                                    <select class="select floating" name="leavestatus"> 
-                                        <option value=""> -- Select -- </option>
-                                        <option value="new" <?php echo (isset($where['leave_status']) && $where['leave_status']=='new')?'selected':''; ?>> New </option>
-                                        <option value="pending" <?php echo (isset($where['leave_status']) && $where['leave_status']=='pending')?'selected':''; ?>> Pending </option>
-                                        <option value="approved" <?php echo (isset($where['leave_status']) && $where['leave_status']=='approved')?'selected':''; ?>> Approved </option>
-                                        <option value="rejected" <?php echo (isset($where['leave_status']) && $where['leave_status']=='rejected')?'selected':''; ?>> Rejected </option>
-                                    </select>
-                                    <label class="focus-label">Leave Status</label>
-                                </div>
-                           </div>
-                           <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
-                                <div class="form-group form-focus">
-                                    <div class="cal-icon">
-                                        <input class="form-control floating datetimepicker" type="text" name="from" value="<?php echo (isset($where['leave_from']))?$where['leave_from']:''; ?>">
-                                    </div>
-                                    <label class="focus-label">From</label>
-                                </div>
-                            </div>
-                           <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
-                                <div class="form-group form-focus">
-                                    <div class="cal-icon">
-                                        <input class="form-control floating datetimepicker" type="text" name="to" value="<?php echo (isset($where['leave_to']))?$where['leave_to']:''; ?>">
-                                    </div>
-                                    <label class="focus-label">To</label>
-                                </div>
-                            </div>
-                           <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
-                                <button type="submit" name="search" class="btn btn-success w-100"> Search </button>  
-                           </div>     
-                        </div>
-                    </form>
+                    
                     <!-- /Search Filter -->
                 <?php } ?>
                     
@@ -493,6 +416,13 @@
                 },
                 leave_reason: {
                     required : 'Leaves reason is required',
+                }
+            },
+            errorPlacement: function (error, element) {
+                if (element.prop("type") == "text" || element.prop("type") == "textarea") {
+                    error.insertAfter(element);
+                } else {
+                    error.insertAfter(element.parent());
                 }
             },
        });

@@ -1,15 +1,24 @@
 <head> 
-    <!-- <script type="text/javascript" src="<?php echo e(asset('assets/js/app.js')); ?>"></script> -->
+    <script type="text/javascript" src="<?php echo e(asset('assets/js/app.js')); ?>"></script>
         <script>$(document).ready(function() {
         // Add More Dept
         $('.add_more_dept_btn').click(function() {
-            console.log('sds');
-            var element = $('.add_dept_div:last').clone();
+            var element = $('.add_new_dept:first').clone();
             element.find('.dept_select').val('');
             element.find('.title_select').val('');
-            var j = $('.add_dept_div').length;
+            element.removeClass('d-none');
+            element.find('.dept_select').addClass('select');
+            element.find('.title_select').addClass('select');
+            var j = $('.add_dept_div').not('.d-none').length;
+
             element.insertAfter($(this).parents().find('.add_dept_div:last'));
-            if(j>1){
+            $('.select').select2({
+                //-^^^^^^^^--- update here
+                minimumResultsForSearch: -1,
+                //allowClear: true,
+                width: '100%'
+            });
+            if(j>=1){
                 //$('.dept_select:last').select2('destroy');
                 $('.dept_select:last').attr('id','dept_select'+j);
                 $('#dept_select'+j).select2('destroy');
@@ -18,7 +27,7 @@
                 $('#title_select'+j).select2('destroy');
                 $('#title_select'+j).select2();
             }
-            if(j == 1){
+            if(j >= 1){
                   $(".add_more_dept_btn:last").remove();
                   $('.add_btn_div:last').append('<button type="button" class="btn btn-primary plus-minus remove_dept_btn"><i class="fas fa-minus"></i></button>');
               }
@@ -53,6 +62,47 @@
             $('.leave_id').val('');
             $('.add_dept_div').slice(1).remove();
         });
+
+        $("#admin_leaves_form").validate({
+            rules: {
+                leave_type: {
+                    required : true},
+                main_department:  {
+                    required : false},
+                main_title:  {
+                    required : true},
+                // 'sub_department[]':  {
+                //     required : true},
+                // 'sub_title[]':  {
+                //     required : true},
+            },
+            messages: {
+                leave_type: {
+                    required : 'Leave Type is required',
+                },
+                main_department: {
+                    required : 'Please select department',
+                }
+                ,
+                main_title: {
+                    required : 'Please select title',
+                },
+                // 'sub_department[]': {
+                //     required : 'Please select department',
+                // },
+                // 'sub_title[]': {
+                //     required : 'Please select title',
+                // }
+            },
+            errorPlacement: function (error, element) {
+                if (element.prop("type") == "text") {
+                    error.insertAfter(element);
+                } else {
+                    error.insertAfter(element.parent());
+                }
+            },
+       });
+       
     });</script></head>
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
@@ -146,7 +196,8 @@
                                     </div>
                                     <?php if(isset($leaveData) && !empty($leaveData)): ?>
                                         <?php $decode_data = json_decode($leaveData->leave_hierarchy); ?>
-                                        <?php if(!empty($decode_data) && count($decode_data) > 0): ?>
+                                      
+                                        <?php if(!empty($decode_data)): ?>
                                             <?php $__currentLoopData = $decode_data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dkey => $dval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                 <div class="row add_dept_div">
                                                     <div class="col-md-5">
@@ -190,6 +241,39 @@
                                     <div class="row add_dept_div">
                                         <div class="col-md-5">
                                             <div class="form-group">
+                                                <select class="select title_select" name="sub_title[]">
+                                                    <option value="">Select Title</option>
+                                                    <?php if(isset($designations) && count($designations) > 0): ?>
+                                                        <?php $__currentLoopData = $designations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                            <option value="<?php echo e($val->id); ?>" data-priority="<?php echo e($val->priority_level); ?>"><?php echo e($val->name); ?></option>
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                    <?php endif; ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5 department_div">
+                                            <div class="form-group">
+                                                <select class="select dept_select" name="sub_department[]">
+                                                    <option value="">Select Department</option>
+                                                    <?php if(isset($departments) && count($departments) > 0): ?>
+                                                        <?php $__currentLoopData = $departments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                            <option value="<?php echo e($val->id); ?>"><?php echo e($val->name); ?></option>
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                    <?php endif; ?>
+                                                </select>
+                                                <input type="hidden" name="dep_hid" value="0" class="dep_hid">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-2 add_btn_div">
+                                            <button type="button" class="btn btn-success add_more_dept_btn"><i class="fa fa-plus"></i></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <?php endif; ?>
+                                    <div class="row add_dept_div add_new_dept d-none">
+                                        <div class="col-md-5">
+                                            <div class="form-group">
                                                 <select class="title_select" name="sub_title[]">
                                                     <option value="">Select Title</option>
                                                     <?php if(isset($designations) && count($designations) > 0): ?>
@@ -218,7 +302,6 @@
                                             <button type="button" class="btn btn-success add_more_dept_btn"><i class="fa fa-plus"></i></button>
                                         </div>
                                     </div>
-                                    <?php endif; ?>
                                     <div class="submit-section">
                                         <button class="btn btn-primary submit-btn" type="submit" id="addLeaveBtn">Submit</button>
                                     </div>

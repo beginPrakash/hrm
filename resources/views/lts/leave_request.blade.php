@@ -7,7 +7,7 @@
 
                 <!-- Page Content -->
                 <div class="content container-fluid">
-                    
+                @include('flash-message') 
                     <!-- Page Header -->
                     <div class="page-header">
                         <div class="row align-items-center">

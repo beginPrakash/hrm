@@ -130,7 +130,7 @@ class LeavesController extends Controller
             //create approveal logs
             if(!empty($leave_hierarchy->leave_hierarchy)):
                 $hierarchy_data = json_decode($leave_hierarchy->leave_hierarchy);
-                if(!empty($hierarchy_data) && count($hierarchy_data) > 0):
+                if(!empty($hierarchy_data)):
                     $i = 0;
                     foreach($hierarchy_data as $key => $val):
                         $save_data = new LeaveApprovalLogs();
@@ -181,7 +181,7 @@ class LeavesController extends Controller
                     
                     if($request->leave_type == 1):
                         $total_request_leave = $employee->request_leave_days ?? 0;
-                        $employee->request_leave_days = $sick_leave_request_days - $request->days;
+                        $employee->request_leave_days = $total_request_leave - $request->days;
                         $opening_leave_days = $employee->opening_leave_days ?? 0;
                         $employee->opening_leave_days = $opening_leave_days + $request->days;
                         $employee->save();
@@ -254,7 +254,7 @@ class LeavesController extends Controller
                 $sched_data = Scheduling::where('employee',$userdetails->user_id ?? 0)->where('shift_on',$date)->first();
                 $create_sched = new Scheduling();
                 $create_sched->company_id = $userdetails->company_id ?? 0;
-                $create_sched->department = $department_id;
+                $create_sched->department = $department;
                 $create_sched->employee = $userdetails->user_id ?? 0;
                 $create_sched->shift_on = $date;
                 $create_sched->shift = $shift_id ?? 0;
@@ -270,7 +270,7 @@ class LeavesController extends Controller
 
         endif;
         
-        return redirect('/leaves')->with('success','Leave approved successfully!');
+        return redirect('/leave_request')->with('success','Leave approved successfully!');
     }
 
     public function leaveReject(Request $request)
@@ -282,15 +282,15 @@ class LeavesController extends Controller
         if(!empty($leave_approvaldata)):
             $leave_approvaldata->delete();
             //update pending tatus for next role
-            $leave_pending_status = LeaveApprovalLogs::where('leave_id',$request->leave_id)->first();
-            if(!empty($leave_pending_status)):
-                $leave_pending_status->status = 'pending';
-                $leave_pending_status->save();
-            endif;
+            // $leave_pending_status = LeaveApprovalLogs::where('leave_id',$request->leave_id)->first();
+            // if(!empty($leave_pending_status)):
+            //     $leave_pending_status->status = 'pending';
+            //     $leave_pending_status->save();
+            // endif;
         endif;
         if(!empty($userdetails)):
             $is_last_approval = LeaveApprovalLogs::where('leave_id',$request->leave_id)->count();
-            if($is_last_approval == 0):
+            //if($is_last_approval == 0):
                 if($leave_d->leave_type == 1):
                     $request_leave_days = $userdetails->request_leave_days;
                     $userdetails->request_leave_days = $request_leave_days - $leave_d->leave_days;
@@ -309,10 +309,10 @@ class LeavesController extends Controller
                 
                 Leaves::where('id', $request->leave_id)->update($updateArray);
 
-            endif;
+            //endif;
         endif;
         
-        return redirect('/leaves')->with('success','Leave rejected successfully!');
+        return redirect('/leave_request')->with('success','Leave rejected successfully!');
     }
 
     public function leaveCancel(Request $request)

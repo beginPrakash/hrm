@@ -7,7 +7,7 @@
 
                 <!-- Page Content -->
                 <div class="content container-fluid">
-                    
+                @include('flash-message') 
                     <!-- Page Header -->
                     <div class="page-header">
                         <div class="row align-items-center">
@@ -28,7 +28,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="table-responsive">
-                                <table class=" table table-bordered table-striped table-hover datatable datatable-LoanApplication">
+                                <table class=" table table-bordered table-striped table-hover datatable-adminleave">
                                     <thead>
                                         <tr>
                                             <th>Leave Type</th>
@@ -78,26 +78,25 @@
         // Add More Dept
         $('.add_more_dept_btn').click(function() {
            
-            var element = $('.add_dept_div:first').clone();
-            var j = $('.add_dept_div').length;
+            var element = $('.add_new_dept:first').clone();
+            var j = $('.add_dept_div').not('.d-none').length;
             element.find('.dept_select').val('');
             element.find('.title_select').val('');
+            element.removeClass('d-none');
+            element.find('.dept_select').addClass('select');
+            element.find('.title_select').addClass('select');
             element.insertAfter($(this).parents().find('.add_dept_div:last'));
-//             $('.select').select2({
-//     //-^^^^^^^^--- update here
-//     //tags: true,
-//     allowClear: true,
-//     width: '100%'
-//   });
+            $('.select').select2({
+                //-^^^^^^^^--- update here
+                minimumResultsForSearch: -1,
+                //allowClear: true,
+                width: '100%'
+            });
             if(j>1){
                 $('.dept_select:last').attr('id','dept_select'+j);
-                $('#dept_select'+j).select2('destroy');
-                $('#dept_select'+j).select2();
                 $('.title_select:last').attr('id','title_select'+j);
-                $('#title_select'+j).select2('destroy');
-                $('#title_select'+j).select2();
             }
-            if(j == 1){
+            if(j >= 1){
                   $(".add_more_dept_btn:last").remove();
                   $('.add_btn_div:last').append('<button type="button" class="btn btn-primary plus-minus remove_dept_btn"><i class="fas fa-minus"></i></button>');
               }
@@ -117,7 +116,7 @@
                 leave_type: {
                     required : true},
                 main_department:  {
-                    required : true},
+                    required : false},
                 main_title:  {
                     required : true},
                 // 'sub_department[]':  {

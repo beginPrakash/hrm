@@ -182,6 +182,7 @@ Route::post('/leaveReject',[LeavesController::class, 'leaveReject'] );
 Route::post('/leaveCancel',[LeavesController::class, 'leaveCancel'] );
 Route::post('/getLeaveDetails',[LeavesController::class, 'getLeaveDetails'] );
 Route::get('/leave_request',[LeavesController::class, 'leave_request'] );
+Route::post('/getmainLeaveDetailsById',[LeavesController::class, 'getLeaveDetailsById'] );
 
 
 

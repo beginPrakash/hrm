@@ -91,8 +91,11 @@ class LeavesController extends Controller
         //check same date leave exist
         $from_date = date('Y-m-d',strtotime($request->from_date));
         $to_date = date('Y-m-d',strtotime($request->to_date));
-        $leave_exist = Leaves::where('user_id',$this->user_id)->whereBetween('leave_from', [$from_date, $to_date])
+        $leave_exist = [];
+        if(empty($request->id)):
+            $leave_exist = Leaves::where('user_id',$this->user_id)->whereBetween('leave_from', [$from_date, $to_date])
         ->orWhereBetween('leave_to', [$from_date, $to_date])->first();
+        endif;
         if(!empty($leave_exist)):
             return redirect()->back()->with('error','Leave is already applied.Please select another date.');
         else:
@@ -109,26 +112,39 @@ class LeavesController extends Controller
                 'leave_status'   =>  'pending',
                 'leave_hierarchy'=> $leave_hierarchy->leave_hierarchy ?? '',
             );
-                                    
-            $leave_data = Leaves::create($insertArray);
+            if(!empty($request->id)):
+                $leave_data = Leaves::where('id', $request->id)->first();
+            else:
+                $leave_data = Leaves::create($insertArray);
+            endif;                    
+            
             //dd($leave_data);
             $leave_id = $leave_data->id ?? '';
-
-            //save employee request leave
-            if(!empty($employee)):
-                if($request->leave_type == 1):
-                    $total_request_leave = $employee->request_leave_days ?? 0;
-                    $employee->request_leave_days = $total_request_leave + $request->days;
-                    $employee->save();
-                endif;
-                if($request->leave_type == 2):
-                    $sick_leave_request_days = $employee->sick_leave_request_days ?? 0;
-                    $employee->sick_leave_request_days = $sick_leave_request_days + $request->days;
-                    $employee->save();
-                endif;
-            endif;
+            $leave_datas = Leaves::where('id', $request->id)->first();
             //create approveal logs
             if(!empty($leave_hierarchy->leave_hierarchy)):
+                //save employee request leave
+                if(!empty($employee)):
+                    if($request->leave_type == 1):
+                        $total_request_leave = $employee->request_leave_days ?? 0;
+                        if(!empty($leave_datas) && $total_request_leave > 0):
+                            $total_request_leave = $total_request_leave - $leave_datas->leave_days;
+                        endif;            
+                        $employee->request_leave_days = $total_request_leave + $request->days;
+                        $employee->save();
+                    endif;
+                    if($request->leave_type == 2):
+                        $sick_leave_request_days = $employee->sick_leave_request_days ?? 0;
+                        if(!empty($leave_datas) && $sick_leave_request_days > 0):
+                            $sick_leave_request_days = $sick_leave_request_days - $leave_datas->leave_days;
+                        endif;
+                        $employee->sick_leave_request_days = $sick_leave_request_days + $request->days;
+                        $employee->save();
+                    endif;
+                endif;
+                if(!empty($request->id)):
+                    $leave_data = Leaves::where('id', $request->id)->update($insertArray);
+                endif;
                 $hierarchy_data = json_decode($leave_hierarchy->leave_hierarchy);
                 if(!empty($hierarchy_data)):
                     $i = 0;
@@ -146,6 +162,32 @@ class LeavesController extends Controller
                     endforeach;
                 endif;
             else:
+
+                //save employee request leave
+                if(!empty($employee)):
+                    if($request->leave_type == 1):
+                        $opening_leave_days = $employee->opening_leave_days ?? 0;
+                        if(!empty($leave_datas)):
+                            $opening_leave_days = $opening_leave_days - $leave_datas->leave_days;
+                        endif;
+                        $employee->opening_leave_days = $opening_leave_days + $request->days;
+                        $employee->save();
+                    endif;
+                    if($request->leave_type == 2):
+                        $sick_leave_days = $employee->sick_leave_days ?? 0;
+                        if(!empty($leave_datas)):
+                            $sick_leave_days = $sick_leave_days - $leave_datas->leave_days;
+                        endif;
+                        //dd($sick_leave_days);
+                        $employee->sick_leave_days = $sick_leave_days + $request->days;
+                        $employee->save();
+                    endif;
+                endif;
+
+                if(!empty($request->id)):
+                    $leave_data = Leaves::where('id', $request->id)->update($insertArray);
+                endif;
+
                 $save_data = Leaves::find($leave_id);
                 $save_data->leave_status ='approved';
                 $save_data->save(); 
@@ -175,25 +217,6 @@ class LeavesController extends Controller
                     $create_sched->shift = $shift_id ?? 0;
                     $create_sched->save();
                 }           
-                
-                //save employee request leave
-                if(!empty($employee)):
-                    
-                    if($request->leave_type == 1):
-                        $total_request_leave = $employee->request_leave_days ?? 0;
-                        $employee->request_leave_days = $total_request_leave - $request->days;
-                        $opening_leave_days = $employee->opening_leave_days ?? 0;
-                        $employee->opening_leave_days = $opening_leave_days + $request->days;
-                        $employee->save();
-                    endif;
-                    if($request->leave_type == 2):
-                        $sick_leave_request_days = $employee->sick_leave_request_days ?? 0;
-                        $employee->sick_leave_request_days = $sick_leave_request_days - $request->days;
-                        $sick_leave_days = $employee->sick_leave_days ?? 0;
-                        $employee->sick_leave_days = $sick_leave_days + $request->days;
-                        $employee->save();
-                    endif;
-                endif;
             endif;
             
             return redirect('/leaves')->with('success','Leave applied successfully!');
@@ -344,6 +367,28 @@ class LeavesController extends Controller
         $leave_approvaldata = LeaveApprovalLogs::where('designation_id',$designation)->where('employee_id','!=',$userId)->where('status','pending')->orWhere('department_id',Null)->where('department_id',$department)->orderBy('id','asc')->groupBy('leave_id')->get();
         //$leave_approvaldata = LeaveApprovalLogs::where('department_id',$department)->where('designation_id',$designation)->orderBy('id','asc')->groupBy('leave_id')->get();
         return view('lts.leave_request',compact('leave_approvaldata'));
+
+    }
+
+    public function getLeaveDetailsById(Request $request)
+    {
+        $this->user_id  = Session::get('user_id');
+        $leavetype = Leavetype::where('status','active')->get();
+        $leaveData = Leaves::find($request->id);
+        $leave_details = getAnnualLeaveDetails($this->user_id);
+        $sick_leave_details = getSickLeaveDetails($this->user_id);
+        $pass_array=array(
+			'leave_details' => $leave_details,
+            'leavetype' => $leavetype,
+            'sick_leave_details' => $sick_leave_details,
+            'leaveData' => $leaveData
+        );
+        $html =  view('lts.leave_modal', $pass_array )->render();
+		$arr = [
+			'success' => 'true',
+			'html' => $html
+		];
+		return response()->json($arr);
 
     }
 }

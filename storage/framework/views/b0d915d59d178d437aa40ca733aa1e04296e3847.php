@@ -82,9 +82,7 @@
                                             <th>No of Days</th>
                                             <th>Reason</th>
                                             <th class="text-center">Status</th>
-                                            <?php if(((isset($userdetails[0]->employee_designation)) && $userdetails[0]->employee_designation->priority_level == 0)) { ?>
-                                                <th class="text-end">Actions</th>
-                                            <?php } ?>
+                                            <th class="text-end">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -111,16 +109,9 @@
                                                     <td><?php echo $leave->leave_reason; ?></td>
                                                     <td>
                                                     <?php echo ucwords($leave->leave_status); ?>
-                                                        <!-- <div class="dropdown action-label">
-                                                            <a class="btn btn-white btn-sm btn-rounded dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <?php echo ucwords($leave->leave_status); ?>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-right">
-                                                                <a class="dropdown-item approveButton" href="#" data-bs-toggle="modal" data-bs-target="#approve_leave" data-id="<?php echo e($leave->id); ?>" data-data="<?php echo $leave->id; ?>"><i class="fa fa-dot-circle-o text-success"></i> Approve</a>
-                                                                <a class="dropdown-item rejectButton" href="#" data-bs-toggle="modal" data-bs-target="#reject_leave" data-id="<?php echo e($leave->id); ?>" data-data="<?php echo $leave->id; ?>"><i class="fa fa-dot-circle-o text-danger"></i> Reject</a>
-                                                            </div>
-                                                            
-                                                        </div> -->
+                                                    </td>
+                                                    <td>
+                                                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#add_leave" data-id="<?php echo e($leave->id); ?>" data-leave_days = "<?php echo e($leave->leave_days); ?>" class="action-icon edit_hierarchy"><i class="fa fa-pencil"></i></a>
                                                     </td>
                                                 </tr>
                                             <?php
@@ -139,124 +130,9 @@
                 <input type="hidden" id="emp_remaining_leave" value="<?php echo e($leave_details['remaining_leave'] ?? 0); ?>">
                 <input type="hidden" id="emp_remainingsick_leave" value="<?php echo e($sick_leave_details['remaining_leave'] ?? 0); ?>">
                 <div id="add_leave" class="modal custom-modal fade" role="dialog">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Add Leave</h5>
-                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <form  action="/leaveInsert" method="post" id="addEditForm">
-                                    <?php echo csrf_field(); ?>
-                                    <div class="form-group">
-                                        <label>Leave Type <span class="text-danger">*</span></label>
-                                        <select class="select" name="leave_type" id="leave_type">
-
-                                            <option value="">Select</option>
-                                             <?php foreach ($leavetype as $value) {?>
-
-                                            <option value="<?php echo $value->id?>" data-id="<?php echo $value->days?>"><?php echo $value->name?></option>
-                                        <?php }?>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>From <span class="text-danger">*</span></label>
-                                        <div class="cal-iconx">
-                                            <input class="form-control datetimepicker_fromx" type="date" name="from_date" min="<?=date('Y-m-d'); ?>" value="<?=date('d-m-Y'); ?>" id="from_date">
-                                        <!-- <div class="cal-icon">
-                                            <input class="form-control datetimepicker" type="text" name="from_date" value="<?php echo date('d/m/Y'); ?>" id="from_date"> -->
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>To <span class="text-danger">*</span></label>
-
-                                        <div class="cal-iconx">
-                                            <input class="form-control datetimepicker_tox" type="date" name="to_date" id="to_date" min="<?=date('Y-m-d'); ?>" value="<?=date('d-m-Y'); ?>">
-
-                                        <!-- <div class="cal-icon">
-                                            <input class="form-control datetimepicker" type="text" name="to_date" id="to_date" value="<?php echo date('d/m/Y'); ?>"> -->
-
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Number of days <span class="text-danger">*</span></label>
-                                        <input class="form-control" value="0" readonly type="text" name="days" id="no_of_days">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Remaining Leaves <span class="text-danger">*</span></label>
-                                        <input class="form-control remaining_leaves" readonly type="text" name="remaining_leaves" id="remaining_leaves" value="0">
-                                        <span class="text-danger" id="rl_count_err"></span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Leave Reason <span class="text-danger">*</span></label>
-                                        <textarea rows="4" class="form-control" name="leave_reason" id="leave_reason"></textarea>
-                                    </div>
-                                    <div class="submit-section">
-                                        <button class="btn btn-primary submit-btn" type="submit" id="addLeaveBtn">Submit</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                    <?php echo $__env->make('lts/leave_modal', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                 </div>
                 <!-- /Add Leave Modal -->
-                
-                <!-- Edit Leave Modal -->
-                <div id="edit_leave" class="modal custom-modal fade" role="dialog">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Edit Leave</h5>
-                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <form action="" method="post" id="addEditForm">
-                                    <div class="form-group">
-                                        <label>Leave Type <span class="text-danger">*</span></label>
-                                        <select class="select" id="leave_leave_type" name="leave_type">
-                                            <option value="">Select</option>
-                                            <?php foreach ($leavetype as $value) {?>
-                                            <option value="<?php echo $value->id?>" data-id="<?php echo $value->days?>"><?php echo $value->name?></option>
-                                            <?php }?>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>From <span class="text-danger">*</span></label>
-                                        <div class="cal-icon">
-                                            <input class="form-control datetimepicker" value="01-01-2019" type="text" id="leave_leave_from" name="from_date">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>To <span class="text-danger">*</span></label>
-                                        <div class="cal-icon">
-                                            <input class="form-control datetimepicker" value="01-01-2019" type="text" id="leave_leave_to" name="to_date">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Number of days <span class="text-danger">*</span></label>
-                                        <input class="form-control" readonly type="text" value="2" id="leave_leave_days" name="days">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Remaining Leaves <span class="text-danger">*</span></label>
-                                        <input class="form-control" readonly value="" type="text" id="leave_remaining_leave" name="remaining_leaves">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Leave Reason <span class="text-danger">*</span></label>
-                                        <textarea rows="4" class="form-control" id="leave_leave_reason" name="leave_reason"></textarea>
-                                    </div>
-                                    <div class="submit-section">
-                                        <button class="btn btn-primary submit-btn">Save</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- /Edit Leave Modal -->
 
                 <!-- Approve Leave Modal -->
                 <div class="modal custom-modal fade" id="approve_leave" role="dialog">
@@ -370,9 +246,7 @@
                             var emp_remaining_leave = $('#emp_remainingsick_leave').val();
                         }
                         var days = $('#no_of_days').val();
-                        console.log(days+'<= '+emp_remaining_leave);
                         if(parseInt(days) <= parseInt(emp_remaining_leave)){
-                            console.log('if');
                             result =  true;
                         }else{
                             //$('#rl_count_err').text('Remaing leave balance is 0.Please select unpaid leave');
@@ -425,7 +299,22 @@
                     error.insertAfter(element.parent());
                 }
             },
-       });
+        });
+
+       $(document).on('click','.edit_hierarchy',function(){
+            $('#add_leave').html('');
+            var id= $(this).attr('data-id');
+            $.ajax({
+            url: '/getmainLeaveDetailsById/',
+            type: "POST",
+            dataType: "json",
+            data: {"_token": "<?php echo e(csrf_token()); ?>", id:id},
+            success:function(response)
+                {
+                    $('#add_leave').html(response.html).fadeIn();
+                }
+            });
+        });
 
        $('#add_leave').on('hidden.bs.modal', function () {
             $('#leave_type').val('').trigger('change');
@@ -434,6 +323,7 @@
             $('#remaining_leaves').val(0);
             $('#no_of_days').val(0);
             $('#leave_reason').val('');
+            $('.leave_m_title').text('Add Leave');
         });
        
     });
@@ -519,40 +409,32 @@
         var request_leave = $('#request_leave').val();
         var leave_type = $('#leave_type').val();
         if(leave_type == 1){
-                        var emp_remaining_leave = $('#emp_remaining_leave').val();
-                    }else if(leave_type == 2){
-                        var emp_remaining_leave = $('#emp_remainingsick_leave').val();
-                    }  
-                    //console.log(emp_remaining_leave);
-                    var remaining_leave = emp_remaining_leave;
-        //var total_rem_leave = remaining_leave - request_leave;
-        //console.log(total_rem_leave);
-        //var remaining_leave = $('#remaining_leaves').val();
-        if(remaining_leave >= no_days){
-            var total_req_leave = remaining_leave - no_days;
-            //console.log(total_req_leave);
-            $('#remaining_leaves').val(total_req_leave);
+            var emp_remaining_leave = $('#emp_remaining_leave').val();
+        }else if(leave_type == 2){
+            var emp_remaining_leave = $('#emp_remainingsick_leave').val();
+        }  
+        //console.log(emp_remaining_leave);
+        var remaining_leave = emp_remaining_leave;
+
+        if($('.leave_id').val() != ''){
+            var edit_days = $('#edit_days').val();
+            var remaining_leave = parseInt(emp_remaining_leave) + parseInt(edit_days);
+                if(remaining_leave >= no_days){
+                    var total_req_leave = parseInt(remaining_leave) - parseInt(no_days);
+                    //console.log(total_req_leave);
+                    $('#remaining_leaves').val(total_req_leave);
+                }
+
+        }else{
+            if(remaining_leave >= no_days){
+                var total_req_leave = remaining_leave - no_days;
+                //console.log(total_req_leave);
+                $('#remaining_leaves').val(total_req_leave);
+            }
         }
         
     });
-    // var request_leave = $('#request_leave').val();
-    // var remaining_leave = $('#emp_remaining_leave').val();
-    // var total_rem_leave = remaining_leave - request_leave;
-    // $('#remaining_leaves').val(total_rem_leave);
-    $(document).on('change','#leave_leave_from, #leave_leave_to',function(){
-        var from_date = $('#leave_leave_from').val();
-        $('#leave_leave_to').attr('min', from_date);
-        var to_date = $('#leave_leave_to').val();
 
-        var dt1 = new Date(from_date);
-        var dt2 = new Date(to_date);
- 
-        var time_difference = dt2.getTime() - dt1.getTime();
-        var result = time_difference / (1000 * 60 * 60 * 24);
-  
-        var no_days = (result >= 0 )?result+1:0;
-        $('#leave_leave_days').val(no_days);
-    });
 </script>
 
 <script>

@@ -92,9 +92,11 @@
                 //allowClear: true,
                 width: '100%'
             });
-            if(j>1){
+            if(j>=1){
                 $('.dept_select:last').attr('id','dept_select'+j);
                 $('.title_select:last').attr('id','title_select'+j);
+                $('.dept_select:last').attr('name','sub_department[]');
+                $('.title_select:last').attr('name','sub_title[]');
             }
             if(j >= 1){
                   $(".add_more_dept_btn:last").remove();

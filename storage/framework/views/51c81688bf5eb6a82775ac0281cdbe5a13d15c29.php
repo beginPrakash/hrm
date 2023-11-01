@@ -18,12 +18,15 @@
                 //allowClear: true,
                 width: '100%'
             });
+            
             if(j>=1){
                 //$('.dept_select:last').select2('destroy');
                 $('.dept_select:last').attr('id','dept_select'+j);
+                $('.dept_select:last').attr('name','sub_department[]');
                 $('#dept_select'+j).select2('destroy');
                 $('#dept_select'+j).select2();
                 $('.title_select:last').attr('id','title_select'+j);
+                $('.title_select:last').attr('name','sub_title[]');
                 $('#title_select'+j).select2('destroy');
                 $('#title_select'+j).select2();
             }
@@ -51,6 +54,7 @@
             {
                 $(this).find('.department_div').hide();
                 $(this).find('.dep_hid').val(1);
+                $(this).append('<select class="select dept_select" name="sub_department[]"></select>');
             }
 
             //for multi user check
@@ -212,7 +216,7 @@
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    <?php if(isset($dval->dept) && !empty($dval->dept)): ?>
+                                                    <?php if(isset($dval->dept) && $dval->dept != null): ?>
                                                     <div class="col-md-5 department_div">
                                                         <div class="form-group">
                                                             <select class="select dept_select" name="sub_department[]">
@@ -226,6 +230,8 @@
                                                             <input type="hidden" name="dep_hid" value="0" class="dep_hid">
                                                         </div>
                                                     </div>
+                                                    <?php else: ?>
+                                                    <input type="hidden" class="dept_select" name="sub_department[]">
                                                     <?php endif; ?>
                                                     <div class="col-md-2 add_btn_div">
                                                         <?php if($dkey == 0): ?>
@@ -274,7 +280,7 @@
                                     <div class="row add_dept_div add_new_dept d-none">
                                         <div class="col-md-5">
                                             <div class="form-group">
-                                                <select class="title_select" name="sub_title[]">
+                                                <select class="title_select">
                                                     <option value="">Select Title</option>
                                                     <?php if(isset($designations) && count($designations) > 0): ?>
                                                         <?php $__currentLoopData = $designations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -286,7 +292,7 @@
                                         </div>
                                         <div class="col-md-5 department_div">
                                             <div class="form-group">
-                                                <select class="dept_select" name="sub_department[]">
+                                                <select class="dept_select">
                                                     <option value="">Select Department</option>
                                                     <?php if(isset($departments) && count($departments) > 0): ?>
                                                         <?php $__currentLoopData = $departments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>

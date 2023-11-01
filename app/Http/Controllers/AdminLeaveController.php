@@ -50,14 +50,16 @@ class AdminLeaveController extends Controller
     public function store(Request $request)
     {
         $hir_arr = [];
-        if(isset($request->sub_department) && count($request->sub_department) > 0):
-            foreach($request->sub_department as $key => $val):
-                if(!empty($request->sub_title[$key])):
-                    $hir_arr[$key]['dept'] = $val;
-                    $hir_arr[$key]['desig'] = $request->sub_title[$key];
+        
+        if(isset($request->sub_title) && count($request->sub_title) > 0):
+            foreach($request->sub_title as $key => $val):
+                if(!empty($val)):
+                    $hir_arr[$key]['dept'] = $request->sub_department[$key];
+                    $hir_arr[$key]['desig'] = $val;
                 endif;
             endforeach;
         endif;
+        //dd($hir_arr);
         $insertArray = array(
             'leave_type'     =>  $request->leave_type,
             'main_dept_id'     =>  $request->main_department,

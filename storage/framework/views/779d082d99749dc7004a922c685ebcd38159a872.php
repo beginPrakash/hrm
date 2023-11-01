@@ -7,7 +7,7 @@
 
                 <!-- Page Content -->
                 <div class="content container-fluid">
-                    
+                <?php echo $__env->make('flash-message', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?> 
                     <!-- Page Header -->
                     <div class="page-header">
                         <div class="row align-items-center">

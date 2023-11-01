@@ -9,6 +9,7 @@ use App\Models\AttendanceDetails;
 use App\Models\Scheduling;
 use App\Models\Leaves;
 use App\Models\EmployeeSalaryData;
+use App\Models\LeaveApprovalLogs;
 
 function getLastId()
 {
@@ -306,5 +307,10 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
             'remaining_leave'   =>  $remaining_leave,
             'remaining_leave_withoutreq' => $remaining_leave_withoutreq);
         return $result;
+    }
+
+    function is_leave_approved_any_approver($leave_id){
+        $count = LeaveApprovalLogs::where('leave_id',$leave_id)->where('status','approved')->count();
+        return $count;
     }
     

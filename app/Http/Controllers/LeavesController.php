@@ -233,15 +233,17 @@ class LeavesController extends Controller
         $designation = intval($userdetails->designation) ?? '';
         $leave_approvaldata = LeaveApprovalLogs::where('leave_id',$request->leave_id)->where('status','pending')->first();
         if(!empty($leave_approvaldata)):
-            $leave_approvaldata->delete();
+            $leave_approvaldata->status = 'approved';
+            $leave_approvaldata->save();
             //update pending tatus for next role
-            $leave_pending_status = LeaveApprovalLogs::where('leave_id',$request->leave_id)->first();
+            $leave_pending_status = LeaveApprovalLogs::where('leave_id',$request->leave_id)->whereNull('status')->first();
             if(!empty($leave_pending_status)):
                 $leave_pending_status->status = 'pending';
                 $leave_pending_status->save();
+                //dd($leave_pending_status);
             endif;
         endif;
-        $is_last_approval = LeaveApprovalLogs::where('leave_id',$request->leave_id)->count();
+        $is_last_approval = LeaveApprovalLogs::where('leave_id',$request->leave_id)->where('status','!=','approved')->count();
         if($is_last_approval == 0):
             if($leave_d->leave_type == 1):
                 $opening_leave_days = $userdetails->opening_leave_days;
@@ -303,7 +305,8 @@ class LeavesController extends Controller
         $userdetails = Employee::where('user_id', $leave_d->user_id ?? '')->where('status','!=','deleted')->first();
         $leave_approvaldata = LeaveApprovalLogs::where('leave_id',$request->leave_id)->where('status','pending')->first();
         if(!empty($leave_approvaldata)):
-            $leave_approvaldata->delete();
+            $leave_approvaldata->status = 'approved';
+            $leave_approvaldata->save();
             //update pending tatus for next role
             // $leave_pending_status = LeaveApprovalLogs::where('leave_id',$request->leave_id)->first();
             // if(!empty($leave_pending_status)):
@@ -364,7 +367,8 @@ class LeavesController extends Controller
         $userdetails = Employee::where('user_id', $userId)->where('status','!=','deleted')->first();
         $department = intval($userdetails->department) ?? '';
         $designation = intval($userdetails->designation) ?? '';
-        $leave_approvaldata = LeaveApprovalLogs::where('designation_id',$designation)->where('employee_id','!=',$userId)->where('status','pending')->orWhere('department_id',Null)->where('department_id',$department)->orderBy('id','asc')->groupBy('leave_id')->get();
+        //dd($department.'---'.$designation);
+        $leave_approvaldata = LeaveApprovalLogs::where('designation_id',$designation)->where('employee_id','!=',$userId)->where('status','pending')->where('designation_id',$designation)->where('employee_id','!=',$userId)->orWhereNull('department_id')->where('department_id',$department)->orderBy('id','asc')->groupBy('leave_id')->get();
         //$leave_approvaldata = LeaveApprovalLogs::where('department_id',$department)->where('designation_id',$designation)->orderBy('id','asc')->groupBy('leave_id')->get();
         return view('lts.leave_request',compact('leave_approvaldata'));
 

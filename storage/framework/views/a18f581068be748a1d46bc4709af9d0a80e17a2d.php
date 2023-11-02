@@ -69,27 +69,22 @@
                 <thead style="background-color: #F5F5F5">
                     <tr>
                         <th>S.no</th>
-                        <th>Employee Id</th>
+                        <th>Emp.Id</th>
                         <th>Name</th>
-                        <th>Position</th> 
-                        <th>Company</th>  
-                        <th>License</th>
                         <th>Salary</th>
-                        <th>Travel Allowance</th>
-                        <th>House Allowance</th>
-                        <th>Position Allowance</th>
-                        <th>Phone Allowance</th>
-                        <th>Other Allowance</th>
+                        <th>Food Allowance</th>
+                        <th>Addition of all other Allowances</th>
                         <th>Deduction</th>
                         <th>Total Earning</th>
-                        <th>Cash or Bank</th>
                     </tr>
                 </thead>
                 <tbody>
                             
                 <?php if(isset($emp_salary_data) && count($emp_salary_data) > 0): ?>
                     <?php $i = 1; ?>
+                    
                     <?php $__currentLoopData = $emp_salary_data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php $total_allowence = total_allowence_withput_food($val->id); ?>
                         <?php if($val->branch_name == $bval->branch_name): ?>
                             <tr>
                                 <td>
@@ -102,41 +97,19 @@
                                     <p><?php echo e($val->name); ?></p>
                                 </td>
                                 <td>
-                                    <p><?php echo e($val->position); ?></p>
-                                </td>
-                                <td>
-                                    <p><?php echo e($val->company_name); ?></p>
-                                </td>
-                                <td>
-                                    <p><?php echo e($val->license); ?></p>
-                                </td>
-                                <td>
                                     <p><?php echo e($val->salary); ?></p>
                                 </td>
                                 <td>
-                                    <p><?php echo e($val->travel_allowence ?? 0); ?></p>
+                                    <p><?php echo e($val->food_allowence ?? 0); ?></p>
                                 </td>
                                 <td>
-                                    <p><?php echo e($val->house_allowence ?? 0); ?></p>
-                                </td>
-                                <td>
-                                    <p><?php echo e($val->position_allowence ?? 0); ?></p>
-                                </td>
-                                <td>
-                                    <p><?php echo e($val->phone_allowence ?? 0); ?></p>
-                                </td>
-
-                                <td>
-                                    <p><?php echo e($val->other_allowence ?? 0); ?></p>
+                                    <p><?php echo e($total_allowence ?? 0); ?></p>
                                 </td>
                                 <td>
                                     <p><?php echo e($val->deduction); ?></p>
                                 </td>
                                 <td>
                                     <p><?php echo e($val->total_earning); ?></p>
-                                </td>
-                                <td>
-                                    <p><?php echo e($val->type); ?></p>
                                 </td>
                             </tr>
                             <?php $i++; ?>    
@@ -189,6 +162,15 @@
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 <?php endif; ?>
+                <tr>
+                    <td>Total</td>
+                    <?php if(isset($emp_company_data) && count($emp_company_data) > 0): ?>
+                        <?php $__currentLoopData = $emp_company_data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ckey => $cval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <td><?php echo e(calcualte_total_by_month_company($month,$year,$cval->company_id,'cash')); ?></td>
+                            <td><?php echo e(calcualte_total_by_month_company($month,$year,$cval->company_id,'bank')); ?></td>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <?php endif; ?>
+                </tr>
                 <tr>
                     <td colspan="1">HR Manager Sign.</td>
                     <td colspan="2">Sr. Accountant Sign.</td>

@@ -103,12 +103,26 @@
             <form action="/employee-salary" method="post" id="salary_form">
                 <?php echo csrf_field(); ?>
                 <input type="hidden" name="report_type" value="pdf">
-                <input type="hidden" name="month" id="pdf_month" value="">
-                <input type="hidden" name="year" id="pdf_year" value="">
+                <input type="hidden" name="month" class="pdf_month" value="">
+                <input type="hidden" name="year" class="pdf_year" value="">
                 <?php if(!empty($is_generate_report)): ?>
                     <button type="submit" class="btn btn-success generate_pdf_btn" style="text-transform:none;"> Generate PDF </button>    
                 <?php endif; ?>
-            <form>
+            </form>
+            <form action="/employee-salary" method="post" id="lock_date_form" class="d-none">
+                <?php echo csrf_field(); ?>
+                <input type="hidden" name="lock_report_type" class="lock_report_type" value="lock_data">
+                <input type="hidden" name="month" class="pdf_month" value="">
+                <input type="hidden" name="year" class="pdf_year" value="">
+                <?php if(!empty($is_generate_report)): ?>
+                    <?php if(isset($is_lock_emp_salary_data) && ($is_lock_emp_salary_data == 'lock')): ?>
+                    <input type="hidden" name="report_type" value="unlock_data">
+                    <button type="button" class="btn btn-success lock_btn" style="text-transform:none;"> UnLock Data</button>    
+                    <?php else: ?>
+                    <button type="button" class="btn btn-success lock_btn" style="text-transform:none;"> Lock Data</button>    
+                    <?php endif; ?>
+                <?php endif; ?>
+            </form>
             <div class="row">
                 <div class="col-md-12">
                     <div class="table-responsive">
@@ -585,6 +599,10 @@
             $('.addition').addClass('hideit');
         }
     });
+
+    $(document).on('click','.generate_pdf_btn',function(){
+        $('#lock_date_form').removeClass('d-none');
+    });
 </script>
 
 <script type="text/javascript">
@@ -641,9 +659,30 @@ $(document).ready(function() {
         ]
     } );
 
-    $('#pdf_month').val($('#report_month').val());
-    $('#pdf_year').val($('#report_year').val());
+    $('.pdf_month').val($('#report_month').val());
+    $('.pdf_year').val($('#report_year').val());
 } );
+
+$(document).on('click','.lock_btn',function(){
+    var month = $('#report_month').val();
+    var year = $('#report_year').val();
+    var type = $('.lock_report_type').val();
+    $.ajax({
+        type: "GET",
+        url: '/changelockpdfstatus/'+month+'/'+year+'/'+type,
+        success: function(data)
+        {
+            console.log(data.res);
+           if(data.res == 'unlock_data'){
+                $('.lock_report_type').val('unlock_data');
+                $('.lock_btn').text('UnLock Data');
+           }else{
+                $('.lock_report_type').val('lock_data');
+                $('.lock_btn').text('Lock Data');
+           }
+        }
+    });
+});
 
     
 </script><?php /**PATH C:\wamp64_new\www\hrm\resources\views/payroll/employee_salary.blade.php ENDPATH**/ ?>

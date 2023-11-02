@@ -50,7 +50,7 @@ class AdminLeaveController extends Controller
     public function store(Request $request)
     {
         $hir_arr = [];
-        
+        //dd($request->all());
         if(isset($request->sub_title) && count($request->sub_title) > 0):
             foreach($request->sub_title as $key => $val):
                 if(!empty($val)):

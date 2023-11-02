@@ -95,7 +95,8 @@ class PayrollController extends Controller
                     $save_data->hourly_salary = $salary_calc['hourly_salary'] ?? 0;
                     $save_data->day_salary = $salary_calc['day_salary'] ?? 0;
                     $save_data->basic_salary = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->basic_salary : 0;
-                    $save_data->salary = $salary_calc['total_salary'] ?? 0;;
+                    $save_data->salary = $salary_calc['total_salary'] ?? 0;
+                    $save_data->food_allowence = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->food_allowance : 0;
                     $save_data->travel_allowence = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->travel_allowance : 0;
                     $save_data->house_allowence = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->house_allowance : 0;
                     $save_data->position_allowence = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->position_allowance : 0;

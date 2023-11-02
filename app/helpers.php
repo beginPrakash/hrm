@@ -238,6 +238,11 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
             return $total;
     }
 
+    function calcualte_total_by_month_company($month,$year,$company_id,$type){
+        $total = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->where('company_id',$company_id)->where('type',$type)->groupBy('company_id')->sum('total_earning');
+        return $total;
+    }
+
     function getAnnualLeaveDetails($id)
     {
         $employee = Employee::where('user_id', $id)->where('status','!=','deleted')->first();
@@ -313,4 +318,11 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $count = LeaveApprovalLogs::where('leave_id',$leave_id)->where('status','approved')->count();
         return $count;
     }
+
+    function total_allowence_withput_food($id){
+        $total = EmployeeSalaryData::where('id',$id)->sum(DB::raw('travel_allowence + house_allowence + position_allowence +phone_allowence + other_allowence'));
+        return $total;
+    }
+
+    
     

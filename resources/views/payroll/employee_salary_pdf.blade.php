@@ -68,27 +68,22 @@
                 <thead style="background-color: #F5F5F5">
                     <tr>
                         <th>S.no</th>
-                        <th>Employee Id</th>
+                        <th>Emp.Id</th>
                         <th>Name</th>
-                        <th>Position</th> 
-                        <th>Company</th>  
-                        <th>License</th>
                         <th>Salary</th>
-                        <th>Travel Allowance</th>
-                        <th>House Allowance</th>
-                        <th>Position Allowance</th>
-                        <th>Phone Allowance</th>
-                        <th>Other Allowance</th>
+                        <th>Food Allowance</th>
+                        <th>Addition of all other Allowances</th>
                         <th>Deduction</th>
                         <th>Total Earning</th>
-                        <th>Cash or Bank</th>
                     </tr>
                 </thead>
                 <tbody>
                             
                 @if(isset($emp_salary_data) && count($emp_salary_data) > 0)
                     @php $i = 1; @endphp
+                    
                     @foreach($emp_salary_data as $key => $val)
+                    @php $total_allowence = total_allowence_withput_food($val->id); @endphp
                         @if($val->branch_name == $bval->branch_name)
                             <tr>
                                 <td>
@@ -101,41 +96,19 @@
                                     <p>{{$val->name}}</p>
                                 </td>
                                 <td>
-                                    <p>{{$val->position}}</p>
-                                </td>
-                                <td>
-                                    <p>{{$val->company_name}}</p>
-                                </td>
-                                <td>
-                                    <p>{{$val->license}}</p>
-                                </td>
-                                <td>
                                     <p>{{$val->salary}}</p>
                                 </td>
                                 <td>
-                                    <p>{{$val->travel_allowence ?? 0}}</p>
+                                    <p>{{$val->food_allowence ?? 0}}</p>
                                 </td>
                                 <td>
-                                    <p>{{$val->house_allowence ?? 0}}</p>
-                                </td>
-                                <td>
-                                    <p>{{$val->position_allowence ?? 0}}</p>
-                                </td>
-                                <td>
-                                    <p>{{$val->phone_allowence ?? 0}}</p>
-                                </td>
-
-                                <td>
-                                    <p>{{$val->other_allowence ?? 0}}</p>
+                                    <p>{{$total_allowence ?? 0}}</p>
                                 </td>
                                 <td>
                                     <p>{{$val->deduction}}</p>
                                 </td>
                                 <td>
                                     <p>{{$val->total_earning}}</p>
-                                </td>
-                                <td>
-                                    <p>{{$val->type}}</p>
                                 </td>
                             </tr>
                             @php $i++; @endphp    
@@ -188,6 +161,15 @@
                         </tr>
                     @endforeach
                 @endif
+                <tr>
+                    <td>Total</td>
+                    @if(isset($emp_company_data) && count($emp_company_data) > 0)
+                        @foreach($emp_company_data as $ckey => $cval)
+                            <td>{{calcualte_total_by_month_company($month,$year,$cval->company_id,'cash')}}</td>
+                            <td>{{calcualte_total_by_month_company($month,$year,$cval->company_id,'bank')}}</td>
+                        @endforeach
+                    @endif
+                </tr>
                 <tr>
                     <td colspan="1">HR Manager Sign.</td>
                     <td colspan="2">Sr. Accountant Sign.</td>

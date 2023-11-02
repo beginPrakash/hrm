@@ -200,6 +200,7 @@ Route::post('/salary_add_ded', [App\Http\Controllers\PayrollController::class, '
 Route::get('/generate-salary-slip/{id}', [App\Http\Controllers\PayrollController::class, 'generate_salary_slip']);
 Route::get('/generateFnf/{id}/{status}', [App\Http\Controllers\PayrollController::class, 'generateFnf']);
 Route::get('/employee-salary-pdf', [App\Http\Controllers\PayrollController::class, 'employee_salary_pdf']);
+Route::get('/changelockpdfstatus/{month}/{year}/{type}', [App\Http\Controllers\PayrollController::class, 'changelockpdfstatus']);
 
 Route::match(array('GET','POST'),'/employee-overtime', [App\Http\Controllers\PayrollController::class, 'employee_overtime']);
 Route::get('/generate-overtime-slip/{id}', [App\Http\Controllers\PayrollController::class, 'generate_overtime_slip']);

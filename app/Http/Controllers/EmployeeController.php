@@ -700,7 +700,11 @@ class EmployeeController extends Controller
         {
             //call excel/csv function
             $import = $this->importCSV($request->file('employee_file'));
-            return redirect()->back()->with("success", 'Employees imported successfully.');
+            if($import['error'] == 1):
+                return redirect()->back()->with("error", 'Something went wrong.');
+            else:
+                return redirect()->back()->with("success", 'Employees imported successfully.');
+            endif;
         }
         else
         {
@@ -785,7 +789,7 @@ class EmployeeController extends Controller
         fclose($file);
 
         $company_id  = Session::get('company_id');
-        
+        $error = 0;
         // Insert to MySQL database
         foreach($importData_arr as $importData)
         {
@@ -793,287 +797,292 @@ class EmployeeController extends Controller
             {
                 continue;
             }
-
-            $emp = '';
-            if($importData[0] !='')
-            {
-                //check employee id exists
-                $emp = Employee::where('emp_generated_id', $importData[0])->first();
-            }
-            $fname = (isset($importData[1]))?$importData[1]:'';
-            $mname = (isset($importData[2]))?$importData[2]:'';
-            $lname = (isset($importData[3]))?$importData[3]:'';
-            $employeeArray = array(
-                'company_id'    =>  $company_id,
-                'first_name'    =>  $fname.' '.$mname,
-                'last_name'     =>  $lname,
-                'email'         =>  (isset($importData[11]))?$importData[11]:NULL,
-                'joining_date'  =>  (isset($importData[12]))?changeDateSlash($importData[12]):'',
-                'passport_no'   =>  (isset($importData[24]))?$importData[24]:'',
-                'passport_expiry'   => (isset($importData[25]))?changeDateSlash($importData[25]):'',
-                'local_address' =>  (isset($importData[28]))?$importData[28]:'',
-                'phone'         =>  (isset($importData[10]))?$importData[10]:'',
-                'opening_leave_days'    =>  (isset($importData[43]))?$importData[43]:'',
-                'opening_leave_amount'  =>  (isset($importData[44]))?$importData[44]:'',
-                'public_holidays_balance'  =>  (isset($importData[45]))?(int)$importData[45]:0,
-                'public_holidays_amount'  =>  (isset($importData[46]))?(float)$importData[46]:0,
-                'visa_no'       =>  ''
-            );
-
-            if(!empty($emp))
-            {
-                //employee exists
-                $employeeArray['updated_at'] = $this->current_datetime;
-                Employee::where("emp_generated_id", $importData[0])->update($employeeArray);
-
-            }
-            else
-            {
-                $auto_id = $this->getLastId();
-                //employee not exists
-                $userId = 0;
-                $usernameNew = str_replace(' ', '',$importData[1]).'@'.$auto_id;
-                $userDetails = User::where('email', $importData[11])->first();
-                // echo '<pre>';print_r($userDetails);exit;
-                if(isset($userDetails) && !empty($userDetails))
+            if(!empty($importData[0]) && !empty($importData[1]) && !empty($importData[4]) && !empty($importData[5]) 
+            && !empty($importData[6]) && !empty($importData[11]) && !empty($importData[12]) && !empty($importData[13])):
+                $emp = '';
+                if($importData[0] !='')
                 {
-                    $userId = $userDetails->id;
+                    //check employee id exists
+                    $emp = Employee::where('emp_generated_id', $importData[0])->first();
+                }
+                $fname = (isset($importData[1]))?$importData[1]:'';
+                $mname = (isset($importData[2]))?$importData[2]:'';
+                $lname = (isset($importData[3]))?$importData[3]:'';
+                $employeeArray = array(
+                    'company_id'    =>  $company_id,
+                    'first_name'    =>  $fname.' '.$mname,
+                    'last_name'     =>  $lname,
+                    'email'         =>  (isset($importData[11]))?$importData[11]:NULL,
+                    'joining_date'  =>  (isset($importData[12]))?changeDateSlash($importData[12]):'',
+                    'passport_no'   =>  (isset($importData[24]))?$importData[24]:'',
+                    'passport_expiry'   => (isset($importData[25]))?changeDateSlash($importData[25]):'',
+                    'local_address' =>  (isset($importData[28]))?$importData[28]:'',
+                    'phone'         =>  (isset($importData[10]))?$importData[10]:'',
+                    'opening_leave_days'    =>  (isset($importData[43]))?$importData[43]:'',
+                    'opening_leave_amount'  =>  (isset($importData[44]))?$importData[44]:'',
+                    'public_holidays_balance'  =>  (isset($importData[45]))?(int)$importData[45]:0,
+                    'public_holidays_amount'  =>  (isset($importData[46]))?(float)$importData[46]:0,
+                    'visa_no'       =>  ''
+                );
+
+                if(!empty($emp))
+                {
+                    //employee exists
+                    $employeeArray['updated_at'] = $this->current_datetime;
+                    Employee::where("emp_generated_id", $importData[0])->update($employeeArray);
+
                 }
                 else
                 {
-                    $password =(isset($importData[0]))?$importData[0].'@mado':"123456";
-                    $userArray = array(
-                        'company_id'    =>  $company_id,
-                        'username'      =>  $usernameNew,
-                        'name'          =>  $fname.' '.$mname.' '.$lname,
-                        'email'         =>  ((isset($importData[11]))?$importData[11]:''),
-                        // 'password'      =>  Hash::make(randomPassword()),
-                        'password'      =>  Hash::make($password),
-                        'created_at'    =>  $this->current_datetime
-                    );
-                    $userId = User::create($userArray)->id;
+                    $auto_id = $this->getLastId();
+                    //employee not exists
+                    $userId = 0;
+                    $usernameNew = str_replace(' ', '',$importData[1]).'@'.$auto_id;
+                    $userDetails = User::where('email', $importData[11])->first();
+                    // echo '<pre>';print_r($userDetails);exit;
+                    if(isset($userDetails) && !empty($userDetails))
+                    {
+                        $userId = $userDetails->id;
+                    }
+                    else
+                    {
+                        $password =(isset($importData[0]))?$importData[0].'@mado':"123456";
+                        $userArray = array(
+                            'company_id'    =>  $company_id,
+                            'username'      =>  $usernameNew,
+                            'name'          =>  $fname.' '.$mname.' '.$lname,
+                            'email'         =>  ((isset($importData[11]))?$importData[11]:''),
+                            // 'password'      =>  Hash::make(randomPassword()),
+                            'password'      =>  Hash::make($password),
+                            'created_at'    =>  $this->current_datetime
+                        );
+                        $userId = User::create($userArray)->id;
+                    }
+
+                    if($userId)
+                    {
+                        //check company exists, if not create company
+                        $resId = 0;
+                        if(isset($importData[19]))
+                        {
+                            $comDetails = Residency::where('name', $importData[19])->first();
+                            if(empty($comDetails))
+                            {
+                                //create employee
+                                $comInsertArray = array(
+                                    'name'  =>  $importData[19],
+                                    'company_id'    =>  $company_id,
+                                    'created_at' => $this->current_datetime
+                                );
+                                $resId = Residency::create($comInsertArray)->id;
+                            }
+                            else
+                            {
+                                $resId = $comDetails->id;//by employee id
+                            }
+                        }
+
+                        //check subcompany exists, if not create subcompany
+                        $subresId = 0;
+                        if(isset($importData[20]))
+                        {
+                            $subcomDetails = Subresidency::where('name', $importData[20])->first();
+                            if(empty($subcomDetails))
+                            {
+                                //create employee
+                                $subcomInsertArray = array(
+                                    'name'  =>  $importData[20],
+                                    'company_id'   =>  $company_id,
+                                    'residency'    =>  $resId,
+                                    'created_at' => $this->current_datetime
+                                );
+                                $subresId = Subresidency::create($subcomInsertArray)->id;
+                            }
+                            else
+                            {
+                                $subresId = $subcomDetails->id;//by employee id
+                            }
+                        }
+
+                        //check branch exists, if not create branch
+                        $branchId = 0;
+                        if(isset($importData[21]))
+                        {
+                            $branchDetails = Branch::where('name', $importData[21])->first();
+                            if(empty($branchDetails))
+                            {
+                                //create employee
+                                $branchInsertArray = array(
+                                    'name'  =>  $importData[21],
+                                    'company_id'   =>  $company_id,
+                                    'residency'    =>  $resId,
+                                    'created_at' => $this->current_datetime
+                                );
+                                $branchId = Branch::create($branchInsertArray)->id;
+                            }
+                            else
+                            {
+                                $branchId = $branchDetails->id;//by employee id
+                            }
+                        }
+
+                        //check department exists, if not create department
+                        $depId = 0;
+                        if(isset($importData[22]))
+                        {
+                            $depDetails = Departments::where('name', $importData[22])->first();
+                            if(empty($depDetails))
+                            {
+                                //create employee
+                                $depInsertArray = array(
+                                    'name'  =>  $importData[22],
+                                    'company_id'    =>  $company_id,
+                                    'created_at' => $this->current_datetime
+                                );
+                                $depId = Departments::create($depInsertArray)->id;
+                            }
+                            else
+                            {
+                                $depId = $depDetails->id;//by employee id
+                            }
+                        }
+
+                        //check designation exists, if not create designation
+                        $desId = 0;
+                        if(isset($importData[23]))
+                        {
+                            $desDetails = Designations::where('name', $importData[23])->first();
+                            if(empty($desDetails))
+                            {
+                                //create employee
+                                $desInsertArray = array(
+                                    'name'  =>  $importData[23],
+                                    'multi_user'  =>  0,
+                                    'department'  =>  $depId,
+                                    'company_id'  =>  $company_id,
+                                    'created_at'  => $this->current_datetime
+                                );
+                                $desId = Designations::create($desInsertArray)->id;
+                            }
+                            else
+                            {
+                                $desId = $desDetails->id;//by employee id
+                            }
+                        }
+
+                        $employeeArray['user_id'] = $userId;
+                        $employeeArray['emp_generated_id'] = $importData[0];
+                        $employeeArray['company'] = $resId;
+                        $employeeArray['subcompany'] = $subresId;
+                        $employeeArray['branch'] = $branchId;
+                        $employeeArray['department'] = $depId;
+                        $employeeArray['designation'] = $desId;
+                        $employeeArray['created_at'] = $this->current_datetime;
+                        $empId = Employee::create($employeeArray)->id;
+                        // echo '<pre>';print_r($employeeArray);exit;
+                        if(isset($empId))
+                        {
+                            //insert/update other details of employee
+                            $employeeDetailsArray = array(
+                                'emp_id'               =>  $empId,
+                                'birthday'             =>  (isset($importData[4]))?changeDateSlash($importData[4]):NULL,
+                                'gender'               =>  (isset($importData[5]))?strtolower($importData[5]):NULL,
+                                'country'             =>  (isset($importData[6]))?$importData[6]:NULL,
+                                'state'             =>  (isset($importData[7]))?$importData[7]:NULL,
+                                'address'               =>  (isset($importData[8]))?$importData[8]:NULL,
+                                'pin_code'               =>  (isset($importData[9]))?$importData[9]:NULL,
+                                'c_id'               =>  (isset($importData[13]))?$importData[13]:NULL,
+                                'expi_c_id'               =>  (isset($importData[14]))?changeDateSlash($importData[14]):NULL,
+                                'b_id'               =>  (isset($importData[15]))?$importData[15]:NULL,
+                                'expi_b_id'               =>  (isset($importData[16])&& $importData[16]!='NR')?changeDateSlash($importData[16]):NULL,
+                                'license'               =>  (isset($importData[17]))?$importData[17]:NULL,
+                                'license_exp'               =>  (isset($importData[18]))?changeDateSlash($importData[18]):NULL,
+                                'religion'              =>  (isset($importData[26]))?$importData[26]:NULL,
+                                'blood_group'           =>  (isset($importData[27]))?$importData[27]:NULL,
+                                // 'pi_address'            =>  $request->pi_address,
+                                'marital_status'        =>  (isset($importData[29]))?$importData[29]:NULL,
+                                // 'spouse_employment'     =>  $request->spouse,
+                                // 'child'                 =>  $request->children
+                            );
+                            // echo '<pre>';print_r( $employeeDetailsArray);exit;
+                            $employee_details =  EmployeeDetails::create($employeeDetailsArray);
+                            $employeeSalaryArray = array(
+                                'emp_id'                =>  $empId,
+                                'basic_salary'          =>  (isset($importData[30]))?$importData[30]:0,
+                                'financal_year'         =>  0,
+                                'travel_allowance'      =>  (isset($importData[31]))?$importData[31]:0,
+                                'food_allowance'        =>  (isset($importData[32]))?$importData[32]:0,
+                                'house_allowance'       =>  (isset($importData[33]))?$importData[33]:0,
+                                'position_allowance'    =>  (isset($importData[34]))?$importData[34]:0,
+                                'phone_allowance'       =>  (isset($importData[35]))?$importData[35]:0,
+                                'other_allowance'       =>  (isset($importData[36]))?$importData[36]:0,
+                                'status'                =>  'active'
+                            );
+                            $employeeSalaryArray['total_salary'] = (float)$employeeSalaryArray['basic_salary'] + (float)$employeeSalaryArray['travel_allowance'] + (float)$employeeSalaryArray['food_allowance'] + (float)$employeeSalaryArray['house_allowance'] + (float)$employeeSalaryArray['position_allowance'] + (float)$employeeSalaryArray['phone_allowance'] + (float)$employeeSalaryArray['other_allowance'];
+                            EmployeeSalary::create($employeeSalaryArray);
+
+
+                            $employeeLoanArray = array(
+                                'emp_id'           =>  $empId,
+                                'loan_amount'      =>  (isset($importData[37]))?$importData[37]:0,
+                                'loan_date'        =>  (isset($importData[38]))?changeDateSlash($importData[38]):NULL,
+                                'installment'      =>  (isset($importData[39]))?$importData[39]:0,
+                                'total_paid'       =>  (isset($importData[40]))?$importData[40]:0,
+                                'install_pending'  =>  (isset($importData[41]))?$importData[41]:0,
+                                'install_amount'   =>  (isset($importData[37]) && $importData[37] > 0 && isset($importData[39]) && $importData[39] >0)?($importData[37]/$importData[39]):0,
+                                'amount_pending'   =>  (isset($importData[42]))?$importData[42]:0,
+                                'out_kwd'          =>  (isset($importData[42]))?$importData[42]:0,
+                                'remarks'          =>  NULL,
+                                'status'           =>  'active'
+                            );
+                            EmployeeLoan::create($employeeLoanArray);
+
+
+                            $employee_accounts = EmployeeAccounts::where("emp_id", $empId)->first();
+                            $eadataArray = array(
+                                'bank_name'      =>  (isset($importData[47]))?$importData[47]:'',
+                                'account_number' =>  (isset($importData[50]))?$importData[50]:0,
+                                'branch_code'    =>  (isset($importData[49]))?$importData[49]:'',
+                                'ifsc_number'    =>  '',
+                                'swift_code'     =>  '',
+                                'branch_name'    =>  (isset($importData[48]))?$importData[48]:''
+                            );
+                            if ($employee_accounts  ==  null) {
+                                $eadataArray = array_merge(array('emp_id'=>$empId),$eadataArray);
+                                EmployeeAccounts::create($eadataArray);
+                            } else {
+                                EmployeeAccounts::where("emp_id", $empId)->update($eadataArray);
+                            }
+
+
+                            $employee_contacts = EmployeeContacts::where("emp_id", $empId)->first();
+                            $ecinsertArray = array(
+                                'emp_id'           =>  $empId,
+                                'pri_con_name'     =>  (isset($importData[51]))?$importData[51]:'',
+                                'pri_con_relation' =>  (isset($importData[52]))?$importData[52]:'',
+                                'pri_con_phone'    =>  (isset($importData[53]))?$importData[53]:'',
+                                'pri_con_phone2'   =>  (isset($importData[54]))?$importData[54]:'',
+                                'sec_con_name'     =>  (isset($importData[55]))?$importData[55]:'',
+                                'sec_con_relation' =>  (isset($importData[56]))?$importData[56]:'',
+                                'sec_con_phone'    =>  (isset($importData[57]))?$importData[57]:'',
+                                'sec_con_phone2'   =>  (isset($importData[58]))?$importData[58]:''
+                            );
+                            if ($employee_contacts  ==  null) {
+                                EmployeeContacts::create($ecinsertArray);
+                            } else {
+                                EmployeeContacts::where("emp_id", $empId)->update($ecinsertArray);
+                            }
+                        }
+                    }
                 }
-
-                if($userId)
-                {
-                    //check company exists, if not create company
-                    $resId = 0;
-                    if(isset($importData[19]))
-                    {
-                        $comDetails = Residency::where('name', $importData[19])->first();
-                        if(empty($comDetails))
-                        {
-                            //create employee
-                            $comInsertArray = array(
-                                'name'  =>  $importData[19],
-                                'company_id'    =>  $company_id,
-                                'created_at' => $this->current_datetime
-                            );
-                            $resId = Residency::create($comInsertArray)->id;
-                        }
-                        else
-                        {
-                            $resId = $comDetails->id;//by employee id
-                        }
-                    }
-
-                    //check subcompany exists, if not create subcompany
-                    $subresId = 0;
-                    if(isset($importData[20]))
-                    {
-                        $subcomDetails = Subresidency::where('name', $importData[20])->first();
-                        if(empty($subcomDetails))
-                        {
-                            //create employee
-                            $subcomInsertArray = array(
-                                'name'  =>  $importData[20],
-                                'company_id'   =>  $company_id,
-                                'residency'    =>  $resId,
-                                'created_at' => $this->current_datetime
-                            );
-                            $subresId = Subresidency::create($subcomInsertArray)->id;
-                        }
-                        else
-                        {
-                            $subresId = $subcomDetails->id;//by employee id
-                        }
-                    }
-
-                    //check branch exists, if not create branch
-                    $branchId = 0;
-                    if(isset($importData[21]))
-                    {
-                        $branchDetails = Branch::where('name', $importData[21])->first();
-                        if(empty($branchDetails))
-                        {
-                            //create employee
-                            $branchInsertArray = array(
-                                'name'  =>  $importData[21],
-                                'company_id'   =>  $company_id,
-                                'residency'    =>  $resId,
-                                'created_at' => $this->current_datetime
-                            );
-                            $branchId = Branch::create($branchInsertArray)->id;
-                        }
-                        else
-                        {
-                            $branchId = $branchDetails->id;//by employee id
-                        }
-                    }
-
-                    //check department exists, if not create department
-                    $depId = 0;
-                    if(isset($importData[22]))
-                    {
-                        $depDetails = Departments::where('name', $importData[22])->first();
-                        if(empty($depDetails))
-                        {
-                            //create employee
-                            $depInsertArray = array(
-                                'name'  =>  $importData[22],
-                                'company_id'    =>  $company_id,
-                                'created_at' => $this->current_datetime
-                            );
-                            $depId = Departments::create($depInsertArray)->id;
-                        }
-                        else
-                        {
-                            $depId = $depDetails->id;//by employee id
-                        }
-                    }
-
-                    //check designation exists, if not create designation
-                    $desId = 0;
-                    if(isset($importData[23]))
-                    {
-                        $desDetails = Designations::where('name', $importData[23])->first();
-                        if(empty($desDetails))
-                        {
-                            //create employee
-                            $desInsertArray = array(
-                                'name'  =>  $importData[23],
-                                'multi_user'  =>  0,
-                                'department'  =>  $depId,
-                                'company_id'  =>  $company_id,
-                                'created_at'  => $this->current_datetime
-                            );
-                            $desId = Designations::create($desInsertArray)->id;
-                        }
-                        else
-                        {
-                            $desId = $desDetails->id;//by employee id
-                        }
-                    }
-
-                    $employeeArray['user_id'] = $userId;
-                    $employeeArray['emp_generated_id'] = $importData[0];
-                    $employeeArray['company'] = $resId;
-                    $employeeArray['subcompany'] = $subresId;
-                    $employeeArray['branch'] = $branchId;
-                    $employeeArray['department'] = $depId;
-                    $employeeArray['designation'] = $desId;
-                    $employeeArray['created_at'] = $this->current_datetime;
-                    $empId = Employee::create($employeeArray)->id;
-                     // echo '<pre>';print_r($employeeArray);exit;
-                    if(isset($empId))
-                    {
-                        //insert/update other details of employee
-                        $employeeDetailsArray = array(
-                            'emp_id'               =>  $empId,
-                            'birthday'             =>  (isset($importData[4]))?changeDateSlash($importData[4]):NULL,
-                            'gender'               =>  (isset($importData[5]))?strtolower($importData[5]):NULL,
-                            'country'             =>  (isset($importData[6]))?$importData[6]:NULL,
-                            'state'             =>  (isset($importData[7]))?$importData[7]:NULL,
-                            'address'               =>  (isset($importData[8]))?$importData[8]:NULL,
-                            'pin_code'               =>  (isset($importData[9]))?$importData[9]:NULL,
-                            'c_id'               =>  (isset($importData[13]))?$importData[13]:NULL,
-                            'expi_c_id'               =>  (isset($importData[14]))?changeDateSlash($importData[14]):NULL,
-                            'b_id'               =>  (isset($importData[15]))?$importData[15]:NULL,
-                            'expi_b_id'               =>  (isset($importData[16])&& $importData[16]!='NR')?changeDateSlash($importData[16]):NULL,
-                            'license'               =>  (isset($importData[17]))?$importData[17]:NULL,
-                            'license_exp'               =>  (isset($importData[18]))?changeDateSlash($importData[18]):NULL,
-                            'religion'              =>  (isset($importData[26]))?$importData[26]:NULL,
-                            'blood_group'           =>  (isset($importData[27]))?$importData[27]:NULL,
-                            // 'pi_address'            =>  $request->pi_address,
-                            'marital_status'        =>  (isset($importData[29]))?$importData[29]:NULL,
-                            // 'spouse_employment'     =>  $request->spouse,
-                            // 'child'                 =>  $request->children
-                        );
-                        // echo '<pre>';print_r( $employeeDetailsArray);exit;
-                        $employee_details =  EmployeeDetails::create($employeeDetailsArray);
-                        $employeeSalaryArray = array(
-                            'emp_id'                =>  $empId,
-                            'basic_salary'          =>  (isset($importData[30]))?$importData[30]:0,
-                            'financal_year'         =>  0,
-                            'travel_allowance'      =>  (isset($importData[31]))?$importData[31]:0,
-                            'food_allowance'        =>  (isset($importData[32]))?$importData[32]:0,
-                            'house_allowance'       =>  (isset($importData[33]))?$importData[33]:0,
-                            'position_allowance'    =>  (isset($importData[34]))?$importData[34]:0,
-                            'phone_allowance'       =>  (isset($importData[35]))?$importData[35]:0,
-                            'other_allowance'       =>  (isset($importData[36]))?$importData[36]:0,
-                            'status'                =>  'active'
-                        );
-                        $employeeSalaryArray['total_salary'] = (float)$employeeSalaryArray['basic_salary'] + (float)$employeeSalaryArray['travel_allowance'] + (float)$employeeSalaryArray['food_allowance'] + (float)$employeeSalaryArray['house_allowance'] + (float)$employeeSalaryArray['position_allowance'] + (float)$employeeSalaryArray['phone_allowance'] + (float)$employeeSalaryArray['other_allowance'];
-                        EmployeeSalary::create($employeeSalaryArray);
-
-
-                        $employeeLoanArray = array(
-                            'emp_id'           =>  $empId,
-                            'loan_amount'      =>  (isset($importData[37]))?$importData[37]:0,
-                            'loan_date'        =>  (isset($importData[38]))?changeDateSlash($importData[38]):NULL,
-                            'installment'      =>  (isset($importData[39]))?$importData[39]:0,
-                            'total_paid'       =>  (isset($importData[40]))?$importData[40]:0,
-                            'install_pending'  =>  (isset($importData[41]))?$importData[41]:0,
-                            'install_amount'   =>  (isset($importData[37]) && $importData[37] > 0 && isset($importData[39]) && $importData[39] >0)?($importData[37]/$importData[39]):0,
-                            'amount_pending'   =>  (isset($importData[42]))?$importData[42]:0,
-                            'out_kwd'          =>  (isset($importData[42]))?$importData[42]:0,
-                            'remarks'          =>  NULL,
-                            'status'           =>  'active'
-                        );
-                        EmployeeLoan::create($employeeLoanArray);
-
-
-                        $employee_accounts = EmployeeAccounts::where("emp_id", $empId)->first();
-                        $eadataArray = array(
-                            'bank_name'      =>  (isset($importData[47]))?$importData[47]:'',
-                            'account_number' =>  (isset($importData[50]))?$importData[50]:0,
-                            'branch_code'    =>  (isset($importData[49]))?$importData[49]:'',
-                            'ifsc_number'    =>  '',
-                            'swift_code'     =>  '',
-                            'branch_name'    =>  (isset($importData[48]))?$importData[48]:''
-                        );
-                        if ($employee_accounts  ==  null) {
-                            $eadataArray = array_merge(array('emp_id'=>$empId),$eadataArray);
-                            EmployeeAccounts::create($eadataArray);
-                        } else {
-                            EmployeeAccounts::where("emp_id", $empId)->update($eadataArray);
-                        }
-
-
-                        $employee_contacts = EmployeeContacts::where("emp_id", $empId)->first();
-                        $ecinsertArray = array(
-                            'emp_id'           =>  $empId,
-                            'pri_con_name'     =>  (isset($importData[51]))?$importData[51]:'',
-                            'pri_con_relation' =>  (isset($importData[52]))?$importData[52]:'',
-                            'pri_con_phone'    =>  (isset($importData[53]))?$importData[53]:'',
-                            'pri_con_phone2'   =>  (isset($importData[54]))?$importData[54]:'',
-                            'sec_con_name'     =>  (isset($importData[55]))?$importData[55]:'',
-                            'sec_con_relation' =>  (isset($importData[56]))?$importData[56]:'',
-                            'sec_con_phone'    =>  (isset($importData[57]))?$importData[57]:'',
-                            'sec_con_phone2'   =>  (isset($importData[58]))?$importData[58]:''
-                        );
-                        if ($employee_contacts  ==  null) {
-                            EmployeeContacts::create($ecinsertArray);
-                        } else {
-                            EmployeeContacts::where("emp_id", $empId)->update($ecinsertArray);
-                        }
-                    }
-                }
-            }
+            else:
+                $error = 1;
+            endif;
               
         }
         $return['message'] = 'Import Successful.';
         $return['status'] = 1;
+        $return['error'] = $error;
         return $return;
     }
 }

@@ -114,14 +114,15 @@
                 <input type="hidden" name="lock_report_type" class="lock_report_type" value="lock_data">
                 <input type="hidden" name="month" class="pdf_month" value="">
                 <input type="hidden" name="year" class="pdf_year" value="">
-                <?php if(!empty($is_generate_report)): ?>
+
                     <?php if(isset($is_lock_emp_salary_data) && ($is_lock_emp_salary_data == 'lock')): ?>
-                    <input type="hidden" name="report_type" value="unlock_data">
+                    <input type="hidden" name="report_type" class="lock_report_type" value="unlock_data">
                     <button type="button" class="btn btn-success lock_btn" style="text-transform:none;"> UnLock Data</button>    
                     <?php else: ?>
-                    <button type="button" class="btn btn-success lock_btn" style="text-transform:none;"> Lock Data</button>    
+                        <?php if(!empty($is_generate_report)): ?>
+                        <button type="button" class="btn btn-success lock_btn" style="text-transform:none;"> Lock Data</button>    
+                        <?php endif; ?>
                     <?php endif; ?>
-                <?php endif; ?>
             </form>
             <div class="row">
                 <div class="col-md-12">
@@ -672,7 +673,6 @@ $(document).on('click','.lock_btn',function(){
         url: '/changelockpdfstatus/'+month+'/'+year+'/'+type,
         success: function(data)
         {
-            console.log(data.res);
            if(data.res == 'unlock_data'){
                 $('.lock_report_type').val('unlock_data');
                 $('.lock_btn').text('UnLock Data');
@@ -680,6 +680,7 @@ $(document).on('click','.lock_btn',function(){
                 $('.lock_report_type').val('lock_data');
                 $('.lock_btn').text('Lock Data');
            }
+           location.reload();
         }
     });
 });

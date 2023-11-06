@@ -204,7 +204,7 @@ Route::get('/changelockpdfstatus/{month}/{year}/{type}', [App\Http\Controllers\P
 
 Route::match(array('GET','POST'),'/employee-overtime', [App\Http\Controllers\PayrollController::class, 'employee_overtime']);
 Route::get('/generate-overtime-slip/{id}', [App\Http\Controllers\PayrollController::class, 'generate_overtime_slip']);
-
+Route::get('/changeovertimelockpdfstatus/{month}/{year}/{type}', [App\Http\Controllers\PayrollController::class, 'changeovertimelockpdfstatus']);
 
 // Holidays
 Route::match(array('GET','POST'),'/holidays', [App\Http\Controllers\HolidaysController::class, 'index'])->name('holidays');

@@ -3,11 +3,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
 <head>
-    <style type="text/css">
-        @page{margin:50px 25px;}
-        body,p {font-weight:normal;font-family: 'Sharp Grotesk';font-size:14px;color:#0C0F1E;line-height:20px;}
 
-        th,b,strong{font-family: 'Sharp Grotesk Book';}
+
+    <style type="text/css">
+    body {
+    font-family: "CircularStd", sans-serif;
+    font-size: 15px;
+    }
+   
         *{box-sizing:border-box;}
         .color-white{ color:white;}
         .color-2b5da7{ color: #2b5da7; }
@@ -29,9 +32,9 @@
         table{width:100%;border-collapse:collapse;}
         table tr th,
         table tr td {padding:5px 10px;text-align:left;}
-        .custom-table th {padding: 5px 10px; font-size: 16px; font-family:'Iskry Bold';}
+        .custom-table th {padding: 5px 10px; font-size: 16px; }
         .custom-table tr {border-bottom: 1px solid #dee2e6;}
-        .custom-table h3 {font-size: 14px;line-height: 16px; font-family:'Iskry Bold'; margin-bottom: 0; }
+        .custom-table h3 {font-size: 14px;line-height: 16px; margin-bottom: 0; }
 
         .table-bordered{border:1px solid #dee2e6;}
         .table-bordered th,
@@ -57,7 +60,7 @@
                     <tr>
                         <th width="80px" style="vertical-align:top">                        
                             <p class="text-left mb-0">
-                                <b>Branch :</b>{{$bval->branch_name}}
+                                <b>Branch: </b>{{$bval->branch_name}}
                             </p>
                         </th>
                     </tr>
@@ -96,7 +99,7 @@
                                     <p>{{$val->name}}</p>
                                 </td>
                                 <td>
-                                    <p>{{$val->salary}}</p>
+                                    <p>{{ number_format($val->salary, 2) }}</p> 
                                 </td>
                                 <td>
                                     <p>{{$val->food_allowence ?? 0}}</p>
@@ -108,7 +111,7 @@
                                     <p>{{$val->deduction}}</p>
                                 </td>
                                 <td>
-                                    <p>{{$val->total_earning}}</p>
+                                    <p>{{ number_format($val->total_earning, 2) }}</p>
                                 </td>
                             </tr>
                             @php $i++; @endphp    
@@ -120,24 +123,23 @@
                         </tbody>
             </table>
         @endforeach  
+        
+        @php $currentMonth = date('F', mktime(0, 0, 0, $month, 10)); @endphp
+        <div style="font-size: 20px; margin-bottom:10px; font-weight: bold;">Summary of {{$currentMonth}} {{$year}}</div>
 
         <table class="table table-bordered custom-table">
-            <tbody>
-                <tr align="center">
-                    @php $currentMonth = date('F', mktime(0, 0, 0, $month, 10)); @endphp
-                    <td colspan="6">{{$currentMonth}} {{$year}}<td>
-                </tr>
+            <tbody> 
                 <tr>
-                    <td></td>
+                    <td>Branch</td>
                     @if(isset($emp_company_data) && count($emp_company_data) > 0)
                         @foreach($emp_company_data as $ckey => $cval)
                             <td colspan="2">{{$cval->company_name}}</td>
                         @endforeach
                     @endif
+                    <td></td>
                 </tr>
-
                 <tr>
-                    <td>Branch</td>
+                    <td></td>
                     @if(isset($emp_company_data) && count($emp_company_data) > 0)
                         @foreach($emp_company_data as $ckey => $cval)
                             <td>Cash</td>
@@ -153,11 +155,11 @@
                             <td>{{$bval->branch_name}}</td>
                             @if(isset($emp_company_data) && count($emp_company_data) > 0)
                                 @foreach($emp_company_data as $ckey => $cval)
-                                    <td>{{calcualte_total_earning_by_month_company($month,$year,$cval->company_id,$bval->id,'cash')}}</td>
+                                    <td>{{ number_format(calcualte_total_earning_by_month_company($month,$year,$cval->company_id,$bval->id,'cash'), 2) }}</td>
                                     <td>{{calcualte_total_earning_by_month_company($month,$year,$cval->company_id,$bval->id,'bank')}}</td>
                                 @endforeach
                             @endif
-                            <td>{{calcualte_total_earning_by_month_company($month,$year,$cval->company_id,$bval->id,'','total')}}</td>
+                            <td>{{ number_format(calcualte_total_earning_by_month_company($month,$year,$cval->company_id,$bval->id,'','total'), 2) }}</td>
                         </tr>
                     @endforeach
                 @endif
@@ -165,20 +167,27 @@
                     <td>Total</td>
                     @if(isset($emp_company_data) && count($emp_company_data) > 0)
                         @foreach($emp_company_data as $ckey => $cval)
-                            <td>{{calcualte_total_by_month_company($month,$year,$cval->company_id,'cash')}}</td>
-                            <td>{{calcualte_total_by_month_company($month,$year,$cval->company_id,'bank')}}</td>
+                            <td>{{ number_format(calcualte_total_by_month_company($month,$year,$cval->company_id,'cash'), 2) }}</td>
+                            <td>{{ number_format(calcualte_total_by_month_company($month,$year,$cval->company_id,'bank'), 2) }}</td>
                         @endforeach
                     @endif
-                </tr>
-                <tr>
-                    <td colspan="1">HR Manager Sign.</td>
-                    <td colspan="2">Sr. Accountant Sign.</td>
-                    <td colspan="2">Finanace Manager Sign.</td>
-                    <td colspan="2">General Manager Sign.</td>
-                    <td>CEO Sign.</td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>
+        <table style="margin-top: 20px;">
+                <tbody>
+                <tr>
+                    <td><b>HR Manager Sign.</b></td>
+                    <td><b>Sr. Accountant Sign.</b></td>
+                    <td><b>Finanace Manager Sign.</b></td>
+                    <td><b>General Manager Sign.</b></td>
+                    <td><b>CEO Sign.</b></td>
+                </tr>
+                </tbody>
+        </table>
+
+
     @endif
     </div>
 </body>

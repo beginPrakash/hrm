@@ -155,10 +155,6 @@
                                                                 {
                                                                     $sched = 'UL';
                                                                 }
-                                                                else if($emloyeeScheduleToday->shift==10)
-                                                                {
-                                                                    $sched = 'COD';
-                                                                }
                                                                 else
                                                                 {
                                                                     $start = date('h:i a', strtotime($emloyeeScheduleToday->start_time));
@@ -664,7 +660,7 @@
                     var shdetails = JSON.parse(value);
                     console.log('here-'+shdetails.shift);
                     // alert(parseInt(shdetails.shift));
-                    if(parseInt(shdetails.shift) <= 2 || parseInt(shdetails.shift) >= 7)
+                    if(parseInt(shdetails.shift) <= 2 && parseInt(shdetails.shift) >= 7 && parseInt(shdetails.shift) <= 9)
                     { 
                         $('#timedivedit').css('display', 'none');
                     }
@@ -704,11 +700,11 @@
     $(document).ready(function() {
         $('.shift_addschedule').on('change', function() {
             var shiftId = $(this).val();
-            if(parseInt(shiftId) <= 3 || parseInt(shiftId) >= 7)
+            if(parseInt(shiftId) <= 3 || (parseInt(shiftId) >= 7 && parseInt(shiftId) <= 9))
             { 
                 $('#timedivadd,#timedivedit').css('display', 'none');
             }
-            else if(parseInt(shiftId) > 3 && parseInt(shiftId) < 7){ 
+            else if(parseInt(shiftId) > 3 && parseInt(shiftId) < 7 || parseInt(shiftId) > 9){ 
                 $('#timedivadd,#timedivedit').css('display', 'flex');
                $.ajax({
                    url: '/shiftDetails/'+shiftId,

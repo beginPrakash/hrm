@@ -20,155 +20,120 @@
                             <li class="breadcrumb-item active"><?php echo ucfirst($title); ?></li>
                         </ul>
                     </div>
-                    <?php //echo $overtimeCount;//if($overtimeCount <= 0){ ?>
-                    <div class="col-auto float-end ms-auto">
-                        <button class="btn add-btn" data-bs-toggle="modal" data-bs-target="#generateOvertimeList" <?php echo ($overtimeCount >0)?'disabled title="Already Generated"':''; ?>><i class="fa fa-plus"></i> Generate Overtime List</button>
-                    </div>
-                    <?php //} ?>
                 </div>
             </div>
             
-            
-            <!-- Search Filter -->
-            <form action="/employee-overtime" method="post">
-                @csrf
-                <div class="row filter-row">
-                   <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
-                        <div class="form-group form-focus">
-                            <input type="text" class="form-control floating">
-                            <label class="focus-label">Employee Name</label>
+            <div class="begin-filters">
+                <!-- Search Filter -->
+                <form action="/employee-overtime" class="col-xl-5 df" method="post" id="salary_form">
+                    @csrf
+                
+                    <div class="col-sm-6 col-md-5 col-lg-3 col-xl-3 col-12">  
+                            <div class="form-group form-focus">
+                                <?php
+                                $monthArray = array(
+                                    '01'    =>  'Jan', '02' => 'Feb', '03' => 'Mar',
+                                    '04'    =>  'Apr', '05' => 'May', '06' => 'Jun',
+                                    '07'    =>  'Jul', '08' => 'Aug', '09' => 'Sep',
+                                    '10'    =>  'Oct', '11' => 'Nov', '12' => 'Dec',
+                                );
+                                ?>
+                                <select class="select floating" name="month" id="report_month"> 
+                                    <option value="">-</option>
+                                    <?php foreach($monthArray as $makey => $ma) { ?>
+                                        <option value="<?php echo $makey; ?>" <?php echo ($makey==$month)?'selected':''; ?>><?php echo $ma; ?></option>
+                                    <?php } ?>
+                                </select>
+                                <label class="focus-label">Select Month</label>
+                            </div>
                         </div>
-                   </div>
-                   <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
-                        <div class="form-group form-focus select-focus">
-                            <select class="select floating"> 
-                                <option value=""> -- Select -- </option>
-                                <option value="">Employee</option>
-                                <option value="1">Manager</option>
-                            </select>
-                            <label class="focus-label">Role</label>
-                        </div>
-                   </div>
-                   <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12"> 
-                        <div class="form-group form-focus select-focus">
-                            <select class="select floating"> 
-                                <option> -- Select -- </option>
-                                <option> Pending </option>
-                                <option> Approved </option>
-                                <option> Rejected </option>
-                            </select>
-                            <label class="focus-label">Leave Status</label>
-                        </div>
-                   </div>
-                   <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
-                        <div class="form-group form-focus">
-                            <?php
-                            $monthArray = array(
-                                '01'    =>  'Jan', '02' => 'Feb', '03' => 'Mar',
-                                '04'    =>  'Apr', '05' => 'May', '06' => 'Jun',
-                                '07'    =>  'Jul', '08' => 'Aug', '09' => 'Sep',
-                                '10'    =>  'Oct', '11' => 'Nov', '12' => 'Dec',
-                            );
-                            ?>
-                            <select class="select floating" name="month"> 
-                                <option value="">-</option>
-                                <?php foreach($monthArray as $makey => $ma) { ?>
-                                    <option value="<?php echo $makey; ?>" <?php echo ($makey==$month)?'selected':''; ?>><?php echo $ma; ?></option>
-                                <?php } ?>
-                            </select>
-                            <label class="focus-label">Select Month</label>
-                        </div>
-                    </div>
-                   <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
-                        <div class="form-group form-focus">
-                            <select class="select floating" name="year"> 
-                                <option value="">-</option>
-                                <?php for($y=date('Y');$y>=2015;$y--) { ?>
-                                    <option value="<?php echo $y; ?>" <?php echo ($year==$y)?'selected':''; ?>><?php echo $y; ?></option>
-                                <?php } ?>
-                            </select>
-                            <label class="focus-label">Select Year</label>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
-                        <button type="submit" class="btn btn-success" name="search" value="search"> Search </button>    
-                    </div>     
+                    <div class="col-sm-6 col-md-3 col-lg-3 col-xl-3 col-12">  
+                            <div class="form-group form-focus">
+                                <select class="select floating" name="year" id="report_year"> 
+                                    <option value="">-</option>
+                                    <?php for($y=date('Y');$y>=2015;$y--) { ?>
+                                        <option value="<?php echo $y; ?>" <?php echo ($year==$y)?'selected':''; ?>><?php echo $y; ?></option>
+                                    <?php } ?>
+                                </select>
+                                <label class="focus-label">Select Year</label>
+                            </div>
+                        </div>    
+                    <input type="hidden" name="report_type" id="report_type" value="">
+                    <div class="col-sm-6 col-md-3 col-lg-3 col-xl-3 col-12"> 
+                        <button type="submit" class="btn btn-success" name="search" value="search" style="text-transform:none"> Generate Overtime Report </button>    
+                    </div> 
+                </form>
+                <!-- /Search Filter -->
+                <div class="other-buttons col-xl-3 ">
+                    <form action="/employee-overtime" method="post" id="salary_form">
+                        @csrf
+                        <input type="hidden" name="report_type" value="pdf">
+                        <input type="hidden" name="month" class="pdf_month" value="">
+                        <input type="hidden" name="year" class="pdf_year" value="">
+                        @if(!empty($is_generate_report))
+                            <button type="submit" class="btn btn-success generate_pdf_btn" style="text-transform:none;"> Generate PDF </button>    
+                        @endif
+                    </form>
+                    <form action="/employee-overtime" method="post" id="lock_date_form" class="d-none">
+                        @csrf
+                        
+                        <input type="hidden" name="month" class="pdf_month" value="">
+                        <input type="hidden" name="year" class="pdf_year" value="">
+
+                            @if(isset($is_lock_emp_salary_data) && ($is_lock_emp_salary_data == 'lock'))
+                            <input type="hidden" name="report_type" class="lock_report_type" value="unlock_data">
+                            <button type="button" class="btn btn-success lock_btn" style="text-transform:none;"> UnLock Data</button>    
+                            @else
+                                @if(!empty($is_generate_report))
+                                <input type="hidden" name="lock_report_type" class="lock_report_type" value="lock_data">
+                                <button type="button" class="btn btn-success lock_btn" style="text-transform:none;"> Lock Data</button>    
+                                @endif
+                            @endif
+                    </form>
                 </div>
-            </form>
-            <!-- /Search Filter -->
-            
+            </div>
             <div class="row">
                 <div class="col-md-12">
                     <div class="table-responsive">
                         <table class="table table-striped custom-table datatablex" id="datatable">
                             <thead>
                                 <tr>
-                                    <th>Employee</th>
-                                    <!-- <th>Employee ID</th> -->
-                                    <!-- <th>Company</th> -->
-                                    <th>Join Date</th>
-                                    <th>Month</th>
-                                    <!-- <th>Salary</th> -->
-                                    <th>Overtime Salary</th>
-                                    <th>Payslip</th>
-                                    <!-- <th class="text-end">Action</th> -->
-                                    <!-- <th class="text-end">Action</th> -->
+                                    <th>Sr.No</th>
+                                    <th>Employee ID</th>
+                                    <th>Employee Name</th>
+                                    <th>Overtime Hours</th>
+                                    <th>Overtime Amount</th>
+                                    <th>Bonus</th>
+                                    <th>Total Earning</th>
                                 </tr>
                             </thead>
                             <tbody>
-                            	<?php  //echo '<pre>';print_r($employees[0]->employee_residency->name);
-                            	if(isset($overtimeDetails))
-                                {
-                                    foreach($overtimeDetails as $sal)
-                                    {
-                                        $encodedData = base64_encode(json_encode($sal));
+                            	<?php  
+                                if(!empty($year) && !empty($month)){
+                                $i = 1;
+                                //echo '<pre>';print_r($employees[0]->employee_residency->name);
+                            	if(isset($employees))
+                            	{
+                            		foreach($employees as $emp)
+                            		{ 
+                                        $salary_calc = calculateOvertimeByFilter($emp->user_id,$emp->emp_generated_id,$month,$year);
                             		?>
-
+                                    
                                 <tr>
                                     <td>
-                                        <h2 class="table-avatar">
-                                            <a href="profile.php" class="avatar"><img alt="" src="assets/img/profiles/avatar-02.jpg"></a>
-                                            <a href="profile.php"><?php echo ucfirst($sal->employees->first_name); ?> <?php echo (isset($sal->employees->last_name))?ucfirst($sal->employees->last_name):''; ?> (EMP ID:<?php echo $sal->emp_generated_id; ?>)     <span><?php echo (isset($sal->employee_designation[0]->name))?': '.ucwords($sal->employee_designation[0]->name):''; ?></span>
-                                                <br>
-                                                <small style="margin-left: 46px;font-size: 12px;"><?php echo (isset($sal->employee_residency[0]->name))?$sal->employee_residency[0]->name:''; ?></small>
-                                            </a>
-                                        </h2>
+                                        {{$i}}
                                     </td>
-                                    <!-- <td><?php //echo $sal->emp_generated_id; ?></td> -->
-                                    <!-- <td><?php //echo (isset($sal->employee_residency->name))?$sal->employee_residency->name:''; ?></td> -->
-                                    <td><?php echo ($sal->joining_date!=NULL)?date('d F, Y', strtotime($sal->joining_date)):''; ?></td>
-                                    <td><?php echo (isset($sal->employee_salary_details->es_month))?date('F', strtotime($sal->employee_salary_details->es_month)):date('F'); ?></td>
-                                    <!-- <td>
-                                        <div class="dropdown">
-                                            <a href="" class="btn btn-white btn-sm btn-rounded dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Web Designer </a>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="#">Software Engineer</a>
-                                                <a class="dropdown-item" href="#">Software Tester</a>
-                                                <a class="dropdown-item" href="#">Frontend Developer</a>
-                                                <a class="dropdown-item" href="#">UI/UX Developer</a>
-                                            </div>
-                                        </div>
-                                    </td> -->
-                                    <!-- <td><?php //echo $sal->employee_salary_details->total_salary; ?></td> -->
-                                    <td>KWD <?php echo (isset($sal->employee_salary_details->total_overtime_salary))?$sal->employee_salary_details->total_overtime_salary:0; ?></td>
-                                    <td>
-                                        <?php if((isset($sal->employee_salary_details->total_overtime_salary)) && $sal->employee_salary_details->total_overtime_salary > 0){ ?>
-                                            <a class="btn btn-sm btn-primary" href="/generate-overtime-slip/<?php echo $sal->employee_salary_details->id; ?>">Generate Slip</a>
-                                        <?php } ?>
-                                    </td>
-                                    
-                                    <!-- <td class="text-end">
-                                        <div class="dropdown dropdown-action">
-                                            <a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
-                                            <div class="dropdown-menu dropdown-menu-right">
-                                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_salary"><i class="fa fa-pencil m-r-5"></i> Edit</a>
-                                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_salary"><i class="fa fa-trash-o m-r-5"></i> Delete</a>
-                                            </div>
-                                        </div>
-                                    </td> -->
+                                    <td>{{$emp->emp_generated_id}}</td>
+                                    <td>{{$emp->first_name}} {{$emp->last_name}}</td>
+                                    <td>{{$salary_calc['total_overtime_hours'] ?? 0}}</td>
+                                    <td>{{$salary_calc['total_salary'] ?? 0}}</td>
+                                    <td>bonus</td>
+                                    <td>total</td>
                                 </tr>
                                 <?php
+                                $i++;
                             		}
+                                }
                             	}?>
                             </tbody>
                         </table>
@@ -178,44 +143,6 @@
         </div>
         <!-- /Page Content -->
         
-        <!-- Generate Overtime List Modal -->
-        <div class="modal custom-modal fade" id="generateOvertimeList" role="dialog">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <div class="form-header">
-                            <h3>Generate Overtime List</h3>
-                            <p>Are you sure want to Generate Overtime For <strong><?php echo date('M, Y'); ?></strong>?</p>
-                        </div>
-                        <div class="modal-btn delete-action" id="loadingDiv">
-                            <div class="row">
-                                <div class="col-6">
-                                    <form action="#" method="post" id="generateOvertimeListForm">
-                                        @csrf
-                                        <!-- <input type="hidden" name="month_id" id="month_id" value="<?php //echo date('m'); ?>"> -->
-                                        <select class="form-control" name="month_id" id="month_id">
-                                            <?php
-            
-            for ($i = 1; $i <= 12; $i++) {
-                $monthName = date("F", mktime(0, 0, 0, $i, 1)); // Get the full month name
-                echo "<option value='$i'>$monthName</option>";
-            }
-            ?>
-                                        </select>
-                                        <button type="submit" class="btn btn-primary btn-large continue-btn" style="width: 100%;">Generate</button>
-                                  </form>
-                                </div>
-                                <div class="col-6">
-                                    <a href="javascript:void(0);" data-bs-dismiss="modal" class="btn btn-primary cancel-btn">Cancel</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- /Generate Overtime List Modal -->
-
     </div>
     <!-- /Page Wrapper -->
 </div>
@@ -254,6 +181,10 @@
             $('.addition').addClass('hideit');
         }
     });
+
+    $(document).on('click','.generate_pdf_btn',function(){
+        $('#lock_date_form').removeClass('d-none');
+    });
 </script>
 
 <script type="text/javascript">
@@ -269,7 +200,7 @@ $(document).on('change','#addition_drop, #deduction_drop',function(){
 </script>
 
 <script type="text/javascript">
-$("#generateOvertimeListForm").submit(function(e) {
+$("#generateSalaryListForm").submit(function(e) {
 
     e.preventDefault(); // avoid to execute the actual submit of the form.
 
@@ -278,7 +209,7 @@ $("#generateOvertimeListForm").submit(function(e) {
     var month_id = $('#month_id').val();
     var divLoading = '<div class="container"><div class="ring"><h1>Generating...</h1></div></div>';
     
-    $('#generateOvertimeList').modal({
+    $('#generateSalaryList').modal({
         show: true,
         keyboard: false,
         backdrop: 'static'
@@ -286,7 +217,7 @@ $("#generateOvertimeListForm").submit(function(e) {
 
     $.ajax({
         type: "GET",
-        url: '/generateOvertimeList/'+month_id,
+        url: '/generateSalaryList/'+month_id,
         data: form.serialize(), // serializes the form's elements.
         beforeSend: function() {
             // setting a timeout
@@ -300,13 +231,40 @@ $("#generateOvertimeListForm").submit(function(e) {
     
 });
 </script>
+
 <script type="text/javascript">
 $(document).ready(function() {
     $('#datatable').DataTable( {
         dom: 'Bfrtip',
         buttons: [
-            'pdfHtml5'
+            //'pdfHtml5'
         ]
     } );
+
+    $('.pdf_month').val($('#report_month').val());
+    $('.pdf_year').val($('#report_year').val());
 } );
+
+$(document).on('click','.lock_btn',function(){
+    var month = $('#report_month').val();
+    var year = $('#report_year').val();
+    var type = $('.lock_report_type').val();
+    $.ajax({
+        type: "GET",
+        url: '/changeovertimelockpdfstatus/'+month+'/'+year+'/'+type,
+        success: function(data)
+        {
+           if(data.res == 'unlock_data'){
+                $('.lock_report_type').val('unlock_data');
+                $('.lock_btn').text('UnLock Data');
+           }else{
+                $('.lock_report_type').val('lock_data');
+                $('.lock_btn').text('Lock Data');
+           }
+           location.reload();
+        }
+    });
+});
+
+    
 </script>

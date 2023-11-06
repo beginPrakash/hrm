@@ -25,8 +25,8 @@ function getInformation()
 
 function calculateSalaryByFilter($user_id,$empid,$mid,$year,$type='')
 {
-    // $emp_id = 5;
-    // $user_id = 229;
+     //$empid = 1012;
+     //$user_id = 251; 
     $endDateOrg = $year.'-'.$mid.'-'.'19';//date('Y-m-20');
     $startDateOrg =  date('Y-m-d', strtotime('-1 month', strtotime($endDateOrg)));
     $startDateOrg = date('Y-m-d', strtotime('+1 days', strtotime($startDateOrg)));
@@ -35,6 +35,7 @@ function calculateSalaryByFilter($user_id,$empid,$mid,$year,$type='')
         $commonWorkingHoursDetails = Overtime::first();
         $commonWorkingHours = $commonWorkingHoursDetails->working_hours - 1;
         $commonWorkingDays = $commonWorkingHoursDetails->working_days;
+        //dd($emp_id);
         $total_schedule_hours = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('employee_id',$empid)->sum('schedule_hours');
         $find_fs_days = Scheduling::whereBetween('shift_on', [$startDateOrg, $endDateOrg])->where('employee',$user_id)->whereIn('shift',[3,8,2])->count();
         $find_fs_hours = $find_fs_days * 8;
@@ -59,6 +60,44 @@ function calculateSalaryByFilter($user_id,$empid,$mid,$year,$type='')
             return $res_arr;
         else:
             return $total_calculate_salary;
+        endif;
+    endif;
+}
+
+
+function calculateOvertimeByFilter($user_id,$empid,$mid,$year,$type='')
+{
+    //$empid = 1012;
+    //$user_id = 251;
+    $endDateOrg = $year.'-'.$mid.'-'.'19';//date('Y-m-20');
+    $startDateOrg =  date('Y-m-d', strtotime('-1 month', strtotime($endDateOrg)));
+    $startDateOrg = date('Y-m-d', strtotime('+1 days', strtotime($startDateOrg)));
+    $total_calculate_salary = 0;
+    if(!empty($mid)):
+        $commonWorkingHoursDetails = Overtime::first();
+        $commonWorkingHours = $commonWorkingHoursDetails->working_hours - 1;
+        $commonWorkingDays = $commonWorkingHoursDetails->working_days;
+        $total_overtime_hours = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('employee_id',$empid)->sum('overtime_hours');
+        //find employee salary details
+        $employee = Employee::where('user_id',$user_id)->where('emp_generated_id',$empid)->first();
+        //calculate salary now
+        if(!empty($employee)):
+            $currentMonthSalary = (isset($employee->employee_salary))?$employee->employee_salary->basic_salary:0;
+            $daySalary = ($currentMonthSalary>0)?($currentMonthSalary/$commonWorkingDays):0;
+            $hourlySalary = ($daySalary>0)?($daySalary/$commonWorkingHours):0;
+            $total_calculate_salary = $total_overtime_hours * $hourlySalary;
+        endif;
+        $res_arr = [];
+        if($type=='report_pdf'):
+            $res_arr['total_overtime_hours'] = $total_overtime_hours;
+            $res_arr['total_salary'] = $total_calculate_salary;
+            $res_arr['dates_between'] = $startDateOrg.','.$endDateOrg;
+            return $res_arr;
+        else:
+            $res_arr['total_overtime_hours'] = $total_overtime_hours;
+            $res_arr['total_salary'] = $total_calculate_salary;
+            $res_arr['dates_between'] = $startDateOrg.','.$endDateOrg;
+            return $res_arr;
         endif;
     endif;
 }
@@ -208,16 +247,18 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
             $final_diff = 0;
             $total_attendanace_hours = floatval($total_attendanace_hours);
             $commonWorkingHours = (int)$commonWorkingHours;
-           // dd($total_attendanace_hours);
-             if($total_attendanace_hours > $commonWorkingHours):
-            //     dd('sds');
-                $diff = $total_attendanace_hours - $commonWorkingHours;
-                $final_diff =  $diff < 0 ? (-1) * $diff : $diff;
+            if($shiftDetails->shift == 4):
+                if($total_attendanace_hours > $commonWorkingHours):
+                    $diff = $total_attendanace_hours - $commonWorkingHours;
+                    $final_diff =  $diff < 0 ? (-1) * $diff : $diff;
+                    $final_diff = $final_diff - 1;
+                endif;
             endif;
+           
             //save schedule hours and overtime data in attanedance detail yable
             $save_data = AttendanceDetails::where('user_id',$user_id)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
             $save_data->schedule_hours = $commonWorkingHours-1;
-            $save_data->overtime_hours = 0;
+            $save_data->overtime_hours = $final_diff ?? 0;
             $save_data->save();
             return true;
         endif;

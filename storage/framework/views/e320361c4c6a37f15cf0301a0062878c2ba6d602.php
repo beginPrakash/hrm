@@ -1,9 +1,6 @@
 <?php echo $__env->make('includes/header', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 <?php echo $__env->make('includes/sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
-<style type="text/css">
-    
-</style>
 <div class="main-wrapper">
 
     <!-- Page Wrapper -->
@@ -24,106 +21,85 @@
                         </ul>
                     </div>
                     <?php //echo $salaryCount;//if($salaryCount <= 0){ ?>
-                    <div class="col-auto float-end ms-auto">
+                    <!--<div class="col-auto float-end ms-auto">
                         <button class="btn add-btn" data-bs-toggle="modal" data-bs-target="#generateSalaryList" <?php echo ($salaryCount >0)?'disabledx title="Already Generated"':''; ?>><i class="fa fa-plus"></i> Generate Salary List</button>
-                    </div>
+                    </div>-->
                     <?php //} ?>
                 </div>
             </div>
             
             
             <!-- Search Filter -->
-            <form action="/employee-salary" method="post" id="salary_form">
-                <?php echo csrf_field(); ?>
-                <div class="row filter-row">
-                   <!-- <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
-                        <div class="form-group form-focus">
-                            <input type="text" name="employee" class="form-control floating" value="<?php echo e($empname ?? ''); ?>">
-                            <label class="focus-label">Employee Name</label>
+            <div class="begin-filters">
+                <form action="/employee-salary" class="col-xl-5 df" method="post" id="salary_form">
+                    <?php echo csrf_field(); ?>
+                
+                   
+                    <div class="col-sm-6 col-md-5 col-lg-3 col-xl-3 col-12">  
+                            <div class="form-group form-focus">
+                                <?php
+                                $monthArray = array(
+                                    '01'    =>  'Jan', '02' => 'Feb', '03' => 'Mar',
+                                    '04'    =>  'Apr', '05' => 'May', '06' => 'Jun',
+                                    '07'    =>  'Jul', '08' => 'Aug', '09' => 'Sep',
+                                    '10'    =>  'Oct', '11' => 'Nov', '12' => 'Dec',
+                                );
+                                ?>
+                                <select class="select floating" name="month" id="report_month"> 
+                                    <option value="">-</option>
+                                    <?php foreach($monthArray as $makey => $ma) { ?>
+                                        <option value="<?php echo $makey; ?>" <?php echo ($makey==$month)?'selected':''; ?>><?php echo $ma; ?></option>
+                                    <?php } ?>
+                                </select>
+                                <label class="focus-label">Select Month</label>
+                            </div>
                         </div>
-                   </div> -->
-                   <!-- <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
-                        <div class="form-group form-focus select-focus">
-                            <select class="select floating"> 
-                                <option value=""> -- Select -- </option>
-                                <option value="">Employee</option>
-                                <option value="1">Manager</option>
-                            </select>
-                            <label class="focus-label">Role</label>
+                    <div class="col-sm-6 col-md-3 col-lg-3 col-xl-3 col-12">  
+                            <div class="form-group form-focus">
+                                <select class="select floating" name="year" id="report_year"> 
+                                    <option value="">-</option>
+                                    <?php for($y=date('Y');$y>=2015;$y--) { ?>
+                                        <option value="<?php echo $y; ?>" <?php echo ($year==$y)?'selected':''; ?>><?php echo $y; ?></option>
+                                    <?php } ?>
+                                </select>
+                                <label class="focus-label">Select Year</label>
+                            </div>
                         </div>
-                   </div>
-                   <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12"> 
-                        <div class="form-group form-focus select-focus">
-                            <select class="select floating"> 
-                                <option> -- Select -- </option>
-                                <option> Pending </option>
-                                <option> Approved </option>
-                                <option> Rejected </option>
-                            </select>
-                            <label class="focus-label">Leave Status</label>
-                        </div>
-                   </div> -->
-                   <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
-                        <div class="form-group form-focus">
-                            <?php
-                            $monthArray = array(
-                                '01'    =>  'Jan', '02' => 'Feb', '03' => 'Mar',
-                                '04'    =>  'Apr', '05' => 'May', '06' => 'Jun',
-                                '07'    =>  'Jul', '08' => 'Aug', '09' => 'Sep',
-                                '10'    =>  'Oct', '11' => 'Nov', '12' => 'Dec',
-                            );
-                            ?>
-                            <select class="select floating" name="month" id="report_month"> 
-                                <option value="">-</option>
-                                <?php foreach($monthArray as $makey => $ma) { ?>
-                                    <option value="<?php echo $makey; ?>" <?php echo ($makey==$month)?'selected':''; ?>><?php echo $ma; ?></option>
-                                <?php } ?>
-                            </select>
-                            <label class="focus-label">Select Month</label>
-                        </div>
-                    </div>
-                   <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
-                        <div class="form-group form-focus">
-                            <select class="select floating" name="year" id="report_year"> 
-                                <option value="">-</option>
-                                <?php for($y=date('Y');$y>=2015;$y--) { ?>
-                                    <option value="<?php echo $y; ?>" <?php echo ($year==$y)?'selected':''; ?>><?php echo $y; ?></option>
-                                <?php } ?>
-                            </select>
-                            <label class="focus-label">Select Year</label>
-                        </div>
-                    </div>
-                    <input type="hidden" name="report_type" id="report_type" value="">
-                    <div class="col-auto">  
-                        <button type="submit" class="btn btn-success" name="search" value="search" style="text-transform:none"> Generate Salary Report </button>    
-                    </div>     
-                </div>
-            </form>
+                        <input type="hidden" name="report_type" id="report_type" value="">
+                        <div class="col-sm-6 col-md-3 col-lg-3 col-xl-3 col-12">  
+                            <button type="submit" class="btn btn-success" name="search" value="search" style="text-transform:none"> Generate Report </button>    
+                        </div>     
+                
+                </form>
             <!-- /Search Filter -->
-            <form action="/employee-salary" method="post" id="salary_form">
-                <?php echo csrf_field(); ?>
-                <input type="hidden" name="report_type" value="pdf">
-                <input type="hidden" name="month" class="pdf_month" value="">
-                <input type="hidden" name="year" class="pdf_year" value="">
-                <?php if(!empty($is_generate_report)): ?>
-                    <button type="submit" class="btn btn-success generate_pdf_btn" style="text-transform:none;"> Generate PDF </button>    
-                <?php endif; ?>
-            </form>
-            <form action="/employee-salary" method="post" id="lock_date_form" class="d-none">
-                <?php echo csrf_field(); ?>
-                <input type="hidden" name="lock_report_type" class="lock_report_type" value="lock_data">
-                <input type="hidden" name="month" class="pdf_month" value="">
-                <input type="hidden" name="year" class="pdf_year" value="">
-
-                    <?php if(isset($is_lock_emp_salary_data) && ($is_lock_emp_salary_data == 'lock')): ?>
-                    <input type="hidden" name="report_type" class="lock_report_type" value="unlock_data">
-                    <button type="button" class="btn btn-success lock_btn" style="text-transform:none;"> UnLock Data</button>    
-                    <?php else: ?>
-                        <?php if(!empty($is_generate_report)): ?>
-                        <button type="button" class="btn btn-success lock_btn" style="text-transform:none;"> Lock Data</button>    
-                        <?php endif; ?>
+                <div class="other-buttons col-xl-3 ">
+                <form class="" action="/employee-salary" method="post" id="salary_form">
+                    <?php echo csrf_field(); ?>
+                    <input type="hidden" name="report_type" value="pdf">
+                    <input type="hidden" name="month" class="pdf_month" value="">
+                    <input type="hidden" name="year" class="pdf_year" value="">
+                    <?php if(!empty($is_generate_report)): ?>
+                        <button type="submit" class="btn btn-success generate_pdf_btn" style="text-transform:none;"> Generate PDF </button>    
                     <?php endif; ?>
-            </form>
+                </form>
+                <form action="/employee-salary" method="post" id="lock_date_form" class="d-none">
+                    <?php echo csrf_field(); ?>
+                    
+                    <input type="hidden" name="month" class="pdf_month" value="">
+                    <input type="hidden" name="year" class="pdf_year" value="">
+
+                        <?php if(isset($is_lock_emp_salary_data) && ($is_lock_emp_salary_data == 'lock')): ?>
+                        <input type="hidden" name="report_type" value="unlock_data">
+                        <button type="button" class="btn btn-success lock_btn" style="text-transform:none;"> UnLock Data</button>    
+                        <?php else: ?>
+                            <?php if(!empty($is_generate_report)): ?>
+                            <input type="hidden" name="lock_report_type" class="lock_report_type" value="lock_data">
+                            <button type="button" class="btn btn-success lock_btn" style="text-transform:none;"> Lock Data</button>    
+                            <?php endif; ?>
+                        <?php endif; ?>
+                </form>
+                </div>    
+            </div>
             <div class="row">
                 <div class="col-md-12">
                     <div class="table-responsive">

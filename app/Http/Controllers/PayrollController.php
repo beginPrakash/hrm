@@ -20,6 +20,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Models\Branch;
 use PDF;
 use App\Models\EmployeeSalaryData;
+use App\Models\EmployeeOvertimeData;
 // use App\Helper\Helper;
 
 use Illuminate\Http\Request;
@@ -139,7 +140,7 @@ class PayrollController extends Controller
             $is_lock_emp_salary_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->value('report_lock_status');
             return view('payroll.employee_salary', compact('title', 'salaryDetails', 'additions', 'deductions', 'breadButton', 'salaryCount', 'year', 'month','employees','empname','is_generate_report','is_lock_emp_salary_data','is_generate_pdf'));
        endif;
-        }
+    }
 
     public function employee_salary_details(Request $request)
     {
@@ -690,40 +691,93 @@ class PayrollController extends Controller
 
     public function employee_overtime()
     {
+        
         $title = $this->title;
 
-        $year = date('Y');
-        $month = date('m');
-        $emp = '';
-
+        $year = '';
+        $month = '';
+        $empname = '';
+        $is_generate_report = 0;
+        $is_generate_pdf = 0;
         $where = array();
-
-        if(isset($_POST['search']))
-        {
-            if(isset($_POST['year']) && $_POST['year']!='')
+        $employees = Employee::with('employee_salary');
+         if(isset($_POST['year']) && $_POST['year']!='')
             {
                 $year = $_POST['year'];
             }
             if(isset($_POST['month']) && $_POST['month']!='')
             {
+                $is_generate_report = 1;
                 $month = $_POST['month'];
             }
-            // if(isset($_POST['employee']) && $_POST['employee']!='')
-            // {
-            //     $where['user_id'] = $_POST['employee'];
-            //     $emp = $_POST['employee'];
-            // }
-        }
+            if(isset($_POST['employee']) && $_POST['employee']!='')
+            {
+                $empname = $_POST['employee'];
+                $employees = $employees->where('status', 'active')->where('first_name', 'like', '%'.$_POST['employee'].'%')
+                            ->orWhere('last_name', 'like', '%'.$_POST['employee'].'%')
+                            ->orWhere(DB::raw("CONCAT(first_name, ' ', last_name)") , 'like', '%'.$_POST['employee'].'%');
+            }
 
-        $breadButton = 0;//echo $month;
-        // $month = date('m');
-        $overtimeDetails = EmployeeMonthlySalary::with('employees', 'employee_designation', 'employee_residency')->where('salary_type','overtime')->where('es_month',$month)->where('es_year',$year)->where('status','active')->get();
+        $breadButton = 0;
+        // $month = 07;//date('m');
+        $salaryDetails = EmployeeMonthlySalary::with('employees', 'employee_designation', 'employee_residency')->where('salary_type','salary')->where('es_month',$month)->where('es_year',$year)->where('status','active')->get();
         // $employees = Employee::with(["employee_designation", "employee_salary_details", "employee_residency"])->where('status','active')->get();
         $additions = PayrollSettings::where('settings_type', 'addition')->where('status','active')->get();
         $deductions = PayrollSettings::where('settings_type', 'deductions')->where('status','active')->get();
-        // echo '<pre>';print_r($overtimeDetails);exit;
-        $overtimeCount = EmployeeMonthlySalary::where('salary_type','overtime')->where('es_month',$month)->where('status','active')->get()->count();
-        return view('payroll.employee_overtime', compact('title', 'overtimeDetails', 'additions', 'deductions', 'breadButton', 'overtimeCount', 'month', 'year'));
+        // echo '<pre>';print_r($salaryDetails);exit;
+        $salaryCount = EmployeeMonthlySalary::where('salary_type','salary')->where('es_month',$month)->where('status','active')->get()->count();
+        $employees = $employees->where('status', 'active')->get();
+       
+        if(isset($_POST['report_type']) && $_POST['report_type']!=''):
+            //save employee salary data
+            $employees = Employee::with('employee_salary')->where('status', 'active')->get();
+            $total_earning = 0;
+            if($_POST['report_type'] == 'pdf'):
+                $is_generate_pdf = 1;
+                $is_lock_emp_salary_data = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->value('report_lock_status');
+                if($is_lock_emp_salary_data != 'lock'):
+                    //delete same tear or month data if already create
+                    EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->delete();
+                    if(!empty($employees) && count($employees) > 0):
+                        foreach($employees as $key => $val):
+                            $salary_calc = calculateOvertimeByFilter($val->user_id,$val->emp_generated_id,$month,$year,'report_pdf');
+                           // $total_allowence = calculate_employee_allowence($val->id);
+                            $total_sal = $salary_calc['total_salary'] ?? 0;
+                            $total_earning = $total_sal + 0;
+                            $save_data = new EmployeeOvertimeData();
+                            $save_data->employee_id = $val->id;
+                            $save_data->name = $val->first_name.' '.$val->last_name;
+                            $save_data->total_overtime_hours = $salary_calc['total_overtime_hours'] ?? 0;
+                            $save_data->hourly_salary = $salary_calc['hourly_salary'] ?? 0;
+                            $save_data->day_salary = $salary_calc['day_salary'] ?? 0;
+                            $save_data->basic_salary = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->basic_salary : 0;
+                            $save_data->overtime_amount = $salary_calc['total_salary'] ?? 0;
+                            $save_data->total_earning = $total_earning;
+                            $save_data->es_year = $year;
+                            $save_data->es_month = $month;
+                            $save_data->dates_between = $salary_calc['dates_between'] ?? '';
+                            $save_data->type = 'cash';
+                            $save_data->save();
+                        endforeach;
+                    endif;
+                endif;
+            endif;
+        //get pdf data 
+            $emp_overtime_data = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->get();
+            $pass_array = array(
+                "emp_overtime_data" => $emp_overtime_data,
+                "month" => $month,
+                "year" => $year,
+            );
+            $cdate = date('Y-m-d');
+            $rname = $cdate.'_overtimereport.pdf';
+            $pdf = PDF::loadView('payroll.employee_overtime_pdf', $pass_array)->setPaper('a4', 'landscape')->setWarnings(false);
+            //print_r($pdf);
+            return $pdf->download($rname);
+        else:            
+            $is_lock_emp_salary_data = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->value('report_lock_status');
+            return view('payroll.employee_overtime', compact('title', 'salaryDetails', 'additions', 'deductions', 'breadButton', 'salaryCount', 'year', 'month','employees','empname','is_generate_report','is_lock_emp_salary_data','is_generate_pdf'));
+       endif;
     }
 
     public function generate_overtime_slip(Request $request)
@@ -791,7 +845,7 @@ class PayrollController extends Controller
     //         endforeach;
     //     endif;
     //    //get pdf data 
-    //     $emp_salary_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->orderBy('branch_name')->whereNotNUll('branch_id')->get();
+    //     $emp_salary_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->get();
     //     $emp_branch_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->orderBy('branch_name')->whereNotNUll('branch_id')->groupBy('branch_name')->select('branch_name','branch_id as id')->get();
     //     $emp_company_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->orderBy('company_name')->whereNotNUll('branch_id')->groupBy('company_name')->get();
     //     //dd($emp_branch_data);
@@ -824,4 +878,21 @@ class PayrollController extends Controller
 		];
 		return response()->json($arr);
     }
+
+    public function changeovertimelockpdfstatus(Request $request,$month,$year,$type){
+        if($type == 'lock_data'):
+            $status = 'lock';
+            $res = 'unlock_data';
+        else:
+            $status = 'unlock';
+            $res = 'lock_data';
+        endif;
+        $emp_salary_data = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->update(["report_lock_status" => $status]);
+        $arr = [
+			'success' => 'true',
+			'res' => $res
+		];
+		return response()->json($arr);
+    }
+
 }

@@ -55,3 +55,29 @@
 .smmr-6{
   margin-right: 6px; 
 }
+.begin-filters {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+.df {display: flex; gap: 15px;}
+.begin-filters button {
+  font-size: 15px;
+  padding: 11px 10px;
+}
+.other-buttons {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  gap: 15px;
+}
+@media (max-width: 991px) {
+  .begin-filters {    
+      flex-direction: column; 
+  }
+  .df {
+      display: block;
+  }
+}

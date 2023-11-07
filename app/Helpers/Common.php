@@ -203,14 +203,13 @@ function getShiftName($id)
         3   =>  'FS',
         7   =>  'AL',
         8   =>  'SL',
-        9   =>  'UL',
-        10   =>  'COD');
+        9   =>  'UL');
     return $shifts[$id];
 }
 
 function getAttendanceText($shiftDetails,$encoded='')
 {
-    if(!empty($shiftDetails) && (in_array($shiftDetails->shift, array(1,2,3,7,8,9,10))))
+    if(!empty($shiftDetails) && (in_array($shiftDetails->shift, array(1,2,3,7,8,9))))
     {
         $tdValue = getShiftName($shiftDetails->shift);
     }

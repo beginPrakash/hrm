@@ -251,16 +251,26 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
                 if($total_attendanace_hours > $commonWorkingHours):
                     $diff = $total_attendanace_hours - $commonWorkingHours;
                     $final_diff =  $diff < 0 ? (-1) * $diff : $diff;
-                    $final_diff = $final_diff - 1;
+                    //$final_diff = $final_diff - 1;
                 endif;
             endif;
            
-            //save schedule hours and overtime data in attanedance detail yable
-            $save_data = AttendanceDetails::where('user_id',$user_id)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
-            $save_data->schedule_hours = $commonWorkingHours-1;
-            $save_data->overtime_hours = $final_diff ?? 0;
-            $save_data->save();
-            return true;
+            if($shiftDetails->shift == 10):
+                //dd($total_attendanace_hours);
+                //save schedule hours and overtime data in attanedance detail yable
+                $save_data = AttendanceDetails::where('user_id',$user_id)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
+                $save_data->schedule_hours = 0;
+                $save_data->overtime_hours = $total_attendanace_hours;
+                $save_data->save();
+                return true;
+            else:
+                //save schedule hours and overtime data in attanedance detail yable
+                $save_data = AttendanceDetails::where('user_id',$user_id)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
+                $save_data->schedule_hours = $commonWorkingHours-1;
+                $save_data->overtime_hours = $final_diff ?? 0;
+                $save_data->save();
+                return true;
+            endif;
         endif;
     }
 

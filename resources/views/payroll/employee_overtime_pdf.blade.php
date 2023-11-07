@@ -73,13 +73,13 @@
                                         <p>{{$val->name}}</p>
                                     </td>
                                     <td>
-                                        <p>{{ $val->total_overtime_hours ?? 0}}</p> 
+                                        <p>{{ round($val->total_overtime_hours) ?? 0}}</p> 
                                     </td>
                                     <td>
-                                        <p>{{ number_format($val->overtime_amount, 2) }}</p>
+                                        <p>{{ number_format($val->overtime_amount,2) }}</p>
                                     </td>
                                     <td>
-                                        <p>bonus</p>
+                                        <p>0</p>
                                     </td>
                                     <td>
                                         <p>{{ number_format($val->total_earning, 2) }}</p>

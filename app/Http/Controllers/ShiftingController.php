@@ -65,7 +65,7 @@ class ShiftingController extends Controller
                 })
                 ->addColumn('action', function ($shiftsArray)
                 {
-                    if($shiftsArray->id > 3)
+                    if($shiftsArray->id > 3 && $shiftsArray->id < 7 || $shiftsArray->id > 9)
                     {
                         $encodedData = base64_encode(json_encode($shiftsArray));
                         $button = '<div class="dropdown dropdown-action pull-right">

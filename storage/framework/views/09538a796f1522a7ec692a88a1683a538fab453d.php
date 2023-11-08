@@ -117,7 +117,9 @@
                             		foreach($employees as $emp)
                             		{ 
                                         $salary_calc = calculateOvertimeByFilter($emp->user_id,$emp->emp_generated_id,$month,$year);
-                            		?>
+                                        $bonus = calculateBonusByMonth($emp->id,$month,$year);
+                                        $total_earning = $salary_calc['total_salary'] + $bonus;
+                                    ?>
                                     
                                 <tr>
                                     <td>
@@ -126,10 +128,10 @@
                                     </td>
                                     <td><?php echo e($emp->emp_generated_id); ?></td>
                                     <td><?php echo e($emp->first_name); ?> <?php echo e($emp->last_name); ?></td>
-                                    <td><?php echo e($salary_calc['total_overtime_hours'] ?? 0); ?></td>
-                                    <td><?php echo e($salary_calc['total_salary'] ?? 0); ?></td>
-                                    <td>bonus</td>
-                                    <td>total</td>
+                                    <td><?php echo e(round($salary_calc['total_overtime_hours']) ?? 0); ?></td>
+                                    <td><?php echo e(number_format($salary_calc['total_salary'],2) ?? 0); ?></td>
+                                    <td><?php echo e($bonus); ?></td>
+                                    <td><?php echo e(number_format($total_earning,2) ?? 0); ?></td>
                                 </tr>
                                 <?php
                                 $i++;

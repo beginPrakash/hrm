@@ -62,6 +62,9 @@
                         <?php $i = 1; ?>
                         
                         <?php $__currentLoopData = $emp_overtime_data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php $bonus = calculateBonusByMonth($val->employee_id,$month,$year);
+                                        $total_earning = $val->overtime_amount + $bonus;
+                                        ?>
                                 <tr>
                                     <td>
                                         <h3 class="mb-0"><?php echo e($i); ?></h3>
@@ -73,16 +76,16 @@
                                         <p><?php echo e($val->name); ?></p>
                                     </td>
                                     <td>
-                                        <p><?php echo e($val->total_overtime_hours ?? 0); ?></p> 
+                                        <p><?php echo e(round($val->total_overtime_hours) ?? 0); ?></p> 
                                     </td>
                                     <td>
-                                        <p><?php echo e(number_format($val->overtime_amount, 2)); ?></p>
+                                        <p><?php echo e(number_format($val->overtime_amount,2)); ?></p>
                                     </td>
                                     <td>
-                                        <p>bonus</p>
+                                        <p><?php echo e($bonus); ?></p>
                                     </td>
                                     <td>
-                                        <p><?php echo e(number_format($val->total_earning, 2)); ?></p>
+                                        <p><?php echo e(number_format($total_earning, 2)); ?></p>
                                     </td>
                                 </tr>
                                 <?php $i++; ?>    

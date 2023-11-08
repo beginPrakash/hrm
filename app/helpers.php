@@ -10,6 +10,7 @@ use App\Models\Scheduling;
 use App\Models\Leaves;
 use App\Models\EmployeeSalaryData;
 use App\Models\LeaveApprovalLogs;
+use App\Models\EmployeeBonus;
 
 function getLastId()
 {
@@ -64,6 +65,14 @@ function calculateSalaryByFilter($user_id,$empid,$mid,$year,$type='')
     endif;
 }
 
+function calculateBonusByMonth($empid,$mid,$year,$type='')
+{
+    $endDateOrg = $year.'-'.$mid.'-'.'19';//date('Y-m-20');
+    $startDateOrg =  date('Y-m-d', strtotime('-1 month', strtotime($endDateOrg)));
+    $startDateOrg = date('Y-m-d', strtotime('+1 days', strtotime($startDateOrg)));
+    $total = EmployeeBonus::whereBetween('bonus_date', [$startDateOrg, $endDateOrg])->where('employee_id',$empid)->sum('bonus_amount');
+    return $total;
+}
 
 function calculateOvertimeByFilter($user_id,$empid,$mid,$year,$type='')
 {

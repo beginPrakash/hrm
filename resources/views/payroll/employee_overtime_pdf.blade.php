@@ -62,6 +62,9 @@
                         @php $i = 1; @endphp
                         
                         @foreach($emp_overtime_data as $key => $val)
+                        @php $bonus = calculateBonusByMonth($val->employee_id,$month,$year);
+                                        $total_earning = $val->overtime_amount + $bonus;
+                                        @endphp
                                 <tr>
                                     <td>
                                         <h3 class="mb-0">{{$i}}</h3>
@@ -79,10 +82,10 @@
                                         <p>{{ number_format($val->overtime_amount,2) }}</p>
                                     </td>
                                     <td>
-                                        <p>0</p>
+                                        <p>{{$bonus}}</p>
                                     </td>
                                     <td>
-                                        <p>{{ number_format($val->total_earning, 2) }}</p>
+                                        <p>{{ number_format($total_earning, 2) }}</p>
                                     </td>
                                 </tr>
                                 @php $i++; @endphp    

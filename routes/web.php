@@ -10,6 +10,7 @@ use App\Http\Controllers\LeavesController;
 use App\Http\Controllers\ShiftingController;
 use App\Http\Controllers\SchedulingController;
 use App\Http\Controllers\ShiftController;
+use App\Http\Controllers\BonusController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -185,10 +186,11 @@ Route::get('/leave_request',[LeavesController::class, 'leave_request'] );
 Route::post('/getmainLeaveDetailsById',[LeavesController::class, 'getLeaveDetailsById'] );
 
 
-
-
-
-
+Route::match(array('GET','POST'),'/bonus',[BonusController::class, 'index'])->name('bonus');
+Route::post('/store_bonus',[BonusController::class, 'store'] )->name('bonus.store');
+Route::post('/bonus_details',[BonusController::class, 'details'] );
+Route::post('/getmainLeaveDetailsById',[BonusController::class, 'getLeaveDetailsById'] );
+Route::post('/delete_bonus',[BonusController::class, 'delete_bonus'] );
 
 
 // ****************************** Policies Module ****************************** //

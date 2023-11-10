@@ -882,9 +882,8 @@ if ($currentMonth >= 4) {
 
                                                 <table class="table">
                                                     <tr>
-                                                        <th>Dates</th>
+                                                        <th>Date</th>
                                                         <th>No. of Days</th>
-                                                        <th>Amount</th>
                                                         <th>Status</th>
                                                         <!-- <th>Action</th> -->
                                                     </tr>
@@ -900,7 +899,7 @@ if ($currentMonth >= 4) {
                                                             <tr>
                                                                 <td><?php echo $el->leave_from; ?> to <?php echo $el->leave_to; ?></td>
                                                                 <td><?php echo $el->leave_days; ?></td>
-                                                                <td><?php echo number_format($perday * $el->leave_days , 2); ?></td>
+                                                                <!-- <td><?php //echo number_format($perday * $el->leave_days , 2); ?></td> -->
                                                                 <td><?php echo $el->leave_status; ?></td>
                                                                 <!-- <td>
                                                                     <?php if($el->leave_status!=='paid' && $el->leave_status!=='hold'){ ?>
@@ -972,9 +971,8 @@ if ($currentMonth >= 4) {
 
                                                 <table class="table">
                                                     <tr>
-                                                        <th>Dates</th>
+                                                        <th>Date</th>
                                                         <th>No. of Days</th>
-                                                        <th>Amount</th>
                                                         <th>Status</th>
                                                         <!-- <th>Action</th> -->
                                                     </tr>
@@ -990,7 +988,7 @@ if ($currentMonth >= 4) {
                                                             <tr>
                                                                 <td><?php echo $el->leave_from; ?> to <?php echo $el->leave_to; ?></td>
                                                                 <td><?php echo $el->leave_days; ?></td>
-                                                                <td><?php echo number_format($perday * $el->leave_days , 2); ?></td>
+                                                                <!-- <td><?php //echo number_format($perday * $el->leave_days , 2); ?></td> -->
                                                                 <td><?php echo $el->leave_status; ?></td>
                                                                 <!-- <td>
                                                                     <?php if($el->leave_status!=='paid' && $el->leave_status!=='hold'){ ?>

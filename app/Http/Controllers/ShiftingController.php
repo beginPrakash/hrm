@@ -117,6 +117,7 @@ class ShiftingController extends Controller
             'indefinite'        =>  $request->indefinite,
             'tag'               =>  $request->tag,
             'note'              =>  $request->note,
+            'is_cod'            =>  $request->is_cod ?? 0,
             'created_at'        =>  date('Y-m-d h:i:s')
         );
         // echo '<pre>';print_r($insertArray);exit;
@@ -144,6 +145,7 @@ class ShiftingController extends Controller
             'indefinite'        =>  $request->indefinite,
             'tag'               =>  $request->tag,
             'note'              =>  $request->note,
+            'is_cod'            =>  $request->is_cod ?? 0,
             'created_at'        =>  date('Y-m-d h:i:s')
         );
         Shifting::where('id', $_POST['id'])->update($updateArray);

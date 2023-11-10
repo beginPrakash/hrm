@@ -128,7 +128,7 @@
                                     </td>
                                     <td><?php echo e($emp->emp_generated_id); ?></td>
                                     <td><?php echo e($emp->first_name); ?> <?php echo e($emp->last_name); ?></td>
-                                    <td><?php echo e(round($salary_calc['total_overtime_hours']) ?? 0); ?></td>
+                                    <td><?php echo e(number_format($salary_calc['total_overtime_hours'],1) ?? 0); ?></td>
                                     <td><?php echo e(number_format($salary_calc['total_salary'],2) ?? 0); ?></td>
                                     <td><?php echo e($bonus); ?></td>
                                     <td><?php echo e(number_format($total_earning,2) ?? 0); ?></td>

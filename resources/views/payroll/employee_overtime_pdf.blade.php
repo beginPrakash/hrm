@@ -76,7 +76,7 @@
                                         <p>{{$val->name}}</p>
                                     </td>
                                     <td>
-                                        <p>{{ round($val->total_overtime_hours) ?? 0}}</p> 
+                                        <p>{{ number_format($val->total_overtime_hours,1) ?? 0}}</p> 
                                     </td>
                                     <td>
                                         <p>{{ number_format($val->overtime_amount,2) }}</p>

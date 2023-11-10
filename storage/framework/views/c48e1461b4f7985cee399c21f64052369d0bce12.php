@@ -165,6 +165,12 @@
                                         </div>
                                     </div>
                                     <div class="col-sm-12">
+                                        <div class="custom-control form-check">
+                                            <input type="checkbox" class="form-check-input" id="is_cod" name="is_cod" value="1">
+                                            <label class="form-check-label" name="is_cod" for="is_cod">Is COD?</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
                                         <div class="form-group">
                                             <label class="col-form-label">Repeat Every</label>
                                             <select class="select" name="repeat_every">
@@ -313,6 +319,12 @@
                                             <input type="checkbox" class="form-check-input" id="customCheck3">
                                             <label class="form-check-label" for="customCheck3">Recurring Shift</label>
                                             </div>
+                                    </div>
+                                    <div class="col-sm-12 cod_div">
+                                        <div class="custom-control form-check">
+                                            <input type="checkbox" class="form-check-input" id="is_cod_edit" name="is_cod" value="1">
+                                            <label class="form-check-label" name="is_cod" for="is_cod">Is COD?</label>
+                                        </div>
                                     </div>
                                     <div class="col-sm-12">
                                         <div class="form-group">
@@ -721,6 +733,8 @@
 
 <script>
     $(document).on('click','.editButton',function(){
+        $('#is_cod_edit').removeAttr('checked');
+        $('.cod_div').removeClass('d-none');
         var rowData = $(this).data('data');
         var decodedData = atob(rowData);
         var termarray = ['min_start_time', 'start_time', 'max_start_time', 'min_end_time', 'end_time', 'max_end_time'];
@@ -734,7 +748,15 @@
             }
             else
             {
-                $('#editForm [name="'+key+'"]').val(value);
+                if(key == 'id' && value<10){
+                    $('.cod_div').addClass('d-none');
+                }
+                if(key == 'is_cod' && value == '1'){
+                    $('#is_cod_edit').attr('checked',true);
+                }
+                if(key != 'is_cod'){
+                    $('#editForm [name="'+key+'"]').val(value);
+                }
             }
         });
     })

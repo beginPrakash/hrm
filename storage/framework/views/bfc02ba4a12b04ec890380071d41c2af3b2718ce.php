@@ -76,7 +76,7 @@
                                         <p><?php echo e($val->name); ?></p>
                                     </td>
                                     <td>
-                                        <p><?php echo e(round($val->total_overtime_hours) ?? 0); ?></p> 
+                                        <p><?php echo e(number_format($val->total_overtime_hours,1) ?? 0); ?></p> 
                                     </td>
                                     <td>
                                         <p><?php echo e(number_format($val->overtime_amount,2)); ?></p>

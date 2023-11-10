@@ -127,7 +127,7 @@
                                     </td>
                                     <td>{{$emp->emp_generated_id}}</td>
                                     <td>{{$emp->first_name}} {{$emp->last_name}}</td>
-                                    <td>{{round($salary_calc['total_overtime_hours']) ?? 0}}</td>
+                                    <td>{{number_format($salary_calc['total_overtime_hours'],1) ?? 0}}</td>
                                     <td>{{number_format($salary_calc['total_salary'],2) ?? 0}}</td>
                                     <td>{{$bonus}}</td>
                                     <td>{{number_format($total_earning,2) ?? 0}}</td>

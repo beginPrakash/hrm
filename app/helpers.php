@@ -246,6 +246,8 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $start_time = _convert_time_to_12hour_format($start_time);
         $end_time = _convert_time_to_12hour_format($end_time);
         $shiftDetails = Scheduling::where('employee', $user_id)->where('shift_on', $att_date)->where('status', 'active')->first();
+        $is_cod = (isset($shiftDetails->shift_details) && !empty($shiftDetails->shift_details)) ? $shiftDetails->shift_details->is_cod : 0;
+
         $commonWorkingHoursDetails = Overtime::first();
         $commonWorkingHours = $commonWorkingHoursDetails->working_hours;
         if(!empty($shiftDetails)):
@@ -264,13 +266,14 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
                 endif;
             endif;
            
-            if($shiftDetails->shift == 10):
+            if($is_cod== '1'):
                 //dd($total_attendanace_hours);
                 //save schedule hours and overtime data in attanedance detail yable
                 $save_data = AttendanceDetails::where('user_id',$user_id)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
                 $save_data->schedule_hours = 0;
                 $save_data->overtime_hours = $total_attendanace_hours;
                 $save_data->save();
+                //dd($save_data);
                 return true;
             else:
                 //save schedule hours and overtime data in attanedance detail yable

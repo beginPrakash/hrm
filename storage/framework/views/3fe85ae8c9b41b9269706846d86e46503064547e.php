@@ -50,7 +50,9 @@ $user_id = Session::get('user_id');
                         <li><a class="<?php echo ($page == 'attendance' || $page == 'estimate-view.php' || $page == 'edit-estimate.php' || $page == 'create-estimate.php')?'active':'';?>" href="/attendance">Attendance</a></li>
                         <?php } ?>
                         <li><a class="<?php echo ($page == 'leaves' || $page == 'estimate-view.php' || $page == 'edit-estimate.php' || $page == 'create-estimate.php')?'active':'';?>" href="/leaves">Leaves</a></li>
+                        <?php if($is_admin > 0) { ?>
                         <li><a class="<?php echo ($page == 'bonus' || $page == 'estimate-view.php' || $page == 'edit-estimate.php' || $page == 'create-estimate.php')?'active':'';?>" href="/bonus">Bonus</a></li>
+                        <?php } ?>
                         <?php if($is_admin != 1) { ?>
                         <li><a class="<?php echo ($page == 'leave_request')?'active':'';?>" href="/leave_request">Leave Request</a></li>
                         <?php } ?>

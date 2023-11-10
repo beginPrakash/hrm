@@ -94,7 +94,7 @@ class LeavesController extends Controller
         $leave_exist = [];
         if(empty($request->id)):
             $leave_exist = Leaves::where('user_id',$this->user_id)->whereBetween('leave_from', [$from_date, $to_date])
-        ->orWhereBetween('leave_to', [$from_date, $to_date])->first();
+        ->orWhereBetween('leave_to', [$from_date, $to_date])->where('user_id',$this->user_id)->first();
         endif;
         if(!empty($leave_exist)):
             return redirect()->back()->with('error','Leave is already applied.Please select another date.');

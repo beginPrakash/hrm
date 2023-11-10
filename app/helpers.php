@@ -247,7 +247,6 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $end_time = _convert_time_to_12hour_format($end_time);
         $shiftDetails = Scheduling::where('employee', $user_id)->where('shift_on', $att_date)->where('status', 'active')->first();
         $is_cod = (isset($shiftDetails->shift_details) && !empty($shiftDetails->shift_details)) ? $shiftDetails->shift_details->is_cod : 0;
-
         $commonWorkingHoursDetails = Overtime::first();
         $commonWorkingHours = $commonWorkingHoursDetails->working_hours;
         if(!empty($shiftDetails)):
@@ -385,6 +384,12 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
     function total_allowence_withput_food($id){
         $total = EmployeeSalaryData::where('id',$id)->sum(DB::raw('travel_allowence + house_allowence + position_allowence +phone_allowence + other_allowence'));
         return $total;
+    }
+
+    function _get_attendance_time($attnDate,$attnUserId,$type){
+        $firstclockin = AttendanceDetails::where('user_id', $attnUserId)->where('punch_state', $type)->whereDate('attendance_on', $attnDate 
+        )->value('attendance_time');
+        return $firstclockin;
     }
 
     

@@ -11,7 +11,7 @@ use App\Http\Controllers\ShiftingController;
 use App\Http\Controllers\SchedulingController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\BonusController;
-
+use App\Http\Controllers\Dashboard;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,11 +29,7 @@ Route::get('/', [AuthenticatedSessionController::class, 'create']);
 
 Route::group(['middleware' => 'auth'], function () {
 	
-	//Dashboard
-	Route::get('/dashboard', function () {
-	    return view('dashboard');
-	})->name('dashboard');
-
+	Route::get('/dashboard', [Dashboard::class, 'index'])->name('dashboard');
 
 	//Employees
 	Route::match(array('GET','POST'),'/employee', [EmployeeController::class, 'index']);

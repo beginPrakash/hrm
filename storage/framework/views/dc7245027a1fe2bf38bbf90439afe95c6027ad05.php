@@ -68,8 +68,110 @@ $username = Session::get('username');
                 </div>
             </div>
         </div>
-     
-        
+        <?php $is_admin = Session::get('is_admin'); ?>
+        <?php if($is_admin != 1): ?>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped custom-table datatable datatablex" id="datatable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Min Start Time</th>
+                                    <th>Max Start Time</th>
+                                    <th>Min End Time</th>
+                                    <th>Max End Time</th>
+                                    <th>Clock In</th>
+                                    <th>Clock Out</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <?php if(isset($sched_data) && count($sched_data) > 0): ?>
+                            	<?php $__currentLoopData = $sched_data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $data): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <?php $clockin = _get_attendance_time($data->shift_on,$user_id,'clockin');
+                                     $clockout = _get_attendance_time($data->shift_on,$user_id,'clockout');
+                                ?>
+                                <?php if($data->shift==1): ?>
+                                    <tr>
+                                        <td>OFF Day</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td> 
+                                        <td></td> 
+                                    </tr>
+                                <?php elseif($data->shift==2): ?>
+                                    <tr>
+                                        <td>PH Day</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td> 
+                                        <td></td> 
+                                    </tr>
+                                <?php elseif($data->shift==3): ?>
+                                    <tr>
+                                        <td>Free Shift</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td> 
+                                        <td></td> 
+                                    </tr>                            
+                                <?php elseif($data->shift==7): ?>
+                                    <tr>
+                                        <td>AL</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td> 
+                                        <td></td>    
+                                    </tr>                           
+                                <?php elseif($data->shift==8): ?>
+                                    <tr>
+                                        <td>SL</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td> 
+                                        <td></td> 
+                                    </tr>                            
+                                <?php elseif($data->shift==9): ?>
+                                    <tr>
+                                        <td>UL</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td> 
+                                        <td></td> 
+                                    </tr>  
+                                <?php else: ?>                         
+                                <tr>
+                                    <td><?php echo e(date('d-m-Y', strtotime($data->shift_on))); ?></td>
+                                    <td><?php echo e(_convert_time_to_12hour_format_bydate($data->min_start_time)); ?></td>
+                                    <td><?php echo e(_convert_time_to_12hour_format_bydate($data->max_start_time)); ?></td>
+                                    <td><?php echo e(_convert_time_to_12hour_format_bydate($data->min_end_time)); ?></td>
+                                    <td><?php echo e(_convert_time_to_12hour_format_bydate($data->max_end_time)); ?></td>
+                                    <td><?php echo e(_convert_time_to_12hour_format_bydate($clockin)); ?></td>
+                                    <td><?php echo e(_convert_time_to_12hour_format_bydate($clockout)); ?></td>
+                                </tr>
+                                <?php endif; ?>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                               
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
     <!-- /Page Content -->
 

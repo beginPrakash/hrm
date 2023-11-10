@@ -178,8 +178,8 @@ class AttendanceController extends Controller
         foreach($importData_arr as $importData)
         {
            
-            if(!empty($importData[0]) && !empty($importData[3]) && !empty($importData[5]) && !empty($importData[6])
-            && !empty($importData[7]) && !empty($importData[8]) && !empty($importData[9]) && !empty($importData[10])):
+            //if(!empty($importData[0]) && !empty($importData[3]) && !empty($importData[5]) && !empty($importData[6])
+            //&& !empty($importData[7]) && !empty($importData[8]) && !empty($importData[9]) && !empty($importData[10])):
                 if($importData[0]==='')
                 {
                     continue;
@@ -229,8 +229,8 @@ class AttendanceController extends Controller
                     "status"        =>  'active');
 
                 //check leave scheduling exist or not
-                $is_scheduling_leave = Scheduling::where('shift_on',$insertData['attendance_on'])->where('employee',$userId)->where('shift','>=',7)->first();
-                if(empty($is_scheduling_leave)):
+                $is_scheduling_leave = Scheduling::where('shift_on',$insertData['attendance_on'])->where('employee',$userId)->first();
+                //if(empty(!$is_scheduling_leave)):
                     if($importData[9] === '' && $importData[10] === '')
                     {
                         
@@ -324,7 +324,7 @@ class AttendanceController extends Controller
                             }
                         }
                     }
-                    //dd($insertData);
+                   // dd($insertData);
                     if(!empty($insertData)):
                         // /dd('sds');
                         $att_date = date('Y-m-d', strtotime($insertData['attendance_on']));
@@ -347,11 +347,11 @@ class AttendanceController extends Controller
                         endif;
                     endif;
                     // echo '<pre>';print_r($insertData);exit;
-                endif;
-            else:
-                AttendanceDetails::where('attendance_id',$attnId)->delete();
-                $error = 1;
-            endif;
+                //endif;
+            // else:
+            //     AttendanceDetails::where('attendance_id',$attnId)->delete();
+            //     $error = 1;
+            // endif;
         }
         $return['message'] = 'Import Successful.';
         $return['status'] = 1;

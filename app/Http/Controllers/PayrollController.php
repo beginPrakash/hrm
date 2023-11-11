@@ -741,18 +741,32 @@ class PayrollController extends Controller
                     if(!empty($employees) && count($employees) > 0):
                         foreach($employees as $key => $val):
                             $salary_calc = calculateOvertimeByFilter($val->user_id,$val->emp_generated_id,$month,$year,'report_pdf');
-                           // $total_allowence = calculate_employee_allowence($val->id);
+                           // dd($val);
+                            $bonus = calculateBonusByMonth($val->id,$month,$year);
                             $total_sal = $salary_calc['total_salary'] ?? 0;
-                            $total_earning = $total_sal + 0;
+                            $total_earning = $total_sal + $bonus;
                             $save_data = new EmployeeOvertimeData();
                             $save_data->employee_id = $val->id;
+                            $save_data->branch_id = $val->branch;
+                            $save_data->branch_name = (isset($val->employee_branch) && !empty($val->employee_branch)) ? $val->employee_branch->name : '';
                             $save_data->name = $val->first_name.' '.$val->last_name;
+                            $save_data->position = (isset($val->employee_designation) && !empty($val->employee_designation)) ? $val->employee_designation->name : '';
+                            $save_data->company_id =$val->company;
+                            $save_data->company_name = (isset($val->employee_company) && !empty($val->employee_company)) ? $val->employee_company->name : '';
+                            $save_data->license = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->license : '';
                             $save_data->total_overtime_hours = $salary_calc['total_overtime_hours'] ?? 0;
                             $save_data->hourly_salary = $salary_calc['hourly_salary'] ?? 0;
                             $save_data->day_salary = $salary_calc['day_salary'] ?? 0;
                             $save_data->basic_salary = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->basic_salary : 0;
                             $save_data->overtime_amount = $salary_calc['total_salary'] ?? 0;
+                            $save_data->food_allowence = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->food_allowance : 0;
+                            $save_data->travel_allowence = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->travel_allowance : 0;
+                            $save_data->house_allowence = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->house_allowance : 0;
+                            $save_data->position_allowence = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->position_allowance : 0;
+                            $save_data->phone_allowence = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->phone_allowance : 0;
+                            $save_data->other_allowence = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->other_allowance : 0;
                             $save_data->total_earning = $total_earning;
+                            $save_data->deduction = 0;
                             $save_data->es_year = $year;
                             $save_data->es_month = $month;
                             $save_data->dates_between = $salary_calc['dates_between'] ?? '';
@@ -763,9 +777,13 @@ class PayrollController extends Controller
                 endif;
             endif;
         //get pdf data 
-            $emp_overtime_data = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->get();
+            $emp_salary_data = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->orderBy('branch_name')->whereNotNUll('branch_id')->get();
+            $emp_branch_data = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->orderBy('branch_name')->whereNotNUll('branch_id')->groupBy('branch_name')->select('branch_name','branch_id as id')->get();
+            $emp_company_data = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->orderBy('company_name')->whereNotNUll('branch_id')->groupBy('company_name')->get();
             $pass_array = array(
-                "emp_overtime_data" => $emp_overtime_data,
+                "emp_salary_data" => $emp_salary_data,
+                "emp_branch_data"=>$emp_branch_data,
+                "emp_company_data"=> $emp_company_data,
                 "month" => $month,
                 "year" => $year,
             );

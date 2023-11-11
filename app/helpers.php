@@ -11,6 +11,7 @@ use App\Models\Leaves;
 use App\Models\EmployeeSalaryData;
 use App\Models\LeaveApprovalLogs;
 use App\Models\EmployeeBonus;
+use App\Models\EmployeeOvertimeData;
 
 function getLastId()
 {
@@ -98,6 +99,8 @@ function calculateOvertimeByFilter($user_id,$empid,$mid,$year,$type='')
         endif;
         $res_arr = [];
         if($type=='report_pdf'):
+            $res_arr['hourly_salary'] = $hourlySalary;
+            $res_arr['day_salary'] = $daySalary;
             $res_arr['total_overtime_hours'] = $total_overtime_hours;
             $res_arr['total_salary'] = $total_calculate_salary;
             $res_arr['dates_between'] = $startDateOrg.','.$endDateOrg;
@@ -302,6 +305,21 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
 
     function calcualte_total_by_month_company($month,$year,$company_id,$type){
         $total = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->where('company_id',$company_id)->where('type',$type)->groupBy('company_id')->sum('total_earning');
+        return $total;
+    }
+
+    function calcualte_ot_total_earning_by_month_company($month,$year,$company_id,$branch_id,$type,$atype=''){
+        if($atype == 'total'):
+            $total = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->where('branch_id',$branch_id)->groupBy('branch_id')->sum('total_earning');
+        //dd($company_id.'---'.$branch_id);
+        else:
+            $total = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->where('company_id',$company_id)->where('branch_id',$branch_id)->groupBy('branch_id','company_id')->where('type',$type)->sum('total_earning');
+        endif;
+            return $total;
+    }
+
+    function calcualte_ot_total_by_month_company($month,$year,$company_id,$type){
+        $total = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->where('company_id',$company_id)->where('type',$type)->groupBy('company_id')->sum('total_earning');
         return $total;
     }
 

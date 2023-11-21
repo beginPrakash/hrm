@@ -233,8 +233,7 @@ h1{
 			                <span><?php echo ucfirst($username); ?></span>
 			            </a>
 			            <div class="dropdown-menu">
-			                <a class="dropdown-item" href="profile.php">My Profile</a>
-			                <a class="dropdown-item" href="settings.php">Settings</a>
+			                <a class="dropdown-item" href="<?php echo e(route('change-password')); ?>">Change Password</a>
 			                <a class="dropdown-item" href="/logout">Logout</a>
 			            </div>
 			        </li>
@@ -245,8 +244,7 @@ h1{
 			    <div class="dropdown mobile-user-menu">
 			        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
 			        <div class="dropdown-menu dropdown-menu-right">
-			            <a class="dropdown-item" href="profile.php">My Profile</a>
-			            <a class="dropdown-item" href="settings.php">Settings</a>
+						<a class="dropdown-item" href="<?php echo e(route('change-password')); ?>">Change Password</a>
 			            <a class="dropdown-item" href="/logout">Logout</a>
 			        </div>
 			    </div>

@@ -348,13 +348,15 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $total_request_leave = $employee->request_leave_days ?? 0;
         $remaining_leave = $totalLeaveDays - ($balance + $total_request_leave);
         $remaining_leave_withoutreq = $totalLeaveDays - $balance;
+        $balance_leave_amount = $perday * $remaining_leave_withoutreq;
         $result = array(
             'totalLeaveDays'    =>  $totalLeaveDays,
             'used'              =>  $used,
             'leaveBalance'      =>  $leaveBalance,
             'leaveAmount'       =>  $leaveAmount,
             'remaining_leave'   =>  $remaining_leave,
-            'remaining_leave_withoutreq'   =>  $remaining_leave_withoutreq);
+            'remaining_leave_withoutreq'   =>  $remaining_leave_withoutreq,
+            'balance_leave_amount' => $balance_leave_amount);
 
         return $result;
     }
@@ -395,6 +397,7 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
     }
 
     function is_leave_approved_any_approver($leave_id){
+      
         $count = LeaveApprovalLogs::where('leave_id',$leave_id)->where('status','approved')->count();
         return $count;
     }

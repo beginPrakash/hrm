@@ -64,6 +64,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+	Route::get('/change-password', [ProfileController::class, 'change_password'])->name('change-password');
+	Route::post('/change-password', [ProfileController::class, 'post_change_password'])->name('post-change-password');
 });
 
 // department 
@@ -185,7 +187,6 @@ Route::post('/getmainLeaveDetailsById',[LeavesController::class, 'getLeaveDetail
 Route::match(array('GET','POST'),'/bonus',[BonusController::class, 'index'])->name('bonus');
 Route::post('/store_bonus',[BonusController::class, 'store'] )->name('bonus.store');
 Route::post('/bonus_details',[BonusController::class, 'details'] );
-Route::post('/getmainLeaveDetailsById',[BonusController::class, 'getLeaveDetailsById'] );
 Route::post('/delete_bonus',[BonusController::class, 'delete_bonus'] );
 
 

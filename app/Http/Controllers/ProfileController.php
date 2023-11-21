@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\FinancialYear;
-
+use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Session;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -69,5 +71,21 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    public function change_password(Request $request){
+        return view('profile.change-password');
+    }
+
+    public function post_change_password(Request $request){
+        $user_id  = Session::get('user_id');
+        $user = User::where('id', $user_id)->first();
+        if(isset($user) && !empty($user)):
+                $update=array('password'=>Hash::make($request->password));
+                User::find($user->id)->update($update);
+                return back()->with('success','Your password has been changed successfully');
+        else:
+            return back()->with('error','Something wrong please try again later');              
+        endif;
     }
 }

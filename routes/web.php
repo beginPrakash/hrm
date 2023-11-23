@@ -107,6 +107,7 @@ Route::post('/isSubresidencyExists', [App\Http\Controllers\SubresidencyControlle
 //     return view('edbr.employee');
 // });
 Route::get('/employeeProfileUpdate',[App\Http\Controllers\EmployeeController::class, 'update']);
+Route::get('/change_manual_punchin_status/{user_id}/{status}',[App\Http\Controllers\EmployeeController::class, 'change_manual_punchin_status']);
 Route::post('/employeeSearch', [EmployeeController::class, 'search']);
 
 
@@ -166,6 +167,7 @@ Route::post('/isAttendanceExists', [App\Http\Controllers\AttendanceController::c
 Route::post('/getAttendanceDetails',[App\Http\Controllers\AttendanceController::class, 'getAttendanceDetails']);
 Route::get('/getAttendanceTime',[App\Http\Controllers\AttendanceController::class, 'attendanceHoursCalculation']);
 Route::post('/create_attendance_by_date',[App\Http\Controllers\AttendanceController::class, 'create_attendance_by_date'])->name('create_attendance_by_date');
+Route::get('/save_clock_data/{type}',[App\Http\Controllers\AttendanceController::class, 'save_clock_data'])->name('save_clock_data');
 
 
 Route::post('/approveOt',[App\Http\Controllers\AttendanceController::class, 'approveOt'])->name('approveOt');

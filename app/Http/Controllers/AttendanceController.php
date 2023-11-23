@@ -188,134 +188,120 @@ class AttendanceController extends Controller
                 //check empno exists, if not create employee
                 $userDetails = $this->getUserDetailsByEmployeeId($importData[0]);
                 $departmentId = 0;
-                if(empty($userDetails))
-                {
-                    //create employee
-                    $this->company_id  = Session::get('company_id');
-                    $userArray = array(
-                        'company_id'    =>  $this->company_id,
-                        'username'      =>  $importData[3].'@'.rand(9000,999999),
-                        'name'          =>  $importData[3],
-                        'email'         =>  NULL,
-                        'password'      =>  Hash::make(randomPassword()),
-                        'created_at'    =>  date('Y-m-d H:i:s')
-                    );
-                    $userId = User::create($userArray)->id;
-                    if($userId)
-                    {
-                        $insertArray = array(
-                            'user_id'       =>  $userId,
-                            'company_id'    =>  $this->company_id,
-                            'first_name'    =>  $importData[3],
-                            'emp_generated_id'  =>  $importData[0]
-                        );
-                        $empId = Employee::create($insertArray);
-                    }
-                }
-                else
-                {
+                if(!empty($userDetails)):
+                    // {
+                    //     //create employee
+                    //     $this->company_id  = Session::get('company_id');
+                    //     $userArray = array(
+                    //         'company_id'    =>  $this->company_id,
+                    //         'username'      =>  $importData[3].'@'.rand(9000,999999),
+                    //         'name'          =>  $importData[3],
+                    //         'email'         =>  NULL,
+                    //         'password'      =>  Hash::make(randomPassword()),
+                    //         'created_at'    =>  date('Y-m-d H:i:s')
+                    //     );
+                    //     $userId = User::create($userArray)->id;
+                    //     if($userId)
+                    //     {
+                    //         $insertArray = array(
+                    //             'user_id'       =>  $userId,
+                    //             'company_id'    =>  $this->company_id,
+                    //             'first_name'    =>  $importData[3],
+                    //             'emp_generated_id'  =>  $importData[0]
+                    //         );
+                    //         $empId = Employee::create($insertArray);
+                    //     }
+                    // }
+                    // else
+                
                     $userId = $userDetails->user_id;//by employee id
                     $departmentId = $userDetails->department;
-                }
-                // $punch = ($importData[5]=='Check In')?'clockin':'clockout';
+                
+                    // $punch = ($importData[5]=='Check In')?'clockin':'clockout';
 
-                $insertData = array(
-                    "user_id"       =>  $userId,
-                    "employee_id"   =>  $importData[0],
-                    "department"    =>  $departmentId,
-                    "attendance_on" =>  date('Y-m-d', strtotime(str_replace('/','-',$importData[5]))),
-                    // "work_code"     =>  'NULL',
-                    "data_source"   =>  'Device',
-                    "status"        =>  'active');
+                    $insertData = array(
+                        "user_id"       =>  $userId,
+                        "employee_id"   =>  $importData[0],
+                        "department"    =>  $departmentId,
+                        "attendance_on" =>  date('Y-m-d', strtotime(str_replace('/','-',$importData[5]))),
+                        // "work_code"     =>  'NULL',
+                        "data_source"   =>  'Device',
+                        "status"        =>  'active');
 
-                //check leave scheduling exist or not
-                $is_scheduling_leave = Scheduling::where('shift_on',$insertData['attendance_on'])->where('employee',$userId)->first();
-                //if(empty(!$is_scheduling_leave)):
-                    if($importData[9] === '' && $importData[10] === '')
-                    {
-                        
-                        $insertData['day_type'] = 'off';
-                        $insertData["attendance_time"]   = 0;
-                        $insertData["punch_state"]          =  'none';
-                        // echo '<pre>';print_r(AttendanceDetails::where($insertData)->count());exit;
-                        if(AttendanceDetails::where($insertData)->count() == 0)
+                    //check leave scheduling exist or not
+                    $is_scheduling_leave = Scheduling::where('shift_on',$insertData['attendance_on'])->where('employee',$userId)->first();
+                    //if(empty(!$is_scheduling_leave)):
+                        if($importData[9] === '' && $importData[10] === '')
                         {
-                            $insertData['attendance_id'] = $attnId;
-                            $insertData["created_at"] = $this->current_datetime;
-                            // echo '<pre>';print_r($insertData);//exit;
-                            $in_data = AttendanceDetails::updateOrCreate($insertData);
-                            continue;
-                        }
-                    }
-
-
-                    if($importData[9] !== '')
-                    {
-                        //off or ph
-                        if((strtolower($importData[9])==='off' || strtolower($importData[9])==='ph') && (strtolower($importData[10])==='off' || strtolower($importData[10])==='ph'))
-                        {
-                            $insertData['day_type'] = strtolower($importData[9]);
+                            
+                            $insertData['day_type'] = 'off';
                             $insertData["attendance_time"]   = 0;
                             $insertData["punch_state"]          =  'none';
-                        }
-                        else
-                        {
-                            $insertData['day_type'] = 'work';
-                            $insertData["attendance_time"] = $importData[9];
-                            $insertData["punch_state"] = 'clockin';
-                        }
-                        if(AttendanceDetails::where($insertData)->count() == 0)
-                        {
-                            $insertData['attendance_id'] = $attnId;
-                            $insertData["created_at"] = $this->current_datetime;
-                            // echo '<pre>';print_r($insertData);//exit;
-                            $in_data = AttendanceDetails::updateOrCreate($insertData);
-                        }                
-                    }
-                    else
-                    {
-                        if($importData[10] !== '')
-                        {
-                            $insertData['day_type'] = 'work';
-                            $insertData["attendance_time"] =    0;
-                            $insertData["punch_state"]  =   'clockin';
+                            // echo '<pre>';print_r(AttendanceDetails::where($insertData)->count());exit;
                             if(AttendanceDetails::where($insertData)->count() == 0)
                             {
                                 $insertData['attendance_id'] = $attnId;
                                 $insertData["created_at"] = $this->current_datetime;
+                                // echo '<pre>';print_r($insertData);//exit;
                                 $in_data = AttendanceDetails::updateOrCreate($insertData);
+                                continue;
                             }
                         }
-                    }           
 
-                    if($importData[10] !== '')
-                    {
-                        // if(strtolower($importData[10])==='off' || strtolower($importData[10])==='ph')
-                        // {
-                        //     $insertData['day_type'] = strtolower($importData[10]);
-                        //     $insertData["attendance_time"]   = 0;
-                        //     $insertData["punch_state"]          =  'none';
-                        // }
-                        // else
-                        // {
-                            $insertData['day_type'] = 'work';
-                            $insertData["attendance_time"] =    $importData[10];
-                            $insertData["punch_state"]  =   'clockout';
-                        // }
-                        if(AttendanceDetails::where($insertData)->count() == 0)
-                        {
-                            $insertData['attendance_id'] = $attnId;
-                            $insertData["created_at"] = $this->current_datetime;
-                            AttendanceDetails::updateOrCreate($insertData);
-                        }
-                    }
-                    else
-                    {
+
                         if($importData[9] !== '')
                         {
-                            $insertData['day_type'] = 'work';
-                            $insertData["attendance_time"] =    0;
-                            $insertData["punch_state"]  =   'clockout';
+                            //off or ph
+                            if((strtolower($importData[9])==='off' || strtolower($importData[9])==='ph') && (strtolower($importData[10])==='off' || strtolower($importData[10])==='ph'))
+                            {
+                                $insertData['day_type'] = strtolower($importData[9]);
+                                $insertData["attendance_time"]   = 0;
+                                $insertData["punch_state"]          =  'none';
+                            }
+                            else
+                            {
+                                $insertData['day_type'] = 'work';
+                                $insertData["attendance_time"] = $importData[9];
+                                $insertData["punch_state"] = 'clockin';
+                            }
+                            if(AttendanceDetails::where($insertData)->count() == 0)
+                            {
+                                $insertData['attendance_id'] = $attnId;
+                                $insertData["created_at"] = $this->current_datetime;
+                                // echo '<pre>';print_r($insertData);//exit;
+                                $in_data = AttendanceDetails::updateOrCreate($insertData);
+                            }                
+                        }
+                        else
+                        {
+                            if($importData[10] !== '')
+                            {
+                                $insertData['day_type'] = 'work';
+                                $insertData["attendance_time"] =    0;
+                                $insertData["punch_state"]  =   'clockin';
+                                if(AttendanceDetails::where($insertData)->count() == 0)
+                                {
+                                    $insertData['attendance_id'] = $attnId;
+                                    $insertData["created_at"] = $this->current_datetime;
+                                    $in_data = AttendanceDetails::updateOrCreate($insertData);
+                                }
+                            }
+                        }           
+
+                        if($importData[10] !== '')
+                        {
+                            // if(strtolower($importData[10])==='off' || strtolower($importData[10])==='ph')
+                            // {
+                            //     $insertData['day_type'] = strtolower($importData[10]);
+                            //     $insertData["attendance_time"]   = 0;
+                            //     $insertData["punch_state"]          =  'none';
+                            // }
+                            // else
+                            // {
+                                $insertData['day_type'] = 'work';
+                                $insertData["attendance_time"] =    $importData[10];
+                                $insertData["punch_state"]  =   'clockout';
+                            // }
                             if(AttendanceDetails::where($insertData)->count() == 0)
                             {
                                 $insertData['attendance_id'] = $attnId;
@@ -323,35 +309,50 @@ class AttendanceController extends Controller
                                 AttendanceDetails::updateOrCreate($insertData);
                             }
                         }
-                    }
-                   // dd($insertData);
-                    if(!empty($insertData)):
-                        // /dd('sds');
-                        $att_date = date('Y-m-d', strtotime($insertData['attendance_on']));
-                        $shiftDetails = Scheduling::where('employee', $insertData['user_id'])->where('shift_on', $att_date)->where('status', 'active')->first();
-                        if(!empty($shiftDetails)):
-                            $flag = _check_green_icon_attendance($insertData['attendance_on'],$insertData['user_id']);
-                            if($flag === 0):
-                                $save_data = save_schedule_overtime_hours($insertData['user_id'],$att_date,$importData[9],$importData[10]);
-                            elseif($flag == 2):
-                                $save_data = AttendanceDetails::where('user_id',$insertData['user_id'])->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
-                                $save_data->schedule_hours = 8;
-                                $save_data->overtime_hours = 0;
-                                $save_data->save();
-                            else:
-                                $save_data = AttendanceDetails::where('user_id',$insertData['user_id'])->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
-                                $save_data->schedule_hours = NULL;
-                                $save_data->overtime_hours = NULL;
-                                $save_data->save();
-                            endif;  
+                        else
+                        {
+                            if($importData[9] !== '')
+                            {
+                                $insertData['day_type'] = 'work';
+                                $insertData["attendance_time"] =    0;
+                                $insertData["punch_state"]  =   'clockout';
+                                if(AttendanceDetails::where($insertData)->count() == 0)
+                                {
+                                    $insertData['attendance_id'] = $attnId;
+                                    $insertData["created_at"] = $this->current_datetime;
+                                    AttendanceDetails::updateOrCreate($insertData);
+                                }
+                            }
+                        }
+                    // dd($insertData);
+                        if(!empty($insertData)):
+                            // /dd('sds');
+                            $att_date = date('Y-m-d', strtotime($insertData['attendance_on']));
+                            $shiftDetails = Scheduling::where('employee', $insertData['user_id'])->where('shift_on', $att_date)->where('status', 'active')->first();
+                            if(!empty($shiftDetails)):
+                                $flag = _check_green_icon_attendance($insertData['attendance_on'],$insertData['user_id']);
+                                if($flag === 0):
+                                    $save_data = save_schedule_overtime_hours($insertData['user_id'],$att_date,$importData[9],$importData[10]);
+                                elseif($flag == 2):
+                                    $save_data = AttendanceDetails::where('user_id',$insertData['user_id'])->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
+                                    $save_data->schedule_hours = 8;
+                                    $save_data->overtime_hours = 0;
+                                    $save_data->save();
+                                else:
+                                    $save_data = AttendanceDetails::where('user_id',$insertData['user_id'])->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
+                                    $save_data->schedule_hours = NULL;
+                                    $save_data->overtime_hours = NULL;
+                                    $save_data->save();
+                                endif;  
+                            endif;
                         endif;
-                    endif;
-                    // echo '<pre>';print_r($insertData);exit;
-                //endif;
-            // else:
-            //     AttendanceDetails::where('attendance_id',$attnId)->delete();
-            //     $error = 1;
-            // endif;
+                        // echo '<pre>';print_r($insertData);exit;
+                    //endif;
+                    // else:
+                    //     AttendanceDetails::where('attendance_id',$attnId)->delete();
+                    //     $error = 1;
+                    // endif;
+                endif;
         }
         $return['message'] = 'Import Successful.';
         $return['status'] = 1;
@@ -780,5 +781,71 @@ class AttendanceController extends Controller
             endif;  
         endif;
         return redirect()->back()->with('success','Attendance created successfully');
+    }
+
+    public function save_clock_data(Request $request,$type){
+        $user_id  = Session::get('user_id');
+        //find employee generated id
+        $cdate = date('Y-m-d');
+        $ctime = date('h:i');
+        $userDetails = Employee::where("user_id", $user_id)->where('status','active')->first();
+        $employee_id = $userDetails->emp_generated_id;//by employee id
+        $departmentId = $userDetails->department;
+        //$ctime = date('H:i', strtotime(str_replace(' pm','',$request->start_time)));
+        if($type == 'in'):
+            $insertData = array(
+            "user_id"       =>  $user_id,
+            "employee_id"   =>  $employee_id,
+            "department"    =>  $departmentId,
+            "attendance_on" =>  $cdate,
+            "attendance_time"=> $ctime,
+            "punch_state"   =>  'clockin',
+            "day_type"     =>  'work',
+            "data_source"   =>  'Device',
+            "created_at"    =>  $this->current_datetime,
+            "status"        =>  'active');
+
+            $in_data = AttendanceDetails::create($insertData);
+        elseif($type == 'out'):
+            $insertData = array(
+            "user_id"       =>  $user_id,
+            "employee_id"   =>  $employee_id,
+            "department"    =>  $departmentId,
+            "attendance_on" =>  $cdate,
+            "attendance_time"=> $ctime,
+            "punch_state"   =>  'clockout',
+            "day_type"     =>  'work',
+            "data_source"   =>  'Device',
+            "created_at"    =>  $this->current_datetime,
+            "status"        =>  'active');
+
+            $out_data = AttendanceDetails::create($insertData);
+        endif;
+        //get schedule data
+        $att_date = date('Y-m-d', strtotime($cdate));
+        $start_time = AttendanceDetails::where('user_id', $user_id)->where('punch_state', 'clockin')->whereDate('attendance_on', $att_date 
+        )->first();
+        $end_time = AttendanceDetails::where('user_id', $user_id)->where('punch_state', 'clockout')->whereDate('attendance_on', $att_date 
+        )->limit(1)->orderBy('id', 'desc')->first();
+        if(!empty($start_time) && !empty($end_time)):
+            $shiftDetails = Scheduling::where('employee', $user_id)->where('shift_on', $att_date)->where('status', 'active')->first();
+            if(!empty($shiftDetails)):
+                $flag = _check_green_icon_attendance($cdate,$user_id);
+                if($flag === 0):
+                    $save_data = save_schedule_overtime_hours($user_id,$att_date,$start_time->attendance_time,$end_time->attendance_time);
+                elseif($flag == 2):
+                    $save_data = AttendanceDetails::find($in_id);
+                    $save_data->schedule_hours = 8;
+                    $save_data->overtime_hours = 0;
+                    $save_data->save();
+                else:
+                    $save_data = AttendanceDetails::find($start_time->id);
+                    $save_data->schedule_hours = NULL;
+                    $save_data->overtime_hours = NULL;
+                    $save_data->save();
+                endif;  
+            endif;
+        endif;
+        return redirect()->back()->with('success','Time saved successfully');
     }
 }

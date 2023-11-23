@@ -164,7 +164,7 @@ $maxDays=date('t', strtotime($start_date));
                                                         {
                                                             if($emloyeeAttendance->day_type === 'off' && ($emloyeeAttendance->attendance_time === '0'))
                                                             {
-                                                                echo($emloyeeAttendance->id);
+                                                                //echo($emloyeeAttendance->id);
                                                                 $encoded = base64_encode(json_encode($date.'/'.$employee->user_id));
                                                                 $tdValue = getAttendanceText($shiftDetails,$encoded);
                                                             }

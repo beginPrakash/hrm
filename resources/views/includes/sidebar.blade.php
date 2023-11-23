@@ -90,12 +90,12 @@ $user_id = Session::get('user_id');
                 <li class="menu-title"> 
                     <span>Pages</span>
                 </li>
-                <li class="submenu">
+                <!-- <li class="submenu">
                     <a href="#"><i class="la la-user"></i> <span> Profile </span> <span class="menu-arrow"></span></a>
                     <ul style="display: none;">
                         <li><a class="<?php echo ($page == 'profile.php')?'active':'';?>" href="profile.php"> Employee Profile </a></li>
                     </ul>
-                </li>
+                </li> -->
 
                 <li>
                     <?php if($is_admin > 0) { ?>

@@ -413,5 +413,10 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         return $firstclockin;
     }
 
+    function _get_emp_manual_punchin($user_id){
+        $data = Employee::where('user_id',$user_id)->value('is_manual_punchin');
+        return $data;
+    }
+
     
     

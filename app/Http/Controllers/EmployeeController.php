@@ -1085,4 +1085,17 @@ class EmployeeController extends Controller
         $return['error'] = $error;
         return $return;
     }
+
+    public function change_manual_punchin_status(Request $request,$user_id,$status){
+        $emp_details = Employee::where('user_id',$user_id)->first();
+        if($emp_details->is_manual_punchin == 0):
+            $emp_details->is_manual_punchin = 1;
+        else:
+            $emp_details->is_manual_punchin = 0;
+        endif;
+        $emp_details->save();
+        $return['message'] = 'Import Successful.';
+        $return['status'] = 1;
+        return $return;
+    }
 }

@@ -188,9 +188,16 @@
                                                     <?php echo ucwords($leave->leave_status); ?>
                                                     </td>
                                                     <td>
+                                                        
                                                         @php $leave_approve = is_leave_approved_any_approver($leave->id); @endphp
-                                                        @if($leave_approve == '0')
+                                                        @if($leave->leave_status=='pending')
                                                             <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#add_leave" data-id="{{$leave->id}}" data-leave_days = "{{$leave->leave_days}}" class="action-icon edit_hierarchy"><i class="fa fa-pencil"></i></a>
+                                                        @else
+                                                            @if($leave->leave_status!='approved')
+                                                                @if($leave_approve <= 0)
+                                                                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#add_leave" data-id="{{$leave->id}}" data-leave_days = "{{$leave->leave_days}}" class="action-icon edit_hierarchy"><i class="fa fa-pencil"></i></a>
+                                                                @endif
+                                                            @endif
                                                         @endif
                                                         </td>
                                                 </tr>

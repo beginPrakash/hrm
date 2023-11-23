@@ -121,7 +121,7 @@ if ($currentMonth >= 4) {
                         <li class="nav-item"><a href="#fnf_settlement" data-bs-toggle="tab" class="nav-link <?php echo ($tabActive==4)?'active':''; ?>">FNF Settlement<small class="text-danger"></small></a></li>
                         <li class="nav-item"><a href="#annual_leave" data-bs-toggle="tab" class="nav-link <?php echo ($tabActive==5)?'active':''; ?>">Annual Leave<small class="text-danger"></small></a></li>
                         <li class="nav-item"><a href="#Worked_holidays" data-bs-toggle="tab" class="nav-link <?php echo ($tabActive==6)?'active':''; ?>">Public Holidays<small class="text-danger"></small></a></li>
-
+                        <li class="nav-item"><a href="#settings" data-bs-toggle="tab" class="nav-link <?php echo ($tabActive==6)?'active':''; ?>">Settings<small class="text-danger"></small></a></li>
                         
                     </ul>
                 </div>
@@ -1159,6 +1159,103 @@ if ($currentMonth >= 4) {
                                                 
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 d-flex" style="display: none!important;">
+                                <div class="card profile-box flex-fill">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <ul class="personal-info">
+                                                <Hr/>
+                                                    <h4>Public Holiday Information</h4>
+                                                <Hr/>
+                                                
+                                                <li>
+                                                    <div class="title">Total Public Holidays</div>
+                                                    <div class="text"><?php echo (isset($annualleavedetails))?$annualleavedetails['totalLeaveDays']:0; ?></div>
+                                                </li>
+                                                <li>
+                                                    <div class="title">Worked Days</div>
+                                                    <div class="text"><?php echo (isset($annualleavedetails))?$annualleavedetails['used']:0; ?></div>
+                                                </li>
+                                                <li>
+                                                    <div class="title">Leave Balance Days</div>
+                                                    <div class="text"><?php echo (isset($annualleavedetails))?$annualleavedetails['leaveBalance']:0; ?></div>
+                                                </li>
+                                                <li>
+                                                    <div class="title">Leave Balance Amount</div>
+                                                    <div class="text">KWD <?php echo (isset($annualleavedetails))?number_format($annualleavedetails['leaveAmount'], 2):0; ?></div>
+                                                </li>
+
+                                                <Hr/>
+                                                    <h4>Leave Requests - <?php echo date('Y'); ?></h4>
+                                                <Hr/>
+
+                                                <table class="table">
+                                                    <tr>
+                                                        <th>Dates</th>
+                                                        <th>No. of Days</th>
+                                                        <th>Amount</th>
+                                                        <th>Status</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                    <?php //echo '<pre>';print_r($user->employee_leaves); 
+                                                    if(isset($user->employee_leaves)) { 
+                                                        foreach($user->employee_leaves as $el) { 
+                                                            if($el->leave_type == 1) { ?>
+                                                        <tr>
+                                                            <td><?php echo $el->leave_from; ?> to <?php echo $el->leave_to; ?></td>
+                                                            <td><?php echo $el->leave_days; ?></td>
+                                                            <td><?php echo number_format($perday * $el->leave_days , 2); ?></td>
+                                                            <td><?php echo $el->leave_status; ?></td>
+                                                            <td>
+                                                                <?php if($el->leave_status!=='paid' && $el->leave_status!=='hold'){ ?>
+                                                                    <form method="post" action="/employeeLeaveAmountUpdate/<?php echo $el->id; ?>">
+                                                                        @csrf
+                                                                        <input type="hidden" name="userid" value="<?php echo $user->id; ?>">
+                                                                        <input type="hidden" name="nodays" value="<?php echo $el->leave_days; ?>">
+                                                                        <input type="hidden" name="lamount" value="<?php echo $perday * $el->leave_days; ?>">
+                                                                        <button type="submit" name="status_type" value="paid" class="btn btn-success text-white">Paid</button>
+                                                                        <button type="submit" name="status_type" value="hold" class="btn btn-warning text-white">Hold</button>
+                                                                    </form>
+                                                                <?php } if($el->leave_status=='paid'){ ?>
+                                                                    <span class="badge bg-inverse-success">Paid</span>
+                                                                <?php } if($el->leave_status=='hold'){ ?>
+                                                                    <span class="badge bg-inverse-warning">Hold</span>
+                                                                <?php } ?>
+                                                            </td>
+                                                        </tr>
+                                                    <?php } } } ?>
+                                                </table>
+
+                                            </ul>
+                                            
+                                            <div class="col-md-12">
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="settings">
+                        <div class="row">
+                            <div class="alert alert-success alert-dismissible fade show d-none" role="alert" id="success_message">
+                                    <strong>Status changed successfully.</strong>
+                            </div>
+                            <div class="col-md-6 d-flex">
+                                <div class="card profile-box flex-fill">
+                                    <div class="card-body">
+                                    <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="is_manual_punchin" data-id="<?php echo $user->user_id; ?>" id="is_manual_punchin" value="{{$user->is_manual_punchin ?? 1}}" @if(isset($user->is_manual_punchin) && $user->is_manual_punchin==1) checked @endif>
+                                    <label class="form-check-label" for="is_manual_punchin">
+                                        Enable Manual Punch-In and Out
+                                    </label>
+                                </div>
                                     </div>
                                 </div>
                             </div>
@@ -2733,6 +2830,19 @@ if ($currentMonth >= 4) {
 
 @include('includes/footer')
 <script type="text/javascript">
+    $(document).on('click','#is_manual_punchin',function(){
+        var check_val = $(this).val();
+        var user_id = $(this).data('id');
+        $.ajax({
+                    url: '/change_manual_punchin_status/'+user_id+'/'+check_val,
+                    type: "GET",
+                    dataType: "json",
+                    success:function(response)
+                    {
+                        $('#success_message').removeClass('d-none');
+                    }
+        });
+    });
     $(document).ready(function() {
 
         $("#employee_info_update").validate({

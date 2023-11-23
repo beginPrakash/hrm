@@ -12,9 +12,21 @@ $username = Session::get('username');
             
     <!-- Page Content -->
     <div class="content container-fluid">
-    
+        @include('flash-message')  
+        @php $is_admin = Session::get('is_admin'); @endphp
         <!-- Page Header -->
         <div class="page-header">
+            @if($is_admin != 1)
+                @if(empty($firstclockin) && empty($lastclockout))
+                    <div class="col-auto float-end ms-auto">
+                        <a href="{{route('save_clock_data','in')}}" class="btn add-btn"><i class="fa fa-clock"></i>Punch In</a>
+                    </div>
+                @elseif(!empty($firstclockin) && empty($lastclockout))
+                    <div class="col-auto float-end ms-auto">
+                        <a href="{{route('save_clock_data','out')}}" class="btn add-btn"><i class="fa fa-clock"></i>Punch Out</a>
+                    </div>
+                @endif
+            @endif
             <div class="row">
                 <div class="col-sm-12">
                     <h3 class="page-title">Welcome <?php echo ucfirst($username); ?>!</h3>
@@ -72,7 +84,22 @@ $username = Session::get('username');
                 </div>
             </div>
         </div>
-        @php $is_admin = Session::get('is_admin'); @endphp
+        
+        @if($is_admin != 1)
+        <div class="row">
+            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+                <div class="card dash-widget">
+                    <div class="card-body">
+                        <span class="dash-widget-icon"><i class="fa fa-user"></i></span>
+                        <div class="dash-widget-info">
+                            <h3>KWD {{number_format($totpayable,2) ?? 0}}</h3>
+                            <span>Total Indemnity Payable</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
         <div class="row">
             @if($is_admin != 1)
                 <div class="col-md-6 col-sm-6 col-lg-6 col-xl-6">
@@ -82,7 +109,7 @@ $username = Session::get('username');
                             <div class="dash-widget-info" style="text-align: left;">
                                 <h3>Annual leave</h3>
                                 <span>Balance leaves {{$balance_annual_leave_total['remaining_leave_withoutreq'] ?? 0}}</span>
-                                <span>Amount ${{$balance_annual_leave_total['balance_leave_amount'] ?? 0}}</span>   
+                                <span>Amount KWD {{$balance_annual_leave_total['balance_leave_amount'] ?? 0}}</span>   
                             </div>
                             <div class="dash-widget-info-btn">
                                 <a href="javascript:void(0);" class="btn btn-primary annual_history_btn">History</a>
@@ -109,7 +136,10 @@ $username = Session::get('username');
                                             </tr>
                                             
                                         @endforeach
-                                
+                                    @else
+                                        <tr>
+                                            <td colspan="3" align="center">No dat found</td>
+                                        </tr>
                                     @endif
                                 </tbody>
                             </table>
@@ -151,7 +181,10 @@ $username = Session::get('username');
                                             </tr>
                                             
                                         @endforeach
-                                
+                                    @else
+                                        <tr>
+                                            <td colspan="3" align="center">No dat found</td>
+                                        </tr>
                                     @endif
                                 </tbody>
                             </table>
@@ -168,7 +201,7 @@ $username = Session::get('username');
                         <div class="card-body">
                             <h3>Schedule</h3>
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive" style="margin-left:20px">
                             <table class="table table-striped custom-table datatable datatablex" id="datatable">
                                 <thead>
                                     <tr>

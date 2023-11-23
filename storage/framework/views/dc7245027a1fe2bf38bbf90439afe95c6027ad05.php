@@ -12,9 +12,21 @@ $username = Session::get('username');
             
     <!-- Page Content -->
     <div class="content container-fluid">
-    
+        <?php echo $__env->make('flash-message', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>  
+        <?php $is_admin = Session::get('is_admin'); ?>
         <!-- Page Header -->
         <div class="page-header">
+            <?php if($is_admin != 1): ?>
+                <?php if(empty($firstclockin) && empty($lastclockout)): ?>
+                    <div class="col-auto float-end ms-auto">
+                        <a href="<?php echo e(route('save_clock_data','in')); ?>" class="btn add-btn"><i class="fa fa-clock"></i>Punch In</a>
+                    </div>
+                <?php elseif(!empty($firstclockin) && empty($lastclockout)): ?>
+                    <div class="col-auto float-end ms-auto">
+                        <a href="<?php echo e(route('save_clock_data','out')); ?>" class="btn add-btn"><i class="fa fa-clock"></i>Punch Out</a>
+                    </div>
+                <?php endif; ?>
+            <?php endif; ?>
             <div class="row">
                 <div class="col-sm-12">
                     <h3 class="page-title">Welcome <?php echo ucfirst($username); ?>!</h3>
@@ -72,7 +84,22 @@ $username = Session::get('username');
                 </div>
             </div>
         </div>
-        <?php $is_admin = Session::get('is_admin'); ?>
+        
+        <?php if($is_admin != 1): ?>
+        <div class="row">
+            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+                <div class="card dash-widget">
+                    <div class="card-body">
+                        <span class="dash-widget-icon"><i class="fa fa-user"></i></span>
+                        <div class="dash-widget-info">
+                            <h3>KWD <?php echo e(number_format($totpayable,2) ?? 0); ?></h3>
+                            <span>Total Indemnity Payable</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
         <div class="row">
             <?php if($is_admin != 1): ?>
                 <div class="col-md-6 col-sm-6 col-lg-6 col-xl-6">
@@ -82,7 +109,7 @@ $username = Session::get('username');
                             <div class="dash-widget-info" style="text-align: left;">
                                 <h3>Annual leave</h3>
                                 <span>Balance leaves <?php echo e($balance_annual_leave_total['remaining_leave_withoutreq'] ?? 0); ?></span>
-                                <span>Amount $<?php echo e($balance_annual_leave_total['balance_leave_amount'] ?? 0); ?></span>   
+                                <span>Amount KWD <?php echo e($balance_annual_leave_total['balance_leave_amount'] ?? 0); ?></span>   
                             </div>
                             <div class="dash-widget-info-btn">
                                 <a href="javascript:void(0);" class="btn btn-primary annual_history_btn">History</a>

@@ -22,22 +22,23 @@ class BonusController extends Controller
         $sql_que = EmployeeBonus::orderBy('id','desc');
         //for search
         $where = [];
-
+        $serach_text = $_POST['search_text'] ?? '';
         if(isset($_POST['search']))
         {
-            if(isset($_POST['employee']) && $_POST['employee']!='')
+            
+            //dd($_POST['search_text']);
+            if(isset($_POST['search_text']) && $_POST['search_text']!='')
             {
-                $where['employee_id'] = $_POST['employee'];
+                $userdata = Employee::where(DB::raw("CONCAT(first_name, ' ', last_name)") , 'like', '%'.$_POST['search_text'].'%')
+                                ->orWhere('emp_generated_id',$serach_text)->select(DB::raw("GROUP_CONCAT(id SEPARATOR ',') as `ids`"))->where('status', 'active')->first();                    
+                $user_ids = $userdata->ids ?? '';
+                $sql_que = $sql_que->whereIn('employee_id',explode(',',$user_ids));
             }
         }
-
-        if(count($where) > 0)
-        {
-            $sql_que->where($where);
-
-        }
+        
+        
         $bonus_data = $sql_que->get();
-        return view('lts.bonus', compact('bonus_data','userdetails','where'));
+        return view('lts.bonus', compact('bonus_data','where','serach_text','userdetails'));
     }  
 
     public function store(Request $request)

@@ -111,9 +111,16 @@
                                                     <?php echo ucwords($leave->leave_status); ?>
                                                     </td>
                                                     <td>
+                                                        
                                                         <?php $leave_approve = is_leave_approved_any_approver($leave->id); ?>
-                                                        <?php if($leave_approve == '0'): ?>
+                                                        <?php if($leave->leave_status=='pending'): ?>
                                                             <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#add_leave" data-id="<?php echo e($leave->id); ?>" data-leave_days = "<?php echo e($leave->leave_days); ?>" class="action-icon edit_hierarchy"><i class="fa fa-pencil"></i></a>
+                                                        <?php else: ?>
+                                                            <?php if($leave->leave_status!='approved'): ?>
+                                                                <?php if($leave_approve <= 0): ?>
+                                                                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#add_leave" data-id="<?php echo e($leave->id); ?>" data-leave_days = "<?php echo e($leave->leave_days); ?>" class="action-icon edit_hierarchy"><i class="fa fa-pencil"></i></a>
+                                                                <?php endif; ?>
+                                                            <?php endif; ?>
                                                         <?php endif; ?>
                                                         </td>
                                                 </tr>
@@ -132,7 +139,7 @@
                 <input type="hidden" id="request_leave" value="<?php echo e($userdetails[0]->request_leave_days ?? 0); ?>">
                 <input type="hidden" id="emp_remaining_leave" value="<?php echo e($leave_details['remaining_leave'] ?? 0); ?>">
                 <input type="hidden" id="emp_remainingsick_leave" value="<?php echo e($sick_leave_details['remaining_leave'] ?? 0); ?>">
-                <div id="add_leave" class="modal custom-modal fade" role="dialog">
+                <div id="add_leave" class="modal custom-modal fade " role="dialog">
                     <?php echo $__env->make('lts/leave_modal', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                 </div>
                 <!-- /Add Leave Modal -->

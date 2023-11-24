@@ -24,6 +24,24 @@
                         </div>
                     </div>
                     <!-- /Page Header -->
+
+                    <!-- Search Filter -->
+                    <form action="/bonus" method="post">
+                        <?php echo csrf_field(); ?>
+                        <div class="row filter-row">
+                            
+                            <div class="col-sm-6 col-md-4">  
+                                <div class="form-group form-focus focused">
+                                    <input class="form-control" type="text" name="search_text" id="search_text" placeholder="Search by userId and name" value="<?php echo e($serach_text ?? ''); ?>">
+                                    <label class="focus-label">Employee Name</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-md-2">  
+                                <input type="submit" class="btn btn-success w-100" name="search" value="search"> 
+                            </div>     
+                        </div>
+                    </form>
+                    <!-- Search Filter -->
                     
                     <div class="row">
                         <div class="col-md-12">
@@ -31,7 +49,7 @@
                                 <table class=" table table-bordered table-striped table-hover datatable datatable-LoanApplication">
                                     <thead>
                                         <tr>
-                                            <th style="width: 30px;">#</th>
+                                            <th style="width: 30px;">User Id</th>
                                             <th>Employee Name</th>
                                             <th>Date</th>
                                             <th>Amount</th>
@@ -49,7 +67,7 @@
                                                 
                                             ?>
                                                 <tr>
-                                                    <td><?php echo e($i); ?></td>
+                                                    <td><?php echo e((isset($data->employee) && !empty($data->employee)) ? $data->employee->emp_generated_id : ''); ?></td>
                                                     <td><?php echo e((isset($data->employee) && !empty($data->employee)) ? $data->employee->first_name : ''); ?></td>
                                                     <td><?php echo e(date('d-m-Y', strtotime($data->bonus_date))); ?></td>
                                                     <td><?php echo e($data->bonus_amount); ?></td>
@@ -71,7 +89,7 @@
                 <!-- /Page Content -->
                 
                 <!-- Add Leave Modal -->
-                <div id="add_leave" class="modal custom-modal fade" role="dialog">
+                <div id="add_leave" class="modal custom-modal fade modal_div" role="dialog">
                     <?php echo $__env->make('lts/bonus_modal', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                 </div>
                 <!-- /Add Leave Modal -->
@@ -112,6 +130,13 @@
 <?php echo $__env->make('includes/footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
 <script type="text/javascript">
+    $('.user_select').select2({
+        minimumResultsForSearch: 4,
+        width: '100%',
+        //allowClear: true,
+        dropdownParent: $(".modal_div"),
+    });
+
     $(document).ready(function() {
           $("#addEditForm").validate({
         rules: {

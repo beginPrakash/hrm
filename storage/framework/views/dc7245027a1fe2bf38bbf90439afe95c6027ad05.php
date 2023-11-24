@@ -136,7 +136,10 @@ $username = Session::get('username');
                                             </tr>
                                             
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                
+                                    <?php else: ?>
+                                        <tr>
+                                            <td colspan="3" align="center">No dat found</td>
+                                        </tr>
                                     <?php endif; ?>
                                 </tbody>
                             </table>
@@ -178,7 +181,10 @@ $username = Session::get('username');
                                             </tr>
                                             
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                
+                                    <?php else: ?>
+                                        <tr>
+                                            <td colspan="3" align="center">No dat found</td>
+                                        </tr>
                                     <?php endif; ?>
                                 </tbody>
                             </table>
@@ -195,7 +201,7 @@ $username = Session::get('username');
                         <div class="card-body">
                             <h3>Schedule</h3>
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive" style="margin-left:20px">
                             <table class="table table-striped custom-table datatable datatablex" id="datatable">
                                 <thead>
                                     <tr>

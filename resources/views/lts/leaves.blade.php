@@ -216,7 +216,7 @@
                 <input type="hidden" id="request_leave" value="{{$userdetails[0]->request_leave_days ?? 0}}">
                 <input type="hidden" id="emp_remaining_leave" value="{{$leave_details['remaining_leave'] ?? 0}}">
                 <input type="hidden" id="emp_remainingsick_leave" value="{{$sick_leave_details['remaining_leave'] ?? 0}}">
-                <div id="add_leave" class="modal custom-modal fade" role="dialog">
+                <div id="add_leave" class="modal custom-modal fade " role="dialog">
                     @include('lts/leave_modal')
                 </div>
                 <!-- /Add Leave Modal -->

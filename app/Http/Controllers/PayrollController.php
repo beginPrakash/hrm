@@ -76,12 +76,29 @@ class PayrollController extends Controller
             //save employee salary data
             $employees = Employee::with('employee_salary')->where('status', 'active')->get();
             $total_earning = 0;
-            if($_POST['report_type'] == 'pdf'):
-                $is_generate_pdf = 1;
-                $is_lock_emp_salary_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->value('report_lock_status');
+        //get pdf data 
+            $emp_salary_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->orderBy('branch_name')->whereNotNUll('branch_id')->get();
+            $emp_branch_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->orderBy('branch_name')->whereNotNUll('branch_id')->groupBy('branch_name')->select('branch_name','branch_id as id')->get();
+            $emp_company_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->orderBy('company_name')->whereNotNUll('branch_id')->groupBy('company_name')->get();
+            $pass_array = array(
+                "emp_salary_data" => $emp_salary_data,
+                "emp_branch_data"=>$emp_branch_data,
+                "emp_company_data"=> $emp_company_data,
+                "month" => $month,
+                "year" => $year,
+            );
+            $cdate = date('Y-m-d');
+            $rname = $cdate.'_salaryreport.pdf';
+            $pdf = PDF::loadView('payroll.employee_salary_pdf', $pass_array)->setPaper('a4', 'landscape')->setWarnings(false);
+            //print_r($pdf);
+            return $pdf->download($rname);
+        else:  
+            $is_lock_emp_salary_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->value('report_lock_status'); 
+            if(!empty($year) && !empty($month)):
                 if($is_lock_emp_salary_data != 'lock'):
-                    //delete same tear or month data if already create
-                    EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->delete();
+                    EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->delete(); 
+                    $employees = Employee::with('employee_salary')->where('status', 'active')->get();
+                    $total_earning = 0;   
                     if(!empty($employees) && count($employees) > 0):
                         foreach($employees as $key => $val):
                             $salary_calc = calculateSalaryByFilter($val->user_id,$val->emp_generated_id,$month,$year,'report_pdf');
@@ -117,27 +134,10 @@ class PayrollController extends Controller
                             $save_data->type = 'cash';
                             $save_data->save();
                         endforeach;
-                    endif;
-                endif;
-            endif;
-        //get pdf data 
-            $emp_salary_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->orderBy('branch_name')->whereNotNUll('branch_id')->get();
-            $emp_branch_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->orderBy('branch_name')->whereNotNUll('branch_id')->groupBy('branch_name')->select('branch_name','branch_id as id')->get();
-            $emp_company_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->orderBy('company_name')->whereNotNUll('branch_id')->groupBy('company_name')->get();
-            $pass_array = array(
-                "emp_salary_data" => $emp_salary_data,
-                "emp_branch_data"=>$emp_branch_data,
-                "emp_company_data"=> $emp_company_data,
-                "month" => $month,
-                "year" => $year,
-            );
-            $cdate = date('Y-m-d');
-            $rname = $cdate.'_salaryreport.pdf';
-            $pdf = PDF::loadView('payroll.employee_salary_pdf', $pass_array)->setPaper('a4', 'landscape')->setWarnings(false);
-            //print_r($pdf);
-            return $pdf->download($rname);
-        else:            
-            $is_lock_emp_salary_data = EmployeeSalaryData::where('es_month',$month)->where('es_year',$year)->value('report_lock_status');
+                    endif;  
+                endif;  
+            endif;  
+            
             return view('payroll.employee_salary', compact('title', 'salaryDetails', 'additions', 'deductions', 'breadButton', 'salaryCount', 'year', 'month','employees','empname','is_generate_report','is_lock_emp_salary_data','is_generate_pdf'));
        endif;
     }
@@ -732,16 +732,35 @@ class PayrollController extends Controller
             //save employee salary data
             $employees = Employee::with('employee_salary')->where('status', 'active')->get();
             $total_earning = 0;
-            if($_POST['report_type'] == 'pdf'):
-                $is_generate_pdf = 1;
-                $is_lock_emp_salary_data = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->value('report_lock_status');
+           
+        //get pdf data 
+            $emp_salary_data = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->orderBy('branch_name')->whereNotNUll('branch_id')->get();
+            $emp_branch_data = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->orderBy('branch_name')->whereNotNUll('branch_id')->groupBy('branch_name')->select('branch_name','branch_id as id')->get();
+            $emp_company_data = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->orderBy('company_name')->whereNotNUll('branch_id')->groupBy('company_name')->get();
+            $pass_array = array(
+                "emp_salary_data" => $emp_salary_data,
+                "emp_branch_data"=>$emp_branch_data,
+                "emp_company_data"=> $emp_company_data,
+                "month" => $month,
+                "year" => $year,
+            );
+            $cdate = date('Y-m-d');
+            $rname = $cdate.'_overtimereport.pdf';
+            $pdf = PDF::loadView('payroll.employee_overtime_pdf', $pass_array)->setPaper('a4', 'landscape')->setWarnings(false);
+            //print_r($pdf);
+            return $pdf->download($rname);
+        else: 
+            $employees = Employee::with('employee_salary')->where('status', 'active')->get();
+            $total_earning = 0;           
+            $is_lock_emp_salary_data = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->value('report_lock_status');
+            if(!empty($year) && !empty($month)):
+                //delete same tear or month data if already create
                 if($is_lock_emp_salary_data != 'lock'):
-                    //delete same tear or month data if already create
                     EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->delete();
                     if(!empty($employees) && count($employees) > 0):
                         foreach($employees as $key => $val):
                             $salary_calc = calculateOvertimeByFilter($val->user_id,$val->emp_generated_id,$month,$year,'report_pdf');
-                           // dd($val);
+                        // dd($val);
                             $bonus = calculateBonusByMonth($val->id,$month,$year);
                             $total_sal = $salary_calc['total_salary'] ?? 0;
                             $total_earning = $total_sal + $bonus;
@@ -776,24 +795,6 @@ class PayrollController extends Controller
                     endif;
                 endif;
             endif;
-        //get pdf data 
-            $emp_salary_data = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->orderBy('branch_name')->whereNotNUll('branch_id')->get();
-            $emp_branch_data = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->orderBy('branch_name')->whereNotNUll('branch_id')->groupBy('branch_name')->select('branch_name','branch_id as id')->get();
-            $emp_company_data = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->orderBy('company_name')->whereNotNUll('branch_id')->groupBy('company_name')->get();
-            $pass_array = array(
-                "emp_salary_data" => $emp_salary_data,
-                "emp_branch_data"=>$emp_branch_data,
-                "emp_company_data"=> $emp_company_data,
-                "month" => $month,
-                "year" => $year,
-            );
-            $cdate = date('Y-m-d');
-            $rname = $cdate.'_overtimereport.pdf';
-            $pdf = PDF::loadView('payroll.employee_overtime_pdf', $pass_array)->setPaper('a4', 'landscape')->setWarnings(false);
-            //print_r($pdf);
-            return $pdf->download($rname);
-        else:            
-            $is_lock_emp_salary_data = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->value('report_lock_status');
             return view('payroll.employee_overtime', compact('title', 'salaryDetails', 'additions', 'deductions', 'breadButton', 'salaryCount', 'year', 'month','employees','empname','is_generate_report','is_lock_emp_salary_data','is_generate_pdf'));
        endif;
     }

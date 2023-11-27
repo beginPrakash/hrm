@@ -392,7 +392,8 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
             'leaveBalance'      =>  $leaveBalance,
             'leaveAmount'       =>  $leaveAmount,
             'remaining_leave'   =>  $remaining_leave,
-            'remaining_leave_withoutreq' => $remaining_leave_withoutreq);
+            'remaining_leave_withoutreq' => $remaining_leave_withoutreq,
+            'taken_leave' => $balance);
         return $result;
     }
 

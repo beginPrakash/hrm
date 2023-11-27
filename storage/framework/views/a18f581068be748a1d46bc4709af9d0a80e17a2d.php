@@ -48,15 +48,7 @@
         <?php $__currentLoopData = $emp_branch_data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $bkey => $bval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <table style="margin-bottom: 30px;max-width:400px;">
                 <tbody>
-                    <?php if($bkey == 0): ?>
-                    <tr>
-                        <th colspan="2" class="text-center">
-                            <a href="<?php echo e(url('/')); ?>">
-                                <img src="<?php echo e(asset('assets/img/logo1.png')); ?>" style="width: 140px;">
-                            </a>
-                        </th>
-                    </tr>
-                    <?php endif; ?>
+                    
                     <tr>
                         <th width="80px" style="vertical-align:top">                        
                             <p class="text-left mb-0">

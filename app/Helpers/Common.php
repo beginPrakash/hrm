@@ -216,12 +216,7 @@ function getAttendanceText($shiftDetails,$encoded='')
     }
     else
     {
-        $is_manual_punchin = _get_emp_manual_punchin($shiftDetails->employee ?? 0);
-        if($is_manual_punchin == 0):
-            $tdValue = '<span class="text-danger">A</span>';
-        else:
-            $tdValue = '<a href="javascript:void(0);" class="CreateAttPopup" data-id="'.$encoded.'"><span class="text-danger">A</span></a>';
-        endif;
+        $tdValue = '<a href="javascript:void(0);" class="CreateAttPopup" data-id="'.$encoded.'"><span class="text-danger">A</span></a>';
     }
 
     return $tdValue;

@@ -17,14 +17,17 @@ $username = Session::get('username');
         <!-- Page Header -->
         <div class="page-header">
             <?php if($is_admin != 1): ?>
-                <?php if(empty($firstclockin) && empty($lastclockout)): ?>
-                    <div class="col-auto float-end ms-auto">
-                        <a href="<?php echo e(route('save_clock_data','in')); ?>" class="btn add-btn"><i class="fa fa-clock"></i>Punch In</a>
-                    </div>
-                <?php elseif(!empty($firstclockin) && empty($lastclockout)): ?>
-                    <div class="col-auto float-end ms-auto">
-                        <a href="<?php echo e(route('save_clock_data','out')); ?>" class="btn add-btn"><i class="fa fa-clock"></i>Punch Out</a>
-                    </div>
+                <?php $is_manual_punchin = _get_emp_manual_punchin($user_id ?? 0); ?>
+                <?php if($is_manual_punchin == 1): ?>
+                    <?php if(empty($firstclockin) && empty($lastclockout)): ?>
+                        <div class="col-auto float-end ms-auto">
+                            <a href="<?php echo e(route('save_clock_data','in')); ?>" class="btn add-btn"><i class="fa fa-clock"></i>Punch In</a>
+                        </div>
+                    <?php elseif(!empty($firstclockin) && empty($lastclockout)): ?>
+                        <div class="col-auto float-end ms-auto">
+                            <a href="<?php echo e(route('save_clock_data','out')); ?>" class="btn add-btn"><i class="fa fa-clock"></i>Punch Out</a>
+                        </div>
+                    <?php endif; ?>
                 <?php endif; ?>
             <?php endif; ?>
             <div class="row">
@@ -154,7 +157,7 @@ $username = Session::get('username');
                             <div class="dash-widget-info" style="text-align: left;">
                                 <h3>Sick leave</h3>
                                 <span>Sick leaves total <?php echo e($balance_sick_leave_total['totalLeaveDays'] ?? 0); ?></span>
-                                <span>Sick leaves taken <?php echo e($balance_sick_leave_total['remaining_leave_withoutreq'] ?? 0); ?></span>   
+                                <span>Sick leaves taken <?php echo e($balance_sick_leave_total['taken_leave'] ?? 0); ?></span>   
                             </div>
                             <div class="dash-widget-info-btn">
                                 <a href="javascript:void(0);" class="btn btn-primary sick_history_btn">History</a>

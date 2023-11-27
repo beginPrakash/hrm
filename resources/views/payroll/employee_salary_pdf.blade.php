@@ -48,15 +48,7 @@
         @foreach($emp_branch_data as $bkey => $bval)
             <table style="margin-bottom: 30px;max-width:400px;">
                 <tbody>
-                    @if($bkey == 0)
-                    <!-- <tr>
-                        <th colspan="2" class="text-center">
-                            <a href="{{ url('/') }}">
-                                <img src="{{ asset('assets/img/logo1.png') }}" style="width: 140px;">
-                            </a>
-                        </th>
-                    </tr> -->
-                    @endif
+                    
                     <tr>
                         <th width="80px" style="vertical-align:top">                        
                             <p class="text-left mb-0">

@@ -419,5 +419,15 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         return $data;
     }
 
+    function is_employee_exist($user_id){
+        $data = Employee::where('user_id',$user_id)->value('id');
+        return $data;
+    }
+
+    function _get_schedule_time_by_emp($att_date,$userId){
+        $scheduling = Scheduling::where('shift_on',$att_date)->where('employee',$userId)->first();
+        return $scheduling;
+    }
+
     
     

@@ -459,7 +459,7 @@ class AttendanceController extends Controller
 
     public function getAttendanceDetails(Request $request)
     {
-        $userId = $request->userId;
+        $userId = intval($request->userId);
         //find employee
         $emp_detail = Employee::where('user_id',$userId)->where('status','active')->first();
         $popup_type = $request->popup_type ?? '';
@@ -474,6 +474,22 @@ class AttendanceController extends Controller
             $attendanceHours = $this->attendanceHoursCalculation($userId, $attnDate);
             $html = view('lts.attendancePopup', compact('emloyeeAttendance', 'attendanceHours', 'attnDate', 'emloyeeSchedule', 'userId','popup_type'))->render();
         endif;
+            echo json_encode($html);
+    }
+
+    public function getempAttendanceDetails(Request $request)
+    {
+        $userId = intval($request->userId);
+        //find employee
+        $emp_detail = Employee::where('user_id',$userId)->where('status','active')->first();
+        $popup_type = $request->popup_type ?? '';
+        $attnDate = str_replace('"','',preg_replace('/\\\\/', '', $request->attnDate));
+        // $emloyeeAttendance = AttendanceDetails::where(array('user_id' => $userId, 'attendance_on' => $attnDate))->orderBy('attendance_time')->get()->toArray();
+        $emloyeeAttendance = AttendanceDetails::where(array('user_id' => $userId, 'attendance_on' => $attnDate,'employee_id'=>$emp_detail->emp_generated_id ?? ''))->get()->toArray();
+        $emloyeeSchedule = Scheduling::where(array('employee' => $userId, 'shift_on' => date('Y-m-d', strtotime($attnDate)), 'status' => 'active'))->get()->toArray();
+        // echo '<pre>';print_r($emloyeeAttendance);exit;
+            $attendanceHours = $this->attendanceHoursCalculation($userId, $attnDate);
+            $html = view('lts.emp_attendance_popup', compact('emloyeeAttendance', 'attendanceHours', 'attnDate', 'emloyeeSchedule', 'userId','popup_type'))->render();
             echo json_encode($html);
     }
     public function testit()
@@ -847,5 +863,41 @@ class AttendanceController extends Controller
             endif;
         endif;
         return redirect()->back()->with('success','Time saved successfully');
+    }
+
+    public function emp_attendance_list(Request $request){
+        $user_id  = Session::get('user_id');
+        $month = date('m');
+        $year = date('Y');
+        $start_date = $year."-".$month."-01";
+        $end_date = date('Y-m-t',strtotime($start_date));
+        $from_date = $_POST['from_date'] ?? '';
+        $to_date = $_POST['to_date'] ?? '';
+        $search = [];
+        $search['from_date'] = $from_date;
+        $search['to_date'] = $to_date;
+       
+        if(!empty($from_date) && !empty($to_date)):
+            $start_date = $from_date;
+            $end_date = $to_date;
+            $fromDate = date('Y-m-d', strtotime($_POST['from_date']));
+            $toDate = date('Y-m-d', strtotime($_POST['to_date']));
+            $att_details = AttendanceDetails::where('user_id',$user_id)->whereBetween('attendance_on', [$fromDate, $toDate])->where('punch_state','clockin')->where('status','active')->get();
+        elseif(!empty($from_date) && empty($to_date)):
+            $start_date = $from_date;
+            $fromDate = date('Y-m-d', strtotime($_POST['from_date']));
+            $end_date = date('Y-m-t',strtotime($start_date));
+            $att_details = AttendanceDetails::where('user_id',$user_id)->where('attendance_on','>=',$fromDate)->where('punch_state','clockin')->where('status','active')->get();
+        elseif(empty($from_date) && !empty($to_date)):
+            $end_date = $to_date;
+            $toDate = date('Y-m-d', strtotime($_POST['to_date']));
+            $month = date('m', strtotime($_POST['to_date']));
+            $att_details = AttendanceDetails::where('user_id',$user_id)->where('attendance_on','<=',$toDate)->where('punch_state','clockin')->where('status','active')->get();
+            
+        else:
+        $att_details = AttendanceDetails::where('user_id',$user_id)->whereMonth('attendance_on',$month)->whereYear('attendance_on',$year)->where('punch_state','clockin')->where('status','active')->get();
+        endif;  
+        
+        return view('lts.emp_attendance',compact('att_details','month','year','user_id','start_date','end_date','search'));
     }
 }

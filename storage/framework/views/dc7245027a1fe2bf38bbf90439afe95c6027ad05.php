@@ -16,32 +16,48 @@ $username = Session::get('username');
         <?php $is_admin = Session::get('is_admin'); ?>
         <!-- Page Header -->
         <div class="page-header">
-            <?php if($is_admin != 1): ?>
-                <?php $is_manual_punchin = _get_emp_manual_punchin($user_id ?? 0); ?>
-                <?php if($is_manual_punchin == 1): ?>
-                    <?php if(empty($firstclockin) && empty($lastclockout)): ?>
-                        <div class="col-auto float-end ms-auto">
-                            <a href="<?php echo e(route('save_clock_data','in')); ?>" class="btn add-btn"><i class="fa fa-clock"></i>Punch In</a>
-                        </div>
-                    <?php elseif(!empty($firstclockin) && empty($lastclockout)): ?>
-                        <div class="col-auto float-end ms-auto">
-                            <a href="<?php echo e(route('save_clock_data','out')); ?>" class="btn add-btn"><i class="fa fa-clock"></i>Punch Out</a>
-                        </div>
-                    <?php endif; ?>
-                <?php endif; ?>
-            <?php endif; ?>
+            
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-sm-4">
                     <h3 class="page-title">Welcome <?php echo ucfirst($username); ?>!</h3>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item active">Dashboard</li>
                     </ul>
                 </div>
+                <div class="col-sm-4">
+                    <?php if($is_admin != 1): ?>
+                        <?php $is_manual_punchin = _get_emp_manual_punchin($user_id ?? 0); ?>
+                        <?php if($is_manual_punchin == 1): ?>
+                            <?php if(empty($firstclockin) && empty($lastclockout)): ?>
+                                <div class="">
+                                    <a href="<?php echo e(route('save_clock_data','in')); ?>" class="btn add-btn"><i class="fa fa-clock"></i>Punch In</a>
+                                </div>
+                            <?php elseif(!empty($firstclockin) && empty($lastclockout)): ?>
+                                <div class="">
+                                    <a href="<?php echo e(route('save_clock_data','out')); ?>" class="btn add-btn"><i class="fa fa-clock"></i>Punch Out</a>
+                                </div>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+                <div class="col-sm-4">
+                    <?php if($is_admin != 1): ?>
+                        <div class="card dash-widget">
+                            <div class="card-body">
+                                <span class="dash-widget-icon"><i class="fas fa-gem"></i></span>
+                                <div class="dash-widget-info">
+                                    <h3><?php echo e(number_format($totpayable,2) ?? 0); ?> KWD</h3>
+                                    <span>Total Indemnity Amount</span>
+                                </div>
+                            </div>
+                        </div>                        
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
         <!-- /Page Header -->
     
-        <div class="row">
+         <!-- <div class="row">
             <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
                 <div class="card dash-widget">
                     <div class="card-body">
@@ -86,23 +102,136 @@ $username = Session::get('username');
                     </div>
                 </div>
             </div>
-        </div>
-        
+        </div> -->
         <?php if($is_admin != 1): ?>
-        <div class="row">
-            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
-                <div class="card dash-widget">
-                    <div class="card-body">
-                        <span class="dash-widget-icon"><i class="fa fa-user"></i></span>
-                        <div class="dash-widget-info">
-                            <h3>KWD <?php echo e(number_format($totpayable,2) ?? 0); ?></h3>
-                            <span>Total Indemnity Payable</span>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card dash-widget">
+                        <div class="card-body">
+                            <h3>Schedule</h3>
+                        </div>
+                        <div class="table-responsive" style="margin-left:20px">
+                            <table class="table table-striped custom-table" id="datatable">
+                                <thead>
+                                    <tr>
+                                        <?php
+                                            $startDate = date('Y-m-d');
+                                            $startingDate = new DateTime($startDate);
+                                            $startingDateYMD = $startingDate->format('Y-m-d');
+                                            for ($i = 0; $i < 7; $i++) {
+                                                $currentDate = clone $startingDate;
+                                                $currentDate->modify("+$i days");
+                                                echo '<th>'.$currentDate->format('D-d') .'</th>';
+                                            }
+                                            ?>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <?php if(isset($sched_data) && count($sched_data) > 0): ?>
+                                        <?php $__currentLoopData = $sched_data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sh): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <tr>
+                                        <?php
+                                                        for ($d = 0; $d < 7; $d++) 
+                                                        {
+                                                            $currentDate = clone $startingDate;
+                                                            $currentDate->modify("+$d days");
+                                                            $aday = $currentDate->format('Y-m-d');
+                                                            $emloyeeScheduleToday = App\Models\Scheduling::where('employee', $sh->user_id)->where('shift_on', $aday)->where('status', 'active')->first();
+                                                           
+                                                            echo '<td>';
+
+                                                            $sh->shift_on_date = $aday;
+                                                            if(!empty($emloyeeScheduleToday))
+                                                            {
+                                                                if($emloyeeScheduleToday->shift==1)
+                                                                {
+                                                                    $sched = 'OFF Day';
+                                                                }
+                                                                else if($emloyeeScheduleToday->shift==2)
+                                                                {
+                                                                    $sched = 'PH Day';
+                                                                }
+                                                                else if($emloyeeScheduleToday->shift==3)
+                                                                {
+                                                                    $sched = 'Free Shift';
+                                                                }
+                                                                else if($emloyeeScheduleToday->shift==7)
+                                                                {
+                                                                    $sched = 'AL';
+                                                                }
+                                                                else if($emloyeeScheduleToday->shift==8)
+                                                                {
+                                                                    $sched = 'SL';
+                                                                }
+                                                                else if($emloyeeScheduleToday->shift==9)
+                                                                {
+                                                                    $sched = 'UL';
+                                                                }
+                                                                else
+                                                                {
+                                                                    $start = date('h:i a', strtotime($emloyeeScheduleToday->start_time));
+                                                                    $end = date('h:i a', strtotime($emloyeeScheduleToday->end_time));
+                                                                    $gap = getTimeDiff($start, $end);
+
+                                                                    $sched = $start.' - '.$end.'('. $gap.' hrs)';
+                                                                }
+                                                                $sh->shift_details = json_encode($emloyeeScheduleToday);
+                                                                    
+                                                                $encodedData = base64_encode(json_encode($sh));
+                                                            ?>
+                                                                <div class="user-add-shedule-list">
+                                                                    <h2>
+                                                                        <a href="javascript:void(0);" style="border:2px dashed #1eb53a">
+                                                                        <span class="username-info m-b-10">
+                                                                            <?php echo $sched; ?></span>
+                                                                        <!-- <span class="userrole-info">Web Designer - SMARTHR</span> -->
+                                                                        </a>
+                                                                    </h2>
+                                                                </div>
+                                                            <?php
+                                                            }
+                                                            else
+                                                            {
+                                                                $encodedData = base64_encode(json_encode($sh));
+                                                                $f = 0;
+                                                                // if(isset($phDetails) && in_array($aday, $phDetails))
+                                                                // {
+                                                                //     $f = 1;
+                                                                //     echo '<span class="badge bg-inverse-danger">PH</span>';
+                                                                // }
+                                                                // if($overtimeDetails->off_day == $d)
+                                                                // {
+                                                                //     $f = 1;
+                                                                //     echo '<span class="badge bg-inverse-danger">OFF DAY</span>';
+                                                                // }
+                                                                if($f==0)
+                                                                {
+                                                            ?>
+                                                                <div class="user-add-shedule-list">
+                                                                    <!-- <a href="#"  data-bs-toggle="modal" data-bs-target="#add_schedule" class="addSchedule" data-data="<?php echo $encodedData; ?>">
+                                                                    <span><i class="fa fa-plus"></i></span>
+                                                                    </a> -->
+                                                                </div>
+                                                            <?php
+                                                                }
+                                                            }
+                                                            echo '</td>';
+                                                        }
+                                                        ?> 
+                                        </tr>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
+                    
                 </div>
             </div>
-        </div>
         <?php endif; ?>
+        
         <div class="row">
             <?php if($is_admin != 1): ?>
                 <div class="col-md-6 col-sm-6 col-lg-6 col-xl-6">
@@ -197,85 +326,7 @@ $username = Session::get('username');
             <?php endif; ?>
         </div>
         
-        <?php if($is_admin != 1): ?>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card dash-widget">
-                        <div class="card-body">
-                            <h3>Schedule</h3>
-                        </div>
-                        <div class="table-responsive" style="margin-left:20px">
-                            <table class="table table-striped custom-table datatable datatablex" id="datatable">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Min Start Time</th>
-                                        <th>Max Start Time</th>
-                                        <th>Min End Time</th>
-                                        <th>Max End Time</th>
-                                        <th>Clock In</th>
-                                        <th>Clock Out</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-
-                                    <?php if(isset($sched_data) && count($sched_data) > 0): ?>
-                                        <?php $__currentLoopData = $sched_data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $data): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <?php $clockin = _get_attendance_time($data->shift_on,$user_id,'clockin');
-                                                $clockout = _get_attendance_time($data->shift_on,$user_id,'clockout');
-                                            ?>
-                                            <?php if($data->shift==1): ?>
-                                                <tr>
-                                                    <td><?php echo e(date('d-m-Y', strtotime($data->shift_on))); ?></td>
-                                                    <td colspan="6" align="center">OFF Day</td>
-                                                </tr>
-                                            <?php elseif($data->shift==2): ?>
-                                                <tr>
-                                                    <td><?php echo e(date('d-m-Y', strtotime($data->shift_on))); ?></td>
-                                                    <td colspan="6" align="center">PH Day</td>
-                                                </tr>
-                                            <?php elseif($data->shift==3): ?>
-                                                <tr>
-                                                    <td><?php echo e(date('d-m-Y', strtotime($data->shift_on))); ?></td>
-                                                    <td colspan="6" align="center">Free Shift</td>
-                                                </tr>                            
-                                            <?php elseif($data->shift==7): ?>
-                                                <tr>
-                                                    <td><?php echo e(date('d-m-Y', strtotime($data->shift_on))); ?></td>
-                                                    <td colspan="6" align="center">AL</td>   
-                                                </tr>                           
-                                            <?php elseif($data->shift==8): ?>
-                                                <tr>
-                                                    <td><?php echo e(date('d-m-Y', strtotime($data->shift_on))); ?></td>
-                                                    <td colspan="6" align="center">SL</td>
-                                                </tr>                            
-                                            <?php elseif($data->shift==9): ?>
-                                                <tr>
-                                                    <td><?php echo e(date('d-m-Y', strtotime($data->shift_on))); ?></td>
-                                                    <td colspan="6" align="center">UL</td>
-                                                </tr>  
-                                            <?php else: ?>                         
-                                            <tr>
-                                                <td><?php echo e(date('d-m-Y', strtotime($data->shift_on))); ?></td>
-                                                <td><?php echo e(_convert_time_to_12hour_format_bydate($data->min_start_time)); ?></td>
-                                                <td><?php echo e(_convert_time_to_12hour_format_bydate($data->max_start_time)); ?></td>
-                                                <td><?php echo e(_convert_time_to_12hour_format_bydate($data->min_end_time)); ?></td>
-                                                <td><?php echo e(_convert_time_to_12hour_format_bydate($data->max_end_time)); ?></td>
-                                                <td><?php echo e(_convert_time_to_12hour_format_bydate($clockin)); ?></td>
-                                                <td><?php echo e(_convert_time_to_12hour_format_bydate($clockout)); ?></td>
-                                            </tr>
-                                            <?php endif; ?>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    
-                </div>
-            </div>
-        <?php endif; ?>
+        
     </div>
     <!-- /Page Content -->
 

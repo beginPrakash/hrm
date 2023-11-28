@@ -52,6 +52,7 @@ $user_id = Session::get('user_id');
                         <li><a class="<?php echo ($page == 'leaves' || $page == 'estimate-view.php' || $page == 'edit-estimate.php' || $page == 'create-estimate.php')?'active':'';?>" href="/leaves">Leaves</a></li>
                         <?php if($is_admin != 1) { ?>
                         <li><a class="<?php echo ($page == 'leave_request')?'active':'';?>" href="/leave_request">Leave Request</a></li>
+                        <!-- <li><a class="<?php echo ($page == 'emp_attendance_list')?'active':'';?>" href="/emp_attendance_list">Attendance</a></li> -->
                         <?php } ?>
                         <?php if($is_admin > 0) { ?>
                             <li><a class="<?php echo ($page == 'admin_leaves')?'active':'';?>" href="/admin_leaves">Leave Hierarchy</a></li>

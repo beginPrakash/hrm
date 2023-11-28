@@ -165,9 +165,11 @@ Route::match(array('GET','POST'),'/attendance',[App\Http\Controllers\AttendanceC
 Route::post('/attendanceInsert',[App\Http\Controllers\AttendanceController::class, 'store']);
 Route::post('/isAttendanceExists', [App\Http\Controllers\AttendanceController::class, 'isAttendanceExists'])->name('isAttendanceExists');
 Route::post('/getAttendanceDetails',[App\Http\Controllers\AttendanceController::class, 'getAttendanceDetails']);
+Route::post('/getempAttendanceDetails',[App\Http\Controllers\AttendanceController::class, 'getempAttendanceDetails']);
 Route::get('/getAttendanceTime',[App\Http\Controllers\AttendanceController::class, 'attendanceHoursCalculation']);
 Route::post('/create_attendance_by_date',[App\Http\Controllers\AttendanceController::class, 'create_attendance_by_date'])->name('create_attendance_by_date');
 Route::get('/save_clock_data/{type}',[App\Http\Controllers\AttendanceController::class, 'save_clock_data'])->name('save_clock_data');
+Route::match(array('GET','POST'),'/emp_attendance_list',[App\Http\Controllers\AttendanceController::class, 'emp_attendance_list'])->name('emp_attendance_list');
 
 
 Route::post('/approveOt',[App\Http\Controllers\AttendanceController::class, 'approveOt'])->name('approveOt');

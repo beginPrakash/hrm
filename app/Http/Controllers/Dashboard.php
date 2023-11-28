@@ -20,7 +20,8 @@ class Dashboard extends Controller
         $current_date = Carbon::today();
         $after_date = Carbon::today()->addDay(7);
         $user_id  = Session::get('user_id');
-        $sched_data = Scheduling::whereDate('shift_on', '>=', date($current_date))->whereDate('shift_on', '<', date($after_date))->where('employee',$user_id)->get();
+        //$sched_data = Scheduling::whereDate('shift_on', '>=', date($current_date))->whereDate('shift_on', '<', date($after_date))->where('employee',$user_id)->get();
+        $sched_data   = Employee::with('schedules')->where('user_id',$user_id)->get();
         $balance_annual_leave_total = getAnnualLeaveDetails($user_id);
         $annual_leave_list = Leaves::where('user_id',$user_id)->where('leave_type','1')->where('leave_status','approved')->orderBy('id','desc')->limit(4)->get();
         $balance_sick_leave_total = getSickLeaveDetails($user_id);

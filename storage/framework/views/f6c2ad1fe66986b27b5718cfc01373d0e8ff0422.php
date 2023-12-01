@@ -62,7 +62,7 @@
                         <option value="">Select</option>
                         <?php if(isset($userdetails) && count($userdetails) > 0): ?>
                             <?php $__currentLoopData = $userdetails; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <option value="<?php echo e($val->id); ?>" <?php echo e((isset($bonusData->employee_id) && ($val->id == $bonusData->employee_id)) ? 'selected' : ''); ?>><?php echo e($val->first_name); ?></option>
+                                <option value="<?php echo e($val->id); ?>" <?php echo e((isset($bonusData->employee_id) && ($val->id == $bonusData->employee_id)) ? 'selected' : ''); ?>><?php echo e($val->first_name); ?> <?php echo e($val->last_name ?? ''); ?></option>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         <?php endif; ?>
                     </select>

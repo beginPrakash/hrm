@@ -62,7 +62,7 @@
                         <option value="">Select</option>
                         @if(isset($userdetails) && count($userdetails) > 0)
                             @foreach($userdetails as $key => $val)
-                                <option value="{{$val->id}}" {{(isset($bonusData->employee_id) && ($val->id == $bonusData->employee_id)) ? 'selected' : ''}}>{{$val->first_name}}</option>
+                                <option value="{{$val->id}}" {{(isset($bonusData->employee_id) && ($val->id == $bonusData->employee_id)) ? 'selected' : ''}}>{{$val->first_name}} {{$val->last_name ?? ''}}</option>
                             @endforeach
                         @endif
                     </select>

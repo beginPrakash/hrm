@@ -104,7 +104,7 @@
                                     <p><?php echo e($val->deduction); ?></p>
                                 </td>
                                 <td>
-                                    <p><?php echo e(number_format($val->total_earning, 2)); ?></p>
+                                    <p><?php echo e(number_format(($val->total_earning - $val->deduction), 2)); ?></p>
                                 </td>
                             </tr>
                             <?php $i++; ?>    

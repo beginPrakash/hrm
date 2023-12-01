@@ -135,6 +135,7 @@
                             	{
                             		foreach($employees as $emp)
                             		{ 
+                                        $deduction = calculateDeductionByMonth($emp->id,$month,$year);
                                         $salary_calc = calculateSalaryByFilter($emp->user_id,$emp->emp_generated_id,$month,$year);
                                         $total_allowence = calculate_employee_allowence($emp->id);
                             		?>
@@ -157,8 +158,8 @@
                                     <td>{{(isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->phone_allowance : 0}}</td>
                                     <td>{{(isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->food_allowance : 0}}</td>
                                     <td>{{(isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->other_allowance : 0}}</td>
-                                    <td>0</td>
-                                    <td>{{$salary_calc + $total_allowence}}</td>
+                                    <td>{{$deduction}}</td>
+                                    <td>{{($salary_calc + $total_allowence) - $deduction}}</td>
                                     <td>Cash</td>
                                 </tr>
                                 <?php

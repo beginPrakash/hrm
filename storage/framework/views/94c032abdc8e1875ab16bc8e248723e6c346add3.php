@@ -68,7 +68,7 @@
                                             ?>
                                                 <tr>
                                                     <td><?php echo e((isset($data->employee) && !empty($data->employee)) ? $data->employee->emp_generated_id : ''); ?></td>
-                                                    <td><?php echo e((isset($data->employee) && !empty($data->employee)) ? $data->employee->first_name : ''); ?></td>
+                                                    <td><?php echo e((isset($data->employee) && !empty($data->employee)) ? $data->employee->first_name.' '.$data->employee->last_name : ''); ?></td>
                                                     <td><?php echo e(date('d-m-Y', strtotime($data->bonus_date))); ?></td>
                                                     <td><?php echo e($data->bonus_amount); ?></td>
                                                     

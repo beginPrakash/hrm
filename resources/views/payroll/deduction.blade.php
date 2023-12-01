@@ -68,7 +68,7 @@
                                             ?>
                                                 <tr>
                                                     <td>{{(isset($data->employee) && !empty($data->employee)) ? $data->employee->emp_generated_id : ''}}</td>
-                                                    <td>{{(isset($data->employee) && !empty($data->employee)) ? $data->employee->first_name : ''}}</td>
+                                                    <td>{{(isset($data->employee) && !empty($data->employee)) ? $data->employee->first_name.' '.$data->employee->last_name : ''}}</td>
                                                     <td>{{date('d-m-Y', strtotime($data->deduction_date))}}</td>
                                                     <td>{{$data->deduction_amount}}</td>
                                                     

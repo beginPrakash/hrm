@@ -83,7 +83,8 @@ $user_id = Session::get('user_id');
                         <li><a class="<?php echo ($page == 'employee-overtime')?'active':'';?>" href="/employee-overtime"> Employee Overtime </a></li>
                         <li><a class="<?php echo ($page == 'payroll-items')?'active':'';?>" href="/payroll-items"> Payroll Items </a></li>
                         <?php if($is_admin > 0) { ?>
-                        <li><a class="<?php echo ($page == 'bonus' || $page == 'estimate-view.php' || $page == 'edit-estimate.php' || $page == 'create-estimate.php')?'active':'';?>" href="/bonus">Bonus</a></li>
+                        <li><a class="<?php echo ($page == 'bonus' )?'active':'';?>" href="/bonus">Bonus</a></li>
+                        <li><a class="<?php echo ($page == 'deduction')?'active':'';?>" href="/deduction">Deduction</a></li>
                         <?php } ?>
                     </ul>
                 </li>

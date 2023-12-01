@@ -103,6 +103,7 @@ class PayrollController extends Controller
                         foreach($employees as $key => $val):
                             $salary_calc = calculateSalaryByFilter($val->user_id,$val->emp_generated_id,$month,$year,'report_pdf');
                             $total_allowence = calculate_employee_allowence($val->id);
+                            $deduction = calculateDeductionByMonth($val->id,$month,$year);
                             $total_sal = $salary_calc['total_salary'] ?? 0;
                             $total_earning = $total_sal + $total_allowence;
                             $save_data = new EmployeeSalaryData();
@@ -126,7 +127,7 @@ class PayrollController extends Controller
                             $save_data->position_allowence = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->position_allowance : 0;
                             $save_data->phone_allowence = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->phone_allowance : 0;
                             $save_data->other_allowence = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->other_allowance : 0;
-                            $save_data->deduction = 0;
+                            $save_data->deduction = $deduction;
                             $save_data->total_earning = $total_earning;
                             $save_data->es_year = $year;
                             $save_data->es_month = $month;

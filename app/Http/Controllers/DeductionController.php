@@ -4,22 +4,17 @@ namespace App\Http\Controllers;
 use DB;
 use Session;
 use App\Models\Employee;
-use App\Models\Leaves;
-use App\Models\Leavetype;
-use App\Models\LeaveStatus;
-use App\Models\LeaveHierarchy;
-use App\Models\LeaveApprovalLogs;
 use App\Http\Controllers\Auth;
 use App\Models\Scheduling;
 use Illuminate\Http\Request;
-use App\Models\EmployeeBonus;
+use App\Models\EmployeeDeduction;
 
-class BonusController extends Controller
+class DeductionController extends Controller
 {
     public function index()
     {
         $userdetails = Employee::with('employee_designation')->where('status', 'active')->get();
-        $sql_que = EmployeeBonus::orderBy('id','desc');
+        $sql_que = EmployeeDeduction::orderBy('id','desc');
         //for search
         $where = [];
         $serach_text = $_POST['search_text'] ?? '';
@@ -37,34 +32,34 @@ class BonusController extends Controller
         }
         
         
-        $bonus_data = $sql_que->get();
-        return view('lts.bonus', compact('bonus_data','where','serach_text','userdetails'));
+        $deduction_data = $sql_que->get();
+        return view('payroll.deduction', compact('deduction_data','where','serach_text','userdetails'));
     }  
 
     public function store(Request $request)
     {
-        //check same date bonus exist
-        $bonus_date = date('Y-m-d',strtotime($request->bonus_date));
+        //check same date deduction exist
+        $deduction_date = date('Y-m-d',strtotime($request->deduction_date));
         if(empty($request->id)):
-            $bonus_exist = EmployeeBonus::where('employee_id',$request->employee_id)->where('bonus_date', $bonus_date)->first();
+            $deduction_exist = EmployeeDeduction::where('employee_id',$request->employee_id)->where('deduction_date', $deduction_date)->first();
         else:
-            $bonus_exist = EmployeeBonus::where('employee_id',$request->employee_id)->where('id','!=',$request->id)->where('bonus_date', $bonus_date)->first();
+            $deduction_exist = EmployeeDeduction::where('employee_id',$request->employee_id)->where('id','!=',$request->id)->where('deduction_date', $deduction_date)->first();
         endif;
-        if(!empty($bonus_exist)):
-            return redirect()->back()->with('error','Bonus is already created.Please select another date.');
+        if(!empty($deduction_exist)):
+            return redirect()->back()->with('error','Deduction is already created.Please select another date.');
         else:
             $insertArray = array(
                 'employee_id'        =>  $request->employee_id,
-                'bonus_date'     =>  $bonus_date,
-                'bonus_amount'     =>  $request->bonus_amount,
+                'deduction_date'     =>  $deduction_date,
+                'deduction_amount'     =>  $request->deduction_amount,
                 'title'=>  $request->title,
             );
             if(!empty($request->id)):
-                $bonus_data = EmployeeBonus::where('id', $request->id)->update($insertArray);
+                $deduction_data = EmployeeDeduction::where('id', $request->id)->update($insertArray);
             else:
-                $bonus_data = EmployeeBonus::create($insertArray);
+                $deduction_data = EmployeeDeduction::create($insertArray);
             endif;                    
-            return redirect('/bonus')->with('success','Bonus saved successfully!');
+            return redirect('/deduction')->with('success','Deduction saved successfully!');
         endif;
     }
 
@@ -72,12 +67,12 @@ class BonusController extends Controller
     public function details(Request $request)
     {
         $userdetails = Employee::with('employee_designation')->where('status', 'active')->get();
-        $bonusData = EmployeeBonus::find($request->id);
+        $deductionData = EmployeeDeduction::find($request->id);
         $pass_array=array(
 			'userdetails' => $userdetails,
-            'bonusData' => $bonusData
+            'deductionData' => $deductionData
         );
-        $html =  view('lts.bonus_modal', $pass_array )->render();
+        $html =  view('payroll.deduction_modal', $pass_array )->render();
 		$arr = [
 			'success' => 'true',
 			'html' => $html
@@ -86,10 +81,10 @@ class BonusController extends Controller
 
     }
 
-    public function delete_bonus(Request $request)
+    public function delete_deduction(Request $request)
     {
-        $bonusData = EmployeeBonus::where('id',$request->bonus_id)->delete();
-		return redirect('/bonus')->with('success','Bonus deleted successfully!');
+        $deductionData = EmployeeDeduction::where('id',$request->deduction_id)->delete();
+		return redirect('/deduction')->with('success','Deduction deleted successfully!');
 
     }
 

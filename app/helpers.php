@@ -12,6 +12,7 @@ use App\Models\EmployeeSalaryData;
 use App\Models\LeaveApprovalLogs;
 use App\Models\EmployeeBonus;
 use App\Models\EmployeeOvertimeData;
+use App\Models\EmployeeDeduction;
 
 function getLastId()
 {
@@ -72,6 +73,15 @@ function calculateBonusByMonth($empid,$mid,$year,$type='')
     $startDateOrg =  date('Y-m-d', strtotime('-1 month', strtotime($endDateOrg)));
     $startDateOrg = date('Y-m-d', strtotime('+1 days', strtotime($startDateOrg)));
     $total = EmployeeBonus::whereBetween('bonus_date', [$startDateOrg, $endDateOrg])->where('employee_id',$empid)->sum('bonus_amount');
+    return $total;
+}
+
+function calculateDeductionByMonth($empid,$mid,$year,$type='')
+{
+    $endDateOrg = $year.'-'.$mid.'-'.'19';//date('Y-m-20');
+    $startDateOrg =  date('Y-m-d', strtotime('-1 month', strtotime($endDateOrg)));
+    $startDateOrg = date('Y-m-d', strtotime('+1 days', strtotime($startDateOrg)));
+    $total = EmployeeDeduction::whereBetween('deduction_date', [$startDateOrg, $endDateOrg])->where('employee_id',$empid)->sum('deduction_amount');
     return $total;
 }
 

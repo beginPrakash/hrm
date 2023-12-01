@@ -103,7 +103,7 @@
                                     <p>{{$val->deduction}}</p>
                                 </td>
                                 <td>
-                                    <p>{{ number_format($val->total_earning, 2) }}</p>
+                                    <p>{{ number_format(($val->total_earning - $val->deduction), 2) }}</p>
                                 </td>
                             </tr>
                             @php $i++; @endphp    

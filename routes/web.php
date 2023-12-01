@@ -11,6 +11,7 @@ use App\Http\Controllers\ShiftingController;
 use App\Http\Controllers\SchedulingController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\BonusController;
+use App\Http\Controllers\DeductionController;
 use App\Http\Controllers\Dashboard;
 use Illuminate\Support\Facades\Route;
 
@@ -192,6 +193,11 @@ Route::match(array('GET','POST'),'/bonus',[BonusController::class, 'index'])->na
 Route::post('/store_bonus',[BonusController::class, 'store'] )->name('bonus.store');
 Route::post('/bonus_details',[BonusController::class, 'details'] );
 Route::post('/delete_bonus',[BonusController::class, 'delete_bonus'] );
+
+Route::match(array('GET','POST'),'/deduction',[DeductionController::class, 'index'])->name('deduction');
+Route::post('/store_deduction',[DeductionController::class, 'store'] )->name('deduction.store');
+Route::post('/deduction_details',[DeductionController::class, 'details'] );
+Route::post('/delete_deduction',[DeductionController::class, 'delete_deduction'] );
 
 
 // ****************************** Policies Module ****************************** //

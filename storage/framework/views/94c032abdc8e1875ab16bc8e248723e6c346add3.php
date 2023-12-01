@@ -140,7 +140,7 @@
     $(document).ready(function() {
           $("#addEditForm").validate({
         rules: {
-            user_id: {
+            employee_id: {
                 required : true},
             bonus_date:  {
                 required : true},
@@ -151,7 +151,7 @@
             },
         },    
         messages: {
-            user_id: {
+            employee_id: {
                 required : 'User is required',
             },
             bonus_date: {

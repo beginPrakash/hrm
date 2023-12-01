@@ -8,26 +8,26 @@
     });
     $("#addEditForm").validate({
         rules: {
-            employee_id: {
+            user_id: {
                 required : true},
-            bonus_date:  {
+            deduction_date:  {
                 required : true},
-            bonus_amount:  {
+            deduction_amount:  {
                 required : true},
             title:  {
                 required : true
             },
         },    
         messages: {
-            employee_id: {
+            user_id: {
                 required : 'User is required',
             },
-            bonus_date: {
-                required : 'Bonus Date is required',
+            deduction_date: {
+                required : 'Deduction Date is required',
             }
             ,
-            bonus_amount: {
-                required : 'Bonus Amount is required',
+            deduction_amount: {
+                required : 'Deduction Amount is required',
             },
             title: {
                 required : 'Title is required',
@@ -47,22 +47,22 @@
 <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
         <div class="modal-header">
-            <h5 class="modal-title leave_m_title">{{(isset($bonusData->id) && !empty($bonusData->id)) ? 'Edit' : 'Add'}} Bonus</h5>
+            <h5 class="modal-title leave_m_title">{{(isset($deductionData->id) && !empty($deductionData->id)) ? 'Edit' : 'Add'}} Deduction</h5>
             <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
         <div class="modal-body">
-            <form  action="{{url('store_bonus')}}" method="post" id="addEditForm">
+            <form  action="{{url('store_deduction')}}" method="post" id="addEditForm">
                 @csrf
-                <input type="hidden" name="id" class="leave_id" value="{{$bonusData->id ?? ''}}">
+                <input type="hidden" name="id" class="leave_id" value="{{$deductionData->id ?? ''}}">
                 <div class="form-group">
                     <label>Select User<span class="text-danger">*</span></label>
                     <select class="user_select" name="employee_id" id="employee_id">
                         <option value="">Select</option>
                         @if(isset($userdetails) && count($userdetails) > 0)
                             @foreach($userdetails as $key => $val)
-                                <option value="{{$val->id}}" {{(isset($bonusData->employee_id) && ($val->id == $bonusData->employee_id)) ? 'selected' : ''}}>{{$val->first_name}}</option>
+                                <option value="{{$val->id}}" {{(isset($deductionData->employee_id) && ($val->id == $deductionData->employee_id)) ? 'selected' : ''}}>{{$val->first_name}}</option>
                             @endforeach
                         @endif
                     </select>
@@ -70,19 +70,19 @@
                 <div class="form-group">
                     <label>Date <span class="text-danger">*</span></label>
                     <div class="cal-iconx">
-                        <input class="form-control datetimepicker_fromx" type="date" name="bonus_date" min="" value="{{$bonusData->bonus_date ?? ''}}" id="bonus_date">
+                        <input class="form-control datetimepicker_fromx" type="date" name="deduction_date" min="" value="{{$deductionData->deduction_date ?? ''}}" id="deduction_date">
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Amount <span class="text-danger">*</span></label>
-                    <input class="form-control" type="number" name="bonus_amount" id="bonus_amount" min="1" value="{{$bonusData->bonus_amount ?? 0}}">
+                    <input class="form-control" type="number" name="deduction_amount" id="deduction_amount" min="1" value="{{$deductionData->deduction_amount ?? 0}}">
                 </div>
                 <div class="form-group">
                     <label>Title <span class="text-danger">*</span></label>
-                    <textarea rows="4" class="form-control" name="title" id="title">{{$bonusData->title ?? ''}}</textarea>
+                    <textarea rows="4" class="form-control" name="title" id="title">{{$deductionData->title ?? ''}}</textarea>
                 </div>
                 <div class="submit-section">
-                    <button class="btn btn-primary submit-btn" type="submit" id="addBonusBtn">Submit</button>
+                    <button class="btn btn-primary submit-btn" type="submit" id="adddeductionBtn">Submit</button>
                 </div>
             </form>
         </div>

@@ -11,7 +11,11 @@
         <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">
 
         <!-- Scripts -->
-        <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
+        
+        <link rel="preload" as="style" href="<?php echo e(url('build/assets/app-8c73b358.css')); ?>" />
+        <link rel="modulepreload" href="<?php echo e(url('build/assets/app-619f552e.js')); ?>" />
+        <link rel="stylesheet" href="<?php echo e(url('build/assets/app-8c73b358.css')); ?>" />
+        <script type="module" src="<?php echo e(url('build/assets/app-619f552e.js')); ?>"></script>
 
        <link rel="stylesheet" href="<?php echo e(asset('assets/css/style.css')); ?>">
        <link rel="stylesheet" href="<?php echo e(asset('assets/css/custom.css')); ?>">

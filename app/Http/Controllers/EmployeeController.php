@@ -170,6 +170,7 @@ class EmployeeController extends Controller
         $financalYear = FinancialYear::get();
         $sal = (isset($employee->employee_salary->total_salary))?$employee->employee_salary->total_salary:0;
         $perday = $sal / 26;
+        //dd($attendanceAndHolidays);
         // echo '<pre>';print_r($employee);exit;
         return view('edbr.profile', [
             'user'                 => $employee,

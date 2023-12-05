@@ -13,6 +13,7 @@ use App\Models\LeaveApprovalLogs;
 use App\Models\EmployeeBonus;
 use App\Models\EmployeeOvertimeData;
 use App\Models\EmployeeDeduction;
+use App\Models\Holidays;
 
 function getLastId()
 {
@@ -222,6 +223,7 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
 
 
     function _check_green_icon_attendance($attnDate,$attnUserId){
+        $is_holiday = Holidays::whereDate('holiday_date',$attnDate)->first();
         $encoded = base64_encode(json_encode($attnDate.'/'.$attnUserId));
 
         $firstclockin = AttendanceDetails::where('user_id', $attnUserId)->where('punch_state', 'clockin')->whereDate('attendance_on', $attnDate 
@@ -246,6 +248,24 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
             {
                 $shcolor = 'text-success';
                 $shicon = 'fa-check';
+                    //update  public holiday balance
+                    if(!empty($is_holiday)):
+                    $emplo = Employee::where('user_id',$attnUserId)->first();
+                    if(!empty($emplo)):
+                        $commonWorkingHoursDetails = Overtime::first();
+                        $commonWorkingHours = $commonWorkingHoursDetails->working_hours - 1;
+                        $commonWorkingDays = $commonWorkingHoursDetails->working_days;
+                        $currentMonthSalary = (isset($emplo->employee_salary))?$emplo->employee_salary->basic_salary:0;
+                        $daySalary = ($currentMonthSalary>0)?($currentMonthSalary/$commonWorkingDays):0;
+                        $hourlySalary = ($daySalary>0)?($daySalary/$commonWorkingHours):0;
+                        $ph_amount = $hourlySalary * 8;
+                        $ph_bal_amount = $emplo->public_holidays_amount;
+                        $ph_bal = $emplo->public_holidays_balance;
+                        $emplo->public_holidays_balance = $ph_bal + 1;
+                        $emplo->public_holidays_amount = $ph_bal_amount + $ph_bal;
+                        $emplo->save();
+                    endif;
+                endif;
             }else{
                 $shcolor = 'text-warning';
                 $shicon = 'fa-info-circle';

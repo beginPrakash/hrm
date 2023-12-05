@@ -981,49 +981,47 @@ if ($currentMonth >= 4) {
                             <div class="col-md-6 d-flex">
                                 <div class="card profile-box flex-fill">
                                     <div class="card-body">
-                                        <h3 class="card-title">Public Holidays <a href="#" class="edit-icon" data-bs-toggle="modal" data-bs-target="#ph_info_modal"><i class="fa fa-pencil"></i></a></h3>
+                                        <h3 class="card-title">Public Holidays </h3>
                                         <div class="row">
                                             <ul class="personal-info">
                                                 <Hr/>
                                                     <h4>Public Holiday Information</h4>
                                                 <Hr/>
-                                                <li>
+                                                <!-- <li>
                                                     <div class="title">Worked Days</div>
                                                     <div class="text"><?php echo (isset($user->public_holidays_balance))?$user->public_holidays_balance:0; ?></div>
                                                 </li>
                                                 <li>
                                                     <div class="title">Balance Amount</div>
                                                     <div class="text">KWD <?php echo (isset($user->public_holidays_amount))?$user->public_holidays_amount:0; ?></div>
-                                                </li>
+                                                </li> -->
 
                                                 <!-- <Hr/>
                                                     <h4 class="pr-3">Work Information</h4>
                                                 <Hr/> -->
                                                 
 
-                                                <table class="table" style="display: none;">
+                                                <table class="table">
                                                     <tr>
                                                         <th>Date</th>
                                                         <th>Day</th>
                                                         <th>Holiday</th>
+                                                        <th>PH Leave Balance</th>
                                                     </tr>
                                                     <?php //echo '<pre>';print_r($user->employee_leaves); 
-                                                    $totalWorkedDays = 0;
                                                     if(isset($holidayWork)) { 
                                                         foreach($holidayWork as $hw) {
-                                                            if($hw->shift !=""){
-                                                                 $totalWorkedDays++;
-                                                            } 
                                                             ?>
                                                         <tr>
                                                             <td><?php echo $hw->attendance_on; ?> </td>
                                                             <td><?php echo $hw->holiday_day; ?></td>
                                                             <td><?php echo $hw->title ?></td>
+                                                            <td>1</td>
                                                         </tr>
                                                     <?php } } ?>
                                                     <tr>    
                                                         <td colspan="2">Today days worked <small>(Based on scheduling)</small></td>
-                                                        <td><?=$totalWorkedDays." - days" ;?> </td>
+                                                        <td><?php echo e($user->public_holidays_balance ?? 0); ?> - days </td>
                                                     </tr>
                                                 </table>
 

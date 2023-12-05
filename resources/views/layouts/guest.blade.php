@@ -11,7 +11,11 @@
         <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">
 
         <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        {{--@vite(['resources/css/app.css', 'resources/js/app.js'])--}}
+        <link rel="preload" as="style" href="{{url('build/assets/app-8c73b358.css')}}" />
+        <link rel="modulepreload" href="{{url('build/assets/app-619f552e.js')}}" />
+        <link rel="stylesheet" href="{{url('build/assets/app-8c73b358.css')}}" />
+        <script type="module" src="{{url('build/assets/app-619f552e.js')}}"></script>
 
        <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
        <link rel="stylesheet" href="{{asset('assets/css/custom.css')}}">

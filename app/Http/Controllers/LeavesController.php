@@ -99,6 +99,20 @@ class LeavesController extends Controller
         if(!empty($leave_exist)):
             return redirect()->back()->with('error','Leave is already applied.Please select another date.');
         else:
+            if($request->ph_checkbox == "on"):
+                $ph = intval($request->public_holidays) ?? 0;
+                $ph_rem = $employee->public_holidays_balance - $ph;
+            else:
+                $ph_rem = $employee->public_holidays_balance;
+            endif;
+            if($request->an_checkbox == "on"):
+                $an = intval($request->annual_leave_days) ?? 0;
+                $an_rem = $employee->opening_leave_days - $an;
+            else:
+                $an = $request->days;
+                $an_rem = $employee->opening_leave_days - $an;
+            endif;
+
             //get leave hierarchy
             $leave_hierarchy = LeaveHierarchy::where(['main_desig_id'=>$designation_id,'leave_type'=>$request->leave_type])->orWhere('main_dept_id',Null)->where('main_dept_id',$department_id)->first();
             $insertArray = array(
@@ -111,6 +125,10 @@ class LeavesController extends Controller
                 'leave_reason'   =>  $request->leave_reason,
                 'leave_status'   =>  'pending',
                 'leave_hierarchy'=> $leave_hierarchy->leave_hierarchy ?? '',
+                'claimed_annual_days' => $an ?? 0,
+                'claimed_public_days' => $ph ?? 0,
+                'claimed_annual_days_rem' => $an_rem ?? 0,
+                'claimed_public_days_rem' => $ph_rem ?? 0,
             );
             if(!empty($request->id)):
                 $leave_data = Leaves::where('id', $request->id)->first();
@@ -377,6 +395,7 @@ class LeavesController extends Controller
     public function getLeaveDetailsById(Request $request)
     {
         $this->user_id  = Session::get('user_id');
+        $userdetails = Employee::with('employee_designation')->where('user_id', $this->user_id)->get();
         $leavetype = Leavetype::where('status','active')->get();
         $leaveData = Leaves::find($request->id);
         $leave_details = getAnnualLeaveDetails($this->user_id);
@@ -385,7 +404,8 @@ class LeavesController extends Controller
 			'leave_details' => $leave_details,
             'leavetype' => $leavetype,
             'sick_leave_details' => $sick_leave_details,
-            'leaveData' => $leaveData
+            'leaveData' => $leaveData,
+            'userdetails'=>$userdetails,
         );
         $html =  view('lts.leave_modal', $pass_array )->render();
 		$arr = [

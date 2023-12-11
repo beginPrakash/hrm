@@ -328,17 +328,17 @@
                 var result = true;
 
                 if($('#leave_type').val() == 1){
-                            var emp_remaining_leave = $('#emp_remaining_leave').val();
-                        }else if($('#leave_type').val() == 2){
-                            var emp_remaining_leave = $('#emp_remainingsick_leave').val();
-                        }
-                        var days = $('#no_of_days').val();
-                        if(parseInt(days) <= parseInt(emp_remaining_leave)){
-                            result =  true;
-                        }else{
-                            //$('#rl_count_err').text('Remaing leave balance is 0.Please select unpaid leave');
-                            result = false;
-                        }
+                    var emp_remaining_leave = $('#emp_remaining_leave').val();
+                }else if($('#leave_type').val() == 2){
+                    var emp_remaining_leave = $('#emp_remainingsick_leave').val();
+                }
+                var days = $('#no_of_days').val();
+                if(parseInt(days) <= parseInt(emp_remaining_leave)){
+                    result =  true;
+                }else{
+                    //$('#rl_count_err').text('Remaing leave balance is 0.Please select unpaid leave');
+                    result = false;
+                }
 
               return this.optional(element) || result;
           }, "Insufficient no of leaves.");
@@ -447,7 +447,12 @@
 
 <script type="text/javascript">
     $(document).on('change','#leave_type, #leave_leave_type',function(){
+        $('.user_leave_request_tbl').addClass('d-none');
         var leave_type = $(this).val();
+        if(leave_type == '1'){
+            $('.user_leave_request_tbl').removeClass('d-none');
+        }
+        
         var max_leaves = $(this).find(':selected').data('id');
         $('#addLeaveBtn').attr('disabled', false);
         $('#rl_count_err').text('');
@@ -493,6 +498,7 @@
 
         var no_days = (result >= 0 )?result+1:0;
         $('#no_of_days').val(no_days);
+        $('.annual_leave_days').val(no_days);
         var request_leave = $('#request_leave').val();
         var leave_type = $('#leave_type').val();
         if(leave_type == 1){
@@ -510,17 +516,51 @@
                     var total_req_leave = parseInt(remaining_leave) - parseInt(no_days);
                     //console.log(total_req_leave);
                     $('#remaining_leaves').val(total_req_leave);
+                    $('.annual_leave_days').prop('max',no_days);
+                    var an_avail = $('.an_avail').val();
+                    var an_taken = $('.annual_leave_days').val();
+                    if(an_taken >= an_avail){
+                        var total = an_avail - an_taken;
+                        $('.annual_remaining_leave').text(total+' Days');
+                    }
                 }
 
         }else{
             if(remaining_leave >= no_days){
                 var total_req_leave = remaining_leave - no_days;
                 //console.log(total_req_leave);
+                $('.annual_leave_days').prop('max',no_days);
                 $('#remaining_leaves').val(total_req_leave);
+                var an_avail = $('.an_avail').val();
+                var an_taken = $('.annual_leave_days').val();
+                if(an_taken >= an_avail){
+                    var total = an_avail - an_taken;
+                    $('.annual_remaining_leave').text(total+' Days');
+                }
             }
         }
         
     });
+
+    function digitKeyOnly(e,eln) {       
+        var k = parseInt($('#no_of_days').val());
+        var value = Number(e.target.value + e.key) || 0;      
+        if (value > k) {
+            e.preventDefault();
+            return false;
+        }
+        return true;
+    }
+
+    function digitKeyOnlyPH(e,eln) {       
+        var k = parseInt($('.ph_avail').val());
+        var value = Number(e.target.value + e.key) || 0;      
+        if (value > k) {
+            e.preventDefault();
+            return false;
+        }
+        return true;
+    }
 
 </script>
 
@@ -537,4 +577,48 @@
             }
         });
     })
+
+    $('.ph_checkbox').click(function(){
+        $('.public_holidays').attr('disabled',true);
+        if ($(this).prop('checked')==true){ 
+            $('.public_holidays').attr('disabled',false);
+            var ph_avail = $('.ph_avail').val();
+            var ph_taken = $('.public_holidays').val();
+            if(ph_avail >= ph_taken){
+                var total = ph_avail - ph_taken;
+                $('.public_remaining_leave').text(total+' Days');
+            }
+        }
+    });
+
+    $(document).on('change','.public_holidays',function(){
+        var ph_avail = $('.ph_avail').val();
+        var ph_taken = $('.public_holidays').val();
+        if(ph_avail >= ph_taken){
+            var total = ph_avail - ph_taken;
+            $('.public_remaining_leave').text(total+' Days');
+        }
+    });
+
+    $('.an_checkbox').click(function(){
+        $('.annual_leave_days').attr('disabled',true);
+        if ($(this).prop('checked')==true){ 
+            $('.annual_leave_days').attr('disabled',false);
+            var an_avail = $('.an_avail').val();
+            var an_taken = $('.annual_leave_days').val();
+            if(an_avail >= an_taken){
+                var total = an_avail - an_taken;
+                $('.annual_remaining_leave').text(total+' Days');
+            }
+        }
+    });
+
+    $(document).on('change keyup','.annual_leave_days',function(){
+        var an_avail = $('.an_avail').val();
+        var an_taken = $('.annual_leave_days').val();
+        if(an_avail >= an_taken){
+            var total = an_avail - an_taken;
+            $('.annual_remaining_leave').text(total+' Days');
+        }
+    });
 </script>

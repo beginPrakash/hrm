@@ -21,6 +21,10 @@ class Leaves extends Model
         'leave_reason',
         'leave_status',
         'leave_hierarchy',
+        'claimed_annual_days',
+        'claimed_public_days',
+        'claimed_annual_days_rem',
+        'claimed_public_days_rem',
 	];
 
     public function status()

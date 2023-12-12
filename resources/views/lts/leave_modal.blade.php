@@ -67,6 +67,7 @@
         consoe.log('sd');
     });
 </script>
+
 <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
         <div class="modal-header">
@@ -131,7 +132,7 @@
                                 <tbody>
                                     <tr>
                                         <td>Annual Leave</td>
-                                        <td><input type="hidden" value="{{$leave_details['remaining_leave'] ?? 0 }}" class="an_avail">{{$leave_details['remaining_leave'] ?? 0}} Days</td>
+                                        <td><input type="hidden" value="{{$userdetails[0]->opening_leave_days ?? 0 }}" class="an_avail">{{$userdetails[0]->opening_leave_days ?? 0}} Days</td>
                                         
                                         @if(isset($leaveData) && !empty($leaveData))
                                             <td>
@@ -139,20 +140,20 @@
                                                     <input class="form-check-input an_checkbox" name="an_checkbox" type="checkbox" role="switch" id="flexSwitchCheckChecked" {{(isset($leaveData) && $leaveData->claimed_annual_days <= 0) ? '' : 'checked'}}>
                                                 </div>
                                             </td>
-                                            <td><input type="number" onkeypress="return digitKeyOnly(event,this)" value="{{$leaveData->claimed_annual_days ?? 0}}" name="annual_leave_days" class="annual_leave_days"  max="{{$leave_details['remaining_leave'] ?? 0}}" min="0" {{($leaveData->claimed_annual_days <= 0) ? 'disabled' : ''}}></td>
+                                            <td><input type="number" onkeypress="return digitKeyOnly(event,this)" value="{{$leaveData->claimed_annual_days ?? 0}}" name="annual_leave_days" class="annual_leave_days"  max="{{$leaveData->claimed_annual_days ?? 0}}" min="0" {{($leaveData->claimed_annual_days <= 0) ? 'disabled' : ''}}></td>
                                         @else
                                             <td>
                                                 <div class="form-check form-switch">
                                                     <input class="form-check-input an_checkbox" name="an_checkbox" type="checkbox" role="switch" id="flexSwitchCheckChecked">
                                                 </div>
                                             </td>
-                                            <td><input type="number" onkeypress="return digitKeyOnly(event,this)" name="annual_leave_days" class="annual_leave_days"  max="{{$leave_details['remaining_leave'] ?? 0}}" min="0" disabled></td>
+                                            <td><input type="number" onkeypress="return digitKeyOnly(event,this)" name="annual_leave_days" class="annual_leave_days"  max="0" min="0" disabled></td>
                                         @endif
                                         <td class="annual_remaining_leave">
                                             @if(isset($leaveData) && !empty($leaveData))
                                                 {{$leaveData->claimed_annual_days_rem ?? 0}} Days
                                             @else
-                                                {{$leave_details['remaining_leave'] ?? 0 }} Days
+                                                {{$userdetails[0]->opening_leave_days ?? 0 }} Days
                                             @endif
                                         </td>
                                     </tr>

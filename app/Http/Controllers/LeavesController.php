@@ -96,6 +96,7 @@ class LeavesController extends Controller
             $leave_exist = Leaves::where('user_id',$this->user_id)->whereBetween('leave_from', [$from_date, $to_date])
         ->orWhereBetween('leave_to', [$from_date, $to_date])->where('user_id',$this->user_id)->first();
         endif;
+        $leave_details = getAnnualLeaveDetails($this->user_id);
         if(!empty($leave_exist)):
             return redirect()->back()->with('error','Leave is already applied.Please select another date.');
         else:
@@ -105,6 +106,7 @@ class LeavesController extends Controller
             else:
                 $ph_rem = $employee->public_holidays_balance;
             endif;
+
             if($request->an_checkbox == "on"):
                 $an = intval($request->annual_leave_days) ?? 0;
                 $an_rem = $employee->opening_leave_days - $an;
@@ -184,12 +186,12 @@ class LeavesController extends Controller
                 //save employee request leave
                 if(!empty($employee)):
                     if($request->leave_type == 1):
-                        $opening_leave_days = $employee->opening_leave_days ?? 0;
-                        if(!empty($leave_datas)):
-                            $opening_leave_days = $opening_leave_days - $leave_datas->leave_days;
-                        endif;
-                        $employee->opening_leave_days = $opening_leave_days + $request->days;
-                        $employee->save();
+                        // $opening_leave_days = $employee->opening_leave_days ?? 0;
+                        // if(!empty($leave_datas)):
+                        //     $opening_leave_days = $opening_leave_days - $leave_datas->leave_days;
+                        // endif;
+                        // $employee->opening_leave_days = $opening_leave_days + $request->days;
+                        // $employee->save();
                     endif;
                     if($request->leave_type == 2):
                         $sick_leave_days = $employee->sick_leave_days ?? 0;

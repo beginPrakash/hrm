@@ -133,11 +133,12 @@
                         </div>
                     </div>
                 </div>
+               
                 <!-- /Page Content -->
                 
                 <!-- Add Leave Modal -->
                 <input type="hidden" id="request_leave" value="<?php echo e($userdetails[0]->request_leave_days ?? 0); ?>">
-                <input type="hidden" id="emp_remaining_leave" value="<?php echo e($leave_details['remaining_leave'] ?? 0); ?>">
+                <input type="hidden" id="emp_remaining_leave" value="<?php echo e($userdetails[0]->opening_leave_days ?? 0); ?>">
                 <input type="hidden" id="emp_remainingsick_leave" value="<?php echo e($sick_leave_details['remaining_leave'] ?? 0); ?>">
                 <div id="add_leave" class="modal custom-modal fade " role="dialog">
                     <?php echo $__env->make('lts/leave_modal', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
@@ -429,6 +430,13 @@
         }else if(leave_type == 2){
             var emp_remaining_leave = $('#emp_remainingsick_leave').val();
         }  
+
+        var an_avail = $('.an_avail').val();
+            var an_taken = $('.annual_leave_days').val();
+            if(an_avail >= an_taken){
+                var total = an_avail - an_taken;
+                $('.annual_remaining_leave').text(total+' Days');
+            }
         //console.log(emp_remaining_leave);
         var remaining_leave = emp_remaining_leave;
 
@@ -507,7 +515,9 @@
             $('.public_holidays').attr('disabled',false);
             var ph_avail = $('.ph_avail').val();
             var ph_taken = $('.public_holidays').val();
-            if(ph_avail >= ph_taken){
+            ph_avail = parseInt(ph_avail);
+            ph_taken = parseInt(ph_taken);
+            if(ph_taken <= ph_avail){
                 var total = ph_avail - ph_taken;
                 $('.public_remaining_leave').text(total+' Days');
             }
@@ -517,7 +527,9 @@
     $(document).on('change','.public_holidays',function(){
         var ph_avail = $('.ph_avail').val();
         var ph_taken = $('.public_holidays').val();
-        if(ph_avail >= ph_taken){
+        ph_avail = parseInt(ph_avail);
+        ph_taken = parseInt(ph_taken);
+        if(ph_taken <= ph_avail){
             var total = ph_avail - ph_taken;
             $('.public_remaining_leave').text(total+' Days');
         }
@@ -529,7 +541,9 @@
             $('.annual_leave_days').attr('disabled',false);
             var an_avail = $('.an_avail').val();
             var an_taken = $('.annual_leave_days').val();
-            if(an_avail >= an_taken){
+            an_avail = parseInt(an_avail);
+            an_taken = parseInt(an_taken);
+            if(an_taken <= an_avail){
                 var total = an_avail - an_taken;
                 $('.annual_remaining_leave').text(total+' Days');
             }
@@ -539,8 +553,11 @@
     $(document).on('change keyup','.annual_leave_days',function(){
         var an_avail = $('.an_avail').val();
         var an_taken = $('.annual_leave_days').val();
-        if(an_avail >= an_taken){
+        an_avail = parseInt(an_avail);
+        an_taken = parseInt(an_taken);
+        if(an_taken <= an_avail){
             var total = an_avail - an_taken;
+            console.log(total);
             $('.annual_remaining_leave').text(total+' Days');
         }
     });

@@ -25,6 +25,7 @@ class Leaves extends Model
         'claimed_public_days',
         'claimed_annual_days_rem',
         'claimed_public_days_rem',
+        'is_post_transaction',
 	];
 
     public function status()

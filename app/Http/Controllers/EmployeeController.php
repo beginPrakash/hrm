@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use DB;
+use DB, PDF;
 use Session;
 
 // use App\Company as AppCompany;
@@ -170,6 +170,8 @@ class EmployeeController extends Controller
         $financalYear = FinancialYear::get();
         $sal = (isset($employee->employee_salary->total_salary))?$employee->employee_salary->total_salary:0;
         $perday = $sal / 26;
+        $emp_leaves = Leaves::where('user_id',$user_id)->where('leave_status','approved')->where('leave_type',1)->whereNull('is_post_transaction')->get();
+        $emp_leaves_history = Leaves::where('user_id',$user_id)->where('leave_status','approved')->where('leave_type',1)->whereNotNull('is_post_transaction')->get();
         //dd($attendanceAndHolidays);
         // echo '<pre>';print_r($employee);exit;
         return view('edbr.profile', [
@@ -190,7 +192,9 @@ class EmployeeController extends Controller
             'financial_year'        => $financalYear,
             'annualleavedetails'   => $annualleavedetails,
             'sickleavedetails' => $sickleavedetails,
-            'perday'=>$perday
+            'perday'=>$perday,
+            'emp_leaves'=>$emp_leaves,
+            'emp_leaves_history'=>$emp_leaves_history
         ]);
     }
 
@@ -1098,5 +1102,68 @@ class EmployeeController extends Controller
         $return['message'] = 'Import Successful.';
         $return['status'] = 1;
         return $return;
+    }
+
+    public function getanLeaveDetailsById(Request $request)
+    {
+
+        $user_id  = $request->user_id;
+        $userdetails = Employee::with('employee_designation')->where('user_id', $user_id)->first();
+        $leaveData = Leaves::find($request->id);
+        $leave_details = getAnnualLeaveDetails($user_id);
+        $pass_array=array(
+            'leaveData' => $leaveData,
+            'userdetails'=>$userdetails,
+            'leave_details'=>$leave_details,
+            'type' => $request->type ?? '',
+        );
+
+        $html =  view('edbr.an_leave_detail_modal', $pass_array )->render();
+		$arr = [
+			'success' => 'true',
+			'html' => $html
+		];
+		return response()->json($arr);
+
+    }
+
+    public function post_leave_transaction(Request $request){
+        //dd($request->all());
+        $leave_data = Leaves::find($request->id);
+        $annual_leave_days = intval($request->annual_leave_days ?? 0);
+        $public_holidays = intval($request->public_holidays ?? 0);
+        if(isset($request->type) && $request->type == 'download'):
+            $pass_array = array(
+                "leave_data" => $leave_data,
+            );
+            $cdate = date('Y-m-d');
+            $rname = $cdate.'_vacationhistory.pdf';
+            $pdf = PDF::loadView('edbr.vacation_history_pdf', $pass_array)->setPaper('a4', 'landscape')->setWarnings(false);
+            //print_r($pdf);
+            return $pdf->download($rname);
+        else:
+            if(!empty($leave_data)):
+                $leave_data->claimed_annual_days = $annual_leave_days;
+                $leave_data->claimed_public_days = $public_holidays;
+                $leave_data->save();
+
+                //deduct leave from employee account
+                $employee = Employee::where('user_id',$leave_data->user_id)->where('status','active')->first();
+                $opening_leave_days = $employee->opening_leave_days ?? 0;
+                $public_balance = $employee->public_holidays_balance ?? 0;
+                if(($opening_leave_days >= $annual_leave_days) || ($public_balance >= $public_holidays)):
+                    $employee->opening_leave_days = $opening_leave_days - $annual_leave_days;
+                    $employee->public_holidays_balance = $public_balance - $public_holidays;
+                    $employee->save();
+                    //update leave status
+                    $leave_data->is_post_transaction = 1;
+                    $leave_data->save();
+                    return redirect()->back()->with('success','Data saved successfully.');
+                else:
+                    return redirect()->back()->with('error','Leave Balance not available.');
+                endif;
+                
+            endif;
+        endif;
     }
 }

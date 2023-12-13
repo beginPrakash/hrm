@@ -1,72 +1,5 @@
 <script type="text/javascript" src="<?php echo e(asset('assets/js/app.js')); ?>"></script>
-<script>
-    $.validator.addMethod("checkreleave", function (value, element) {
-        var result = true;
 
-        if($('#leave_type').val() == 1){
-                    var emp_remaining_leave = $('#emp_remaining_leave').val();
-                }else if($('#leave_type').val() == 2){
-                    var emp_remaining_leave = $('#emp_remainingsick_leave').val();
-                }
-                var days = $('#no_of_days').val();
-                if(parseInt(days) <= parseInt(emp_remaining_leave)){
-                    result =  true;
-                }else{
-                    //$('#rl_count_err').text('Remaing leave balance is 0.Please select unpaid leave');
-                    result = false;
-                }
-
-        return this.optional(element) || result;
-    }, "Insufficient no of leaves.");
-    $("#addEditForm").validate({
-        rules: {
-            leave_type: {
-                required : true},
-            from_date:  {
-                required : true},
-            to_date:  {
-                required : true},
-            days:  {
-                required : true},
-            remaining_leaves:  {
-                checkreleave: true,
-            },
-                leave_reason:  {
-                required : true},
-        },
-        messages: {
-            leave_type: {
-                required : 'Leave Type is required',
-            },
-                from_date: {
-                required : 'From Date is required',
-            }
-            ,
-            to_date: {
-                required : 'To Date is required',
-            },
-            days: {
-                required : 'Days is required',
-            },
-            remaining_leaves: {
-                required : 'Remaining leave balance is 0.Please select unpaid leave',
-            },
-            leave_reason: {
-                required : 'Leaves reason is required',
-            }
-        },
-        errorPlacement: function (error, element) {
-            if (element.prop("type") == "text" || element.prop("type") == "textarea") {
-                error.insertAfter(element);
-            } else {
-                error.insertAfter(element.parent());
-            }
-        },
-    });
-    $('.ph_checkbox').click(function(){
-        consoe.log('sd');
-    });
-</script>
 
 <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -77,7 +10,7 @@
             </button>
         </div>
         <div class="modal-body">
-            <?php if(empty($type)): ?>
+            <?php if(empty($type) && (isset($leaveData) && !empty($leaveData))): ?>
             <form  action="/post_leave_transaction" method="post">
                 <?php echo csrf_field(); ?>
                 <input type="hidden" name="id" class="leave_id" value="<?php echo e($leaveData->id ?? ''); ?>">
@@ -135,39 +68,40 @@
                 </div>
             </form>
             <?php else: ?>
-            
-            <div class="row">
-                    <div class="col-md-12">
-                        <div class="table-responsive">
-                            <table class=" table table-bordered table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 30px;">Amount Type</th>
-                                        <th>Available</th>
-                                        <th>Payment</th>
-                                        <th>Text</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Annual Leave</td>
-                                        <td><?php echo e($leaveData->claimed_annual_days_rem + $leaveData->claimed_annual_days); ?> Days</td>
-                                        <td>Yes</td>
-                                        <td><?php echo e($leaveData->claimed_annual_days ?? 0); ?> Days</td>
-                                    </tr>
-                                    <?php if(isset($leaveData) && ($leaveData->claimed_public_days > 0)): ?>
+                <?php if(isset($type) && ($type == 'history')): ?>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table class=" table table-bordered table-striped table-hover">
+                                    <thead>
                                         <tr>
-                                            <td>Public Holiday</td>
-                                            <td><?php echo e($leaveData->claimed_public_days_rem + $leaveData->claimed_public_days); ?> Days</td>
-                                            <td>Yes</td>
-                                            <td><?php echo e($leaveData->claimed_public_days_rem ?? 0); ?> Days</td>
+                                            <th style="width: 30px;">Amount Type</th>
+                                            <th>Available</th>
+                                            <th>Payment</th>
+                                            <th>Text</th>
                                         </tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Annual Leave</td>
+                                            <td><?php echo e($leaveData->claimed_annual_days_rem + $leaveData->claimed_annual_days); ?> Days</td>
+                                            <td>Yes</td>
+                                            <td><?php echo e($leaveData->claimed_annual_days ?? 0); ?> Days</td>
+                                        </tr>
+                                        <?php if(isset($leaveData) && ($leaveData->claimed_public_days > 0)): ?>
+                                            <tr>
+                                                <td>Public Holiday</td>
+                                                <td><?php echo e($leaveData->claimed_public_days_rem + $leaveData->claimed_public_days); ?> Days</td>
+                                                <td>Yes</td>
+                                                <td><?php echo e($leaveData->claimed_public_days ?? 0); ?> Days</td>
+                                            </tr>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                </div>
+                <?php endif; ?>
             <?php endif; ?>
            
             <form  action="/post_leave_transaction" method="post">

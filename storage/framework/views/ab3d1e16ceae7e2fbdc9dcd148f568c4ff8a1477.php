@@ -829,20 +829,19 @@ if ($currentMonth >= 4) {
                                                 <ul class="personal-info">
                                                     
                                                     <?php if(isset($emp_leaves) && count($emp_leaves) > 0): ?>
-                                                    <?php $__currentLoopData = $emp_leaves; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <?php $__currentLoopData = $emp_leaves; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
-                                                    <li>
-                                                        
-                                                        <div class="text"><a href="#" class="an_leave_btn" data-bs-toggle="modal" data-bs-target="#an_leave_detail_modal" data-id="<?php echo e($val->id); ?>" data-userid="<?php echo e($user->user_id); ?>"><i class="fa fa-clock"></i> <?php echo e(date('d M y', strtotime($val->leave_from))); ?> - <?php echo e(date('d M y', strtotime($val->leave_to))); ?> (<?php echo e($val->leave_days); ?> Days)</a></div>
-                                                    </li>
-                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                        <li>
+                                                            
+                                                            <div class="text"><a href="#" class="an_leave_btn" data-bs-toggle="modal" data-bs-target="#an_leave_detail_modal" data-id="<?php echo e($val->id); ?>" data-userid="<?php echo e($user->user_id); ?>"><i class="fa fa-clock"></i> <?php echo e(date('d M y', strtotime($val->leave_from))); ?> - <?php echo e(date('d M y', strtotime($val->leave_to))); ?> (<?php echo e($val->leave_days); ?> Days)</a></div>
+                                                        </li>
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                    <?php else: ?>
+                                                        <li>No data found</li>
                                                     <?php endif; ?>
 
                                                 </ul>
                                                 
-                                                <div class="col-md-12">
-                                                    
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -860,20 +859,19 @@ if ($currentMonth >= 4) {
                                                 <ul class="personal-info">
                                                     
                                                     <?php if(isset($emp_leaves_history) && count($emp_leaves_history) > 0): ?>
-                                                    <?php $__currentLoopData = $emp_leaves_history; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <?php $__currentLoopData = $emp_leaves_history; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
-                                                    <li>
-                                                        
-                                                        <div class="text"><a href="#" class="an_leave_btn" data-bs-toggle="modal" data-bs-target="#an_leave_detail_modal" data-id="<?php echo e($val->id); ?>" data-userid="<?php echo e($user->user_id); ?>" data-type="history"><i class="fa fa-clock"></i> <?php echo e(date('d M y', strtotime($val->leave_from))); ?> - <?php echo e(date('d M y', strtotime($val->leave_to))); ?> (<?php echo e($val->leave_days); ?> Days)</a></div>
-                                                    </li>
-                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                        <li>
+                                                            
+                                                            <div class="text"><a href="#" class="an_leave_btn" data-bs-toggle="modal" data-bs-target="#an_leave_detail_modal" data-id="<?php echo e($val->id); ?>" data-userid="<?php echo e($user->user_id); ?>" data-type="history"><i class="fa fa-clock"></i> <?php echo e(date('d M y', strtotime($val->leave_from))); ?> - <?php echo e(date('d M y', strtotime($val->leave_to))); ?> (<?php echo e($val->leave_days); ?> Days)</a></div>
+                                                        </li>
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                    <?php else: ?>
+                                                        <li>No data found</li>
                                                     <?php endif; ?>
 
                                                 </ul>
                                                 
-                                                <div class="col-md-12">
-                                                    
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -884,15 +882,17 @@ if ($currentMonth >= 4) {
                         </div>
                         <div class="tab-pane fade" id="annual_leave">
                             <div class="row">
-                                <div class="col-md-6 d-flex">
+                                <div class="col-md-12 d-flex">
                                     <div class="card profile-box flex-fill">
                                         <div class="card-body">
-                                            <h3 class="card-title">Annual Leave Information<?php //echo date('Y'); ?><a href="#" class="edit-icon" data-bs-toggle="modal" data-bs-target="#opening_leave_info_modal"><i class="fa fa-pencil"></i></a></h3>
+                                            <h3 class="card-title">Annual Leave Information<?php //echo date('Y'); ?>
+                                            <!-- <a href="#" class="edit-icon" data-bs-toggle="modal" data-bs-target="#opening_leave_info_modal"><i class="fa fa-pencil"></i></a> -->
+                                        </h3>
                                             <div class="row">
                                                 <ul class="personal-info">
                                                     
                                                     <?php
-                                                    $al_balance = (isset($user->opening_leave_days))?$user->opening_leave_days:$annualleavedetails['leaveBalance'];
+                                                    $al_balance = $annualleavedetails['totalLeaveDays'] ?? 0;
                                                     $al_used = (isset($annualleavedetails['totalLeaveDays']) && $annualleavedetails['totalLeaveDays']>0 && isset($al_balance) && $al_balance > 0)?$annualleavedetails['totalLeaveDays'] - $al_balance:0;
                                                     ?>
 
@@ -902,34 +902,33 @@ if ($currentMonth >= 4) {
                                                     </li>
                                                     <li>
                                                         <div class="title">Used Leave Days</div>
-                                                        <div class="text"><?php echo e((isset($user->opening_leave_days) && !empty($user->opening_leave_days)) ? $user->opening_leave_days : 0); ?></div>
+                                                        <div class="text"><?php echo e($annualleavedetails['used'] ?? 0); ?></div>
                                                     </li>
                                                     <li>
                                                         <div class="title">Balance Days</div>
-                                                        <div class="text"><?php echo e($annualleavedetails['remaining_leave_withoutreq']  ?? 0); ?></div>
+                                                        <div class="text"><?php echo e((isset($user->opening_leave_days) && !empty($user->opening_leave_days)) ? $user->opening_leave_days : 0); ?></div>
                                                     </li>
                                                     <li>
                                                         <div class="title">Balance Amount</div>
-                                                        <div class="text">KWD 
-                                                        <?php echo e(number_format($annualleavedetails['balance_leave_amount'],2)  ?? 0); ?>
-
+                                                        <div class="text"> 
+                                                        <?php echo e(number_format($annualleavedetails['leaveAmount'],2)  ?? 0); ?> KWD
                                                         </div>
                                                     </li>
 
-                                                    <Hr/>
-                                                        <h4>Leave Requests - <?php echo date('Y'); ?></h4>
-                                                    <Hr/>
 
                                                     <table class="table">
                                                         <tr>
                                                             <th>Date</th>
-                                                            <th>No. of Days</th>
-                                                            <th>Status</th>
-                                                            <!-- <th>Action</th> -->
+                                                            <th># Leave was in Bucket</th>
+                                                            <th>Applied for</th>
+                                                            <th>Claimed for</th>
+                                                            <th>Opening Leave Balance</th>
+                                                            <th>Claimed Amount</th>
+                                                            <th>Closing Leave Balance</th>
                                                         </tr>
 
                                                         <?php //echo '<pre>';print_r($user->employee_leaves); 
-                                                        if(isset($user->employee_leaves)) { 
+                                                        if(isset($user->employee_leaves) && count($user->employee_leaves) > 0) { 
                                                             foreach($user->employee_leaves as $el) { 
                                                                 if($el->leave_type == 1) { 
                                                                     $cur_year = date('Y');
@@ -937,36 +936,25 @@ if ($currentMonth >= 4) {
                                                                     ?>
                                                             <?php if($cur_year == $leave_year): ?>
                                                                 <tr>
-                                                                    <td><?php echo $el->leave_from; ?> to <?php echo $el->leave_to; ?></td>
-                                                                    <td><?php echo $el->leave_days; ?></td>
-                                                                    <!-- <td><?php //echo number_format($perday * $el->leave_days , 2); ?></td> -->
-                                                                    <td><?php echo $el->leave_status; ?></td>
-                                                                    <!-- <td>
-                                                                        <?php if($el->leave_status!=='paid' && $el->leave_status!=='hold'){ ?>
-                                                                            <form method="post" action="/employeeLeaveAmountUpdate/<?php echo $el->id; ?>">
-                                                                                <?php echo csrf_field(); ?>
-                                                                                <input type="hidden" name="userid" value="<?php echo $user->id; ?>">
-                                                                                <input type="hidden" name="nodays" value="<?php echo $el->leave_days; ?>">
-                                                                                <input type="hidden" name="lamount" value="<?php echo $perday * $el->leave_days; ?>">
-                                                                                <button type="submit" name="status_type" value="paid" class="btn btn-success text-white">Paid</button>
-                                                                                <button type="submit" name="status_type" value="hold" class="btn btn-warning text-white">Hold</button>
-                                                                            </form>
-                                                                        <?php } if($el->leave_status=='paid'){ ?>
-                                                                            <span class="badge bg-inverse-success">Paid</span>
-                                                                        <?php } if($el->leave_status=='hold'){ ?>
-                                                                            <span class="badge bg-inverse-warning">Hold</span>
-                                                                        <?php } ?>
-                                                                    </td> -->
+                                                                    <td><?php echo e(date('d M y', strtotime($el->leave_from))); ?> - <?php echo e(date('d M y', strtotime($el->leave_to))); ?></td>
+                                                                    <td><?php echo e(($el->claimed_annual_days_rem ?? 0) + $el->claimed_annual_days); ?> Days</td>
+                                                                    <td><?php echo e($el->leave_days ?? 0); ?> Days</td>
+                                                                    <td><?php echo e($el->claimed_annual_days ?? 0); ?> Days</td>
+                                                                    <td><?php echo e(number_format($el->opening_leave_balance,2) ?? 0); ?> KWD</td>
+                                                                    <td><?php echo e(number_format($el->claimed_amount,2) ?? 0); ?> KWD</td>
+                                                                    <td><?php echo e(number_format($el->closing_leave_balance,2) ?? 0); ?> KWD</td>
                                                                 </tr>
                                                             <?php endif; ?>
-                                                        <?php } } } ?>
+                                                        <?php } } } else { ?>
+                                                            <tr>
+                                                                <td colspan="7" align="center">No data found</td>
+                                                            </tr>
+                                                        <?php } ?>
                                                     </table>
 
                                                 </ul>
                                                 
-                                                <div class="col-md-12">
-                                                    
-                                                </div>
+                                               
                                             </div>
                                         </div>
                                     </div>
@@ -3146,7 +3134,7 @@ if ($currentMonth >= 4) {
     });
 
        $(document).on('click','.an_leave_btn',function(){
-        console.log('sdfds');
+        //console.log('sdfds');
             $('#an_leave_detail_modal').html('');
             var id= $(this).attr('data-id');
             var user_id = $(this).attr('data-userid');

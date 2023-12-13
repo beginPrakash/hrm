@@ -83,7 +83,7 @@
                                             <p>Yes</p>
                                         </td>
                                         <td>
-                                            <p><?php echo e($leave_data->claimed_public_days_rem); ?> Days</p>
+                                            <p><?php echo e($leave_data->claimed_public_days); ?> Days</p>
                                         </td>
                                     </tr>
                                 <?php endif; ?>

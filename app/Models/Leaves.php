@@ -25,6 +25,9 @@ class Leaves extends Model
         'claimed_public_days',
         'claimed_annual_days_rem',
         'claimed_public_days_rem',
+        'opening_leave_balance',
+        'claimed_amount',
+        'closing_leave_balance',
         'is_post_transaction',
 	];
 

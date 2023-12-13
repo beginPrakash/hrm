@@ -411,6 +411,9 @@
             $('#remaining_leaves').val(0);
             $('#no_of_days').val(0);
             $('#leave_reason').val('');
+            $('.annual_leave_days').val(0);
+            $('.public_holidays').val(0);
+            $('.annual_remaining_leave').text('0 Days');
             $('.leave_m_title').text('Add Leave');
         });
        

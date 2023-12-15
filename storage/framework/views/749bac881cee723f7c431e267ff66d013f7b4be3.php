@@ -24,7 +24,7 @@
                                         <th style="width: 30px;">Amount Type</th>
                                         <th>Available</th>
                                         <th>Payment</th>
-                                        <th>Textbox</th>
+                                        <th>Claim</th>
                                         <th class="text-end">Remaining</th>
                                     </tr>
                                 </thead>
@@ -35,12 +35,12 @@
                                         
                                         <td>
                                             <div class="form-check form-switch">
-                                                <input class="form-check-input an_checkbox" name="an_checkbox" type="checkbox" role="switch" id="flexSwitchCheckChecked" <?php echo e((isset($leaveData) && $leaveData->claimed_annual_days <= 0) ? '' : 'checked'); ?>>
+                                                <input class="form-check-input an_checkbox" name="an_checkbox" type="checkbox" role="switch" id="flexSwitchCheckChecked" <?php echo e((isset($leaveData) && $leaveData->claimed_annual_days < 0) ? '' : 'checked'); ?>>
                                             </div>
                                         </td>
                                         <input type="hidden" id="no_of_days" value="<?php echo e($leaveData->leave_days ?? 0); ?>">
                                         <input type="hidden" value="<?php echo e($userdetails->opening_leave_days ?? 0); ?>" class="an_avail">
-                                        <td><input type="number" onkeypress="return digitKeyOnly(event,this)" value="<?php echo e($leaveData->claimed_annual_days ?? 0); ?>" name="annual_leave_days" class="annual_leave_days"  max="<?php echo e($leaveData->claimed_annual_days ?? 0); ?>" min="0" <?php echo e((isset($leaveData) && $leaveData->claimed_annual_days <= 0) ? 'disabled' : ''); ?>></td>
+                                        <td><input type="number" onkeypress="return digitKeyOnly(event,this)" value="<?php echo e($leaveData->claimed_annual_days ?? 0); ?>" name="annual_leave_days" class="annual_leave_days"  max="<?php echo e($leaveData->leave_days ?? 0); ?>" min="0" <?php echo e((isset($leaveData) && $leaveData->claimed_annual_days < 0) ? 'disabled' : ''); ?>></td>
                                         <td class="annual_remaining_leave">
                                             <?php echo e(($userdetails->opening_leave_days ?? 0) - ($leaveData->claimed_annual_days ?? 0)); ?> Days   
                                         </td>
@@ -78,7 +78,7 @@
                                             <th style="width: 30px;">Amount Type</th>
                                             <th>Available</th>
                                             <th>Payment</th>
-                                            <th>Text</th>
+                                            <th>Claim</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -101,17 +101,19 @@
                             </div>
                         </div>
                     </div>
+                    <form  action="/post_leave_transaction" method="post">
+                        <?php echo csrf_field(); ?>
+                        <input type="hidden" name="type" id="trans_type" value="download">
+                        <input type="hidden" name="id" class="leave_id" value="<?php echo e($leaveData->id ?? ''); ?>">
+                        <div class="submit-section">
+                            <button class="btn btn-primary submit-btn" type="submit" id="download_btn">Download Settlement</button>
+                        </div>
+                    </form> 
+
                 <?php endif; ?>
             <?php endif; ?>
            
-            <form  action="/post_leave_transaction" method="post">
-                <?php echo csrf_field(); ?>
-                <input type="hidden" name="type" id="trans_type" value="download">
-                <input type="hidden" name="id" class="leave_id" value="<?php echo e($leaveData->id ?? ''); ?>">
-                <div class="submit-section">
-                    <button class="btn btn-primary submit-btn" type="submit" id="download_btn">Download Settlement</button>
-                </div>
-            </form>        
+                   
         </div>
     </div>
 </div><?php /**PATH C:\wamp64_new\www\hrm\resources\views/edbr/an_leave_detail_modal.blade.php ENDPATH**/ ?>

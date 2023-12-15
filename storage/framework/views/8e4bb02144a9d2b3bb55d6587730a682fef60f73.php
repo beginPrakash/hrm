@@ -44,53 +44,151 @@
 </head>
 <body>
     <div style="display: block; margin:0 auto;">
-
-            <table class="custom-table" style="margin-bottom: 30px;max-width:400px;">
-                <thead style="background-color: #F5F5F5">
-                    <tr>
-                        <th>Amount Type</th>
-                        <th>Available</th>
-                        <th>Payment</th>
-                        <th>Text</th>
-                    </tr>
-                </thead>
+            <table style="margin-bottom: 30px;max-width:400px;">
                 <tbody>
-                        <?php if(isset($leave_data) && !empty($leave_data)): ?>   
-                            <?php if(!empty($leave_data->leave_days)): ?> 
-                                <tr>
-                                    <td>
-                                        <p>Annual Leave</p>
-                                    </td>
-                                    <td>
-                                        <p><?php echo e($leave_data->claimed_annual_days_rem + $leave_data->claimed_annual_days); ?> Days</p>
-                                    </td>
-                                    <td>
-                                        <p>Yes</p>
-                                    </td>
-                                    <td>
-                                        <p><?php echo e($leave_data->claimed_annual_days); ?> Days</p>
-                                    </td>
-                                </tr>
-                                <?php if(!empty($leave_data->claimed_public_days)): ?> 
-                                    <tr>
-                                        <td>
-                                            <p>Public Holiday</p>
-                                        </td>
-                                        <td>
-                                            <p><?php echo e($leave_data->claimed_public_days_rem + $leave_data->claimed_public_days); ?> Days</p>
-                                        </td>
-                                        <td>
-                                            <p>Yes</p>
-                                        </td>
-                                        <td>
-                                            <p><?php echo e($leave_data->claimed_public_days); ?> Days</p>
-                                        </td>
-                                    </tr>
-                                <?php endif; ?>
-                            <?php endif; ?>
-                        <?php endif; ?>   
-               
-                        </tbody>
+                    
+                    <tr>
+                        <th width="80px" style="vertical-align:top">                        
+                            <p class="text-center mb-0">
+                                <b><?php echo e((isset($employee->employee_company_details) && !empty($employee->employee_company_details)) ? $employee->employee_company_details->company_name : ''); ?> </b>
+                            </p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th width="80px" style="vertical-align:top">                        
+                            <p class="text-center mb-0">
+                                <b>Vacation settlement (<?php echo e(date('d M y', strtotime($leave_data->updated_at))); ?>) </b>
+                            </p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th width="80px" style="vertical-align:top">                        
+                            <p class="text-center mb-0">
+                                <b><?php echo e($employee->full_name ?? ''); ?> - <?php echo e($employee->emp_generated_id ?? ''); ?> - <?php echo e($employee->employee_details ? $employee->employee_details->c_id : '--'); ?></b>
+                            </p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th width="80px" style="vertical-align:top">                        
+                            <p class="text-left mb-0">
+                                <b>Salary of employee : </b><?php echo e(number_format($leave_data->basic_salary,2) ?? 0); ?> KWD
+                            </p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th width="80px" style="vertical-align:top">                        
+                            <p class="text-left mb-0">
+                                <b>Number of leave in bucket : </b><?php echo e($leave_data->claimed_annual_days + $leave_data->claimed_annual_days_rem); ?>
+
+                            </p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th width="80px" style="vertical-align:top">                        
+                            <p class="text-left mb-0">
+                                <b>Number of leave approved : </b><?php echo e($leave_data->claimed_annual_days ?? ''); ?>
+
+                            </p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th width="80px" style="vertical-align:top">                        
+                            <p class="text-left mb-0">
+                                <b>Date of leaves approved  : </b><?php echo e(date('d M y', strtotime($leave_approve_date))); ?>
+
+                            </p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th width="80px" style="vertical-align:top">                        
+                            <p class="text-left mb-0">
+                                <b>No of leave remaining  : </b><?php echo e($leave_data->claimed_annual_days_rem ?? ''); ?>
+
+                            </p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th width="80px" style="vertical-align:top">                        
+                            <p class="text-left mb-0">
+                                <b>Number of leaved paying : </b><?php echo e(number_format(_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_annual_days ?? 0),2)); ?> KWD
+                            </p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th width="80px" style="vertical-align:top">                        
+                            <p class="text-left mb-0">
+                                <b>Balance amount remains : </b><?php echo e(number_format(_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_annual_days_rem ?? 0),2)); ?> KWD
+                            </p>
+                        </th>
+                    </tr>
+
+                    <tr>
+                        <th width="80px" style="vertical-align:top">                        
+                            <p class="text-left mb-0">
+                                <b>No of public holidays : </b><?php echo e($leave_data->claimed_public_days ?? 0 + $leave_data->claimed_public_days_rem ?? 0); ?>
+
+                            </p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th width="80px" style="vertical-align:top">                        
+                            <p class="text-left mb-0">
+                                <b>No of public holidays paying : </b><?php echo e(number_format(_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_public_days ?? 0),2)); ?> KWD
+                            </p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th width="80px" style="vertical-align:top">                        
+                            <p class="text-left mb-0">
+                                <b>No of public holidays Remains  : </b><?php echo e($leave_data->claimed_public_days_rem ?? 0); ?>
+
+                            </p>
+                        </th>
+                    </tr>
+
+                    <tr>
+                        <th width="80px" style="vertical-align:top">                        
+                            <p class="text-left mb-0">
+                                <b>Payable amount  : </b><?php echo e(number_format((_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_annual_days ?? 0)) + (_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_public_days ?? 0)),2)); ?> KWD
+                            </p>
+                        </th>
+                    </tr>
+
+                    <tr>
+                        <th width="80px" style="vertical-align:top">                        
+                            <p class="text-left mb-0">
+                                <b>Number of leaved paying  : </b><?php echo e($leave_data->claimed_annual_days + $leave_data->claimed_public_days); ?>
+
+                            </p>
+                        </th>
+                    </tr>
+
+                    <tr>
+                        <th width="80px" style="vertical-align:top">                        
+                            <p class="text-left mb-0">
+                                <b>No of public holidays Remains   : </b><?php echo e($employee->public_holidays_balance ?? 0); ?>
+
+                            </p>
+                        </th>
+                    </tr>
+
+                    <tr>
+                        <th width="80px" style="vertical-align:top">                        
+                            <p class="text-left mb-0">
+                                <b>Total Payable amount  : </b><?php echo e(number_format((_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_annual_days ?? 0)) + (_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_public_days ?? 0)),2)); ?> KWD
+                            </p>
+                        </th>
+                    </tr>
+                </tbody>
+            </table>
+            <table style="margin-top: 20px;">
+                <tbody>
+                <tr>
+                    <td><b>HR Sign.</b></td>
+                    <td><b>Finanace Sign.</b></td>
+                    <td><b>GM Sign.</b></td>
+                </tr>
+                </tbody>
             </table>
         
     </div>

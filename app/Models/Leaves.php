@@ -29,6 +29,7 @@ class Leaves extends Model
         'claimed_amount',
         'closing_leave_balance',
         'is_post_transaction',
+        'basic_salary',
 	];
 
     public function status()

@@ -32,6 +32,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Overtime;
+use App\Models\LeaveApprovalLogs;
 
 class EmployeeController extends Controller
 {
@@ -172,10 +173,12 @@ class EmployeeController extends Controller
         $sal = (isset($employee->employee_salary->total_salary))?$employee->employee_salary->total_salary:0;
         $perday = $sal / 26;
         $emp_leaves = Leaves::where('user_id',$user_id)->where('leave_status','approved')->where('leave_type',1)->whereNull('is_post_transaction')->get();
+        $an_emp_leaves = Leaves::where('user_id',$user_id)->where('leave_status','approved')->where('leave_type',1)->whereNotNull('is_post_transaction')->orderBy('updated_at','desc')->get();
         $emp_leaves_history = Leaves::where('user_id',$user_id)->where('leave_status','approved')->where('leave_type',1)->whereNotNull('is_post_transaction')->get();
         //dd($attendanceAndHolidays);
         // echo '<pre>';print_r($employee);exit;
         return view('edbr.profile', [
+            'an_emp_leaves'        => $an_emp_leaves,
             'user'                 => $employee,
             'department_dropdown'  => $department_dropdown, 
             'designation_dropdown' => $designation_dropdown,
@@ -1134,8 +1137,12 @@ class EmployeeController extends Controller
         $annual_leave_days = intval($request->annual_leave_days ?? 0);
         $public_holidays = intval($request->public_holidays ?? 0);
         if(isset($request->type) && $request->type == 'download'):
+            $employee = Employee::where('user_id',$leave_data->user_id)->where('status','active')->first();
+            $leave_approve_date = LeaveApprovalLogs::where('leave_id',$leave_data->id)->where('status','approved')->orderBy('id','desc')->value('updated_at');
             $pass_array = array(
                 "leave_data" => $leave_data,
+                "employee"=>$employee,
+                "leave_approve_date"=>$leave_approve_date ?? $leave_data->created_at,
             );
             $cdate = date('Y-m-d');
             $rname = $cdate.'_vacationhistory.pdf';
@@ -1148,30 +1155,20 @@ class EmployeeController extends Controller
                 $employee = Employee::where('user_id',$leave_data->user_id)->where('status','active')->first();
                 $opening_leave_days = $employee->opening_leave_days ?? 0;
                 $public_balance = $employee->public_holidays_balance ?? 0;
+                $leave_data->basic_salary = (isset($employee->employee_salary))?$employee->employee_salary->basic_salary:0;
+                $leave_data->save();
                 if(($opening_leave_days >= $annual_leave_days) || ($public_balance >= $public_holidays)):
                     $employee->opening_leave_days = $opening_leave_days - $annual_leave_days;
                     $employee->public_holidays_balance = $public_balance - $public_holidays;
                     $employee->save();
-                    //calculate salary
-                    $commonWorkingHoursDetails = Overtime::first();
-                    $commonWorkingHours = $commonWorkingHoursDetails->working_hours - 1;
-                    $commonWorkingDays = $commonWorkingHoursDetails->working_days;
-                    $currentMonthSalary = (isset($employee->employee_salary))?$employee->employee_salary->basic_salary:0;
-                    $daySalary = ($currentMonthSalary>0)?($currentMonthSalary/$commonWorkingDays):0;
-                    $hourlySalary = ($daySalary>0)?($daySalary/$commonWorkingHours):0;
+
                   
                     $rem_days = $opening_leave_days - $annual_leave_days;
-                    $opening_leave_balance = $opening_leave_days * $daySalary;
-                    $claimed_amount = $annual_leave_days * $daySalary;
-                    $closing_leave_balance = $rem_days * $daySalary;
                     //update leave status
                     $leave_data->claimed_annual_days = $annual_leave_days;
                     $leave_data->claimed_public_days = $public_holidays;
                     $leave_data->claimed_annual_days_rem = $opening_leave_days - $annual_leave_days;
                     $leave_data->claimed_public_days_rem = $public_balance - $public_holidays;
-                    $leave_data->opening_leave_balance = $opening_leave_balance;
-                    $leave_data->claimed_amount = $claimed_amount;
-                    $leave_data->closing_leave_balance = $closing_leave_balance;
                     $leave_data->is_post_transaction = 1;
                     $leave_data->save();
                     return redirect()->back()->with('success','Data saved successfully.');

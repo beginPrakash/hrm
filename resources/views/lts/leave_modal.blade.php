@@ -125,7 +125,7 @@
                                         <th style="width: 30px;">Amount Type</th>
                                         <th>Available</th>
                                         <th>Payment</th>
-                                        <th>Textbox</th>
+                                        <th>Claim</th>
                                         <th class="text-end">Remaining</th>
                                     </tr>
                                 </thead>
@@ -157,7 +157,7 @@
                                             @endif
                                         </td>
                                     </tr>
-                                    @if($userdetails[0]->public_holidays_balance > 0)
+                                    @if(isset($userdetails[0]) && $userdetails[0]->public_holidays_balance > 0)
                                         <tr>
                                             <td>Public Holiday</td>
                                             <td><input type="hidden" value="{{$userdetails[0]->public_holidays_balance}}" class="ph_avail">{{$userdetails[0]->public_holidays_balance}} Days</td>

@@ -369,7 +369,9 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $totalLeaveMonths = ($exYM[0] * 12) +$exYM[1];
         // echo $employee->opening_leave_days;
         $totalLeaveDays = $totalLeaveMonths * 2.5;
+        $totalLeaveDays = floatval($totalLeaveDays);
         $balance = (!empty($employee) && (isset($employee->opening_leave_days)))?$employee->opening_leave_days:0;
+        $balance = floatval($balance);
         $used = ($balance > 0 && $totalLeaveDays > 0)?$totalLeaveDays - $balance:0;
         $leaveBalance = $totalLeaveDays - $used;
         $sal = (isset($employee->employee_salary->total_salary))?$employee->employee_salary->total_salary:0;
@@ -457,6 +459,16 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
     function _get_schedule_time_by_emp($att_date,$userId){
         $scheduling = Scheduling::where('shift_on',$att_date)->where('employee',$userId)->first();
         return $scheduling;
+    }
+
+    function _calculate_salary_by_days($currentMonthSalary=0,$days=0){
+        $commonWorkingHoursDetails = Overtime::first();
+        $commonWorkingHours = $commonWorkingHoursDetails->working_hours - 1;
+        $commonWorkingDays = $commonWorkingHoursDetails->working_days;
+        $daySalary = ($currentMonthSalary>0)?($currentMonthSalary/$commonWorkingDays):0;
+        $hourlySalary = ($daySalary>0)?($daySalary/$commonWorkingHours):0;
+        $total_salary = $daySalary * $days;
+        return $total_salary;
     }
 
     

@@ -928,8 +928,8 @@ if ($currentMonth >= 4) {
                                                         </tr>
 
                                                         <?php //echo '<pre>';print_r($user->employee_leaves); 
-                                                        if(isset($user->employee_leaves) && count($user->employee_leaves) > 0) { 
-                                                            foreach($user->employee_leaves as $el) { 
+                                                        if(isset($an_emp_leaves) && count($an_emp_leaves) > 0) { 
+                                                            foreach($an_emp_leaves as $el) { 
                                                                 if($el->leave_type == 1) { 
                                                                     $cur_year = date('Y');
                                                                     $leave_year = date('Y', strtotime($el->leave_to)); 
@@ -940,9 +940,9 @@ if ($currentMonth >= 4) {
                                                                     <td><?php echo e(($el->claimed_annual_days_rem ?? 0) + $el->claimed_annual_days); ?> Days</td>
                                                                     <td><?php echo e($el->leave_days ?? 0); ?> Days</td>
                                                                     <td><?php echo e($el->claimed_annual_days ?? 0); ?> Days</td>
-                                                                    <td><?php echo e(number_format($el->opening_leave_balance,2) ?? 0); ?> KWD</td>
-                                                                    <td><?php echo e(number_format($el->claimed_amount,2) ?? 0); ?> KWD</td>
-                                                                    <td><?php echo e(number_format($el->closing_leave_balance,2) ?? 0); ?> KWD</td>
+                                                                    <td><?php echo e(number_format((_calculate_salary_by_days($el->basic_salary,$el->claimed_annual_days ?? 0)) + (_calculate_salary_by_days($el->basic_salary,$el->claimed_annual_days_rem ?? 0)),2)); ?> KWD</td>
+                                                                    <td><?php echo e(number_format((_calculate_salary_by_days($el->basic_salary,$el->claimed_annual_days ?? 0)),2)); ?> KWD</td>
+                                                                    <td><?php echo e(number_format((_calculate_salary_by_days($el->basic_salary,$el->claimed_annual_days_rem ?? 0)),2)); ?> KWD</td>
                                                                 </tr>
                                                             <?php endif; ?>
                                                         <?php } } } else { ?>
@@ -1055,11 +1055,11 @@ if ($currentMonth >= 4) {
                                                 <!-- <li>
                                                     <div class="title">Worked Days</div>
                                                     <div class="text"><?php echo (isset($user->public_holidays_balance))?$user->public_holidays_balance:0; ?></div>
-                                                </li>
+                                                </li>-->
                                                 <li>
-                                                    <div class="title">Balance Amount</div>
-                                                    <div class="text">KWD <?php echo (isset($user->public_holidays_amount))?$user->public_holidays_amount:0; ?></div>
-                                                </li> -->
+                                                    <div class="title">Available public holidays</div>
+                                                    <div class="text"> <?php echo (isset($user->public_holidays_balance))?$user->public_holidays_balance:0; ?></div>
+                                                </li>
 
                                                 <!-- <Hr/>
                                                     <h4 class="pr-3">Work Information</h4>
@@ -3118,16 +3118,16 @@ if ($currentMonth >= 4) {
     $(document).on('change','.public_holidays',function(){
         var ph_avail = $('.ph_avail').val();
         var ph_taken = $('.public_holidays').val();
-        if(ph_avail >= ph_taken){
+        if(ph_taken <= ph_avail){
             var total = ph_avail - ph_taken;
             $('.public_remaining_leave').text(total+' Days');
         }
     });
 
     $(document).on('change keyup','.annual_leave_days',function(){
-        var an_avail = $('.an_avail').val();
-        var an_taken = $('.annual_leave_days').val();
-        if(an_avail >= an_taken){
+        var an_avail = parseInt($('.an_avail').val());
+        var an_taken = parseInt($('.annual_leave_days').val());
+        if(an_taken <= an_avail){
             var total = an_avail - an_taken;
             $('.annual_remaining_leave').text(total+' Days');
         }

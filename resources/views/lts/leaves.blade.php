@@ -511,10 +511,13 @@
             var emp_remaining_leave = $('#emp_remainingsick_leave').val();
         }  
 
-        var an_avail = $('.an_avail').val();
-            var an_taken = $('.annual_leave_days').val();
-            if(an_avail >= an_taken){
+        var an_avail = parseInt($('.an_avail').val());
+            var an_taken = parseInt($('.annual_leave_days').val());
+            
+            if(an_taken <= an_avail){
                 var total = an_avail - an_taken;
+                $('.an_checkbox').attr('checked',true);
+                $('.annual_leave_days').attr('disabled',false);
                 $('.annual_remaining_leave').text(total+' Days');
             }
         //console.log(emp_remaining_leave);
@@ -530,7 +533,7 @@
                     $('.annual_leave_days').prop('max',no_days);
                     var an_avail = $('.an_avail').val();
                     var an_taken = $('.annual_leave_days').val();
-                    if(an_taken >= an_avail){
+                    if(an_taken <= an_avail){
                         var total = an_avail - an_taken;
                         $('.annual_remaining_leave').text(total+' Days');
                     }
@@ -544,7 +547,7 @@
                 $('#remaining_leaves').val(total_req_leave);
                 var an_avail = $('.an_avail').val();
                 var an_taken = $('.annual_leave_days').val();
-                if(an_taken >= an_avail){
+                if(an_taken <= an_avail){
                     var total = an_avail - an_taken;
                     $('.annual_remaining_leave').text(total+' Days');
                 }
@@ -637,7 +640,7 @@
         an_taken = parseInt(an_taken);
         if(an_taken <= an_avail){
             var total = an_avail - an_taken;
-            console.log(total);
+            //console.log(total);
             $('.annual_remaining_leave').text(total+' Days');
         }
     });

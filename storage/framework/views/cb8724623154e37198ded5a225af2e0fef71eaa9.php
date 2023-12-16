@@ -1,5 +1,5 @@
-@include('includes/header')
-@include('includes/sidebar')
+<?php echo $__env->make('includes/header', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+<?php echo $__env->make('includes/sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
 <?php 
 $tabActive = 1;
@@ -28,9 +28,9 @@ if ($currentMonth >= 4) {
     
     <!-- Page Content -->
     <div class="content container-fluid">
-        @include('flash-message') 
+        <?php echo $__env->make('flash-message', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?> 
         <!-- Page Header -->
-        @include('includes/breadcrumbs', ['title' => $title])
+        <?php echo $__env->make('includes/breadcrumbs', ['title' => $title], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
         <!-- /Page Header -->
         <div class="card">
@@ -40,27 +40,30 @@ if ($currentMonth >= 4) {
                         <div class="profile-view">
                             <div class="profile-img-wrap">
                                 <div class="profile-img">
-                                    <a href="#"><img alt="" src="{{ ($user->profile!=null)?'uploads/profile/'.$user->profile:'assets/img/profiles/avatar.png'}}"></a>
+                                    <a href="#"><img alt="" src="<?php echo e(($user->profile!=null)?'uploads/profile/'.$user->profile:'assets/img/profiles/avatar.png'); ?>"></a>
                                 </div>
                             </div>
                             <div class="profile-basic">
                                 <div class="row">
                                     <div class="col-md-5">
                                         <div class="profile-info-left">
-                                            <h3 class="user-name m-t-0 mb-0">{{$user->first_name ? ucfirst($user->first_name).' '.ucfirst($user->last_name)  : "--"}}
+                                            <h3 class="user-name m-t-0 mb-0"><?php echo e($user->first_name ? ucfirst($user->first_name).' '.ucfirst($user->last_name)  : "--"); ?>
+
                                                 <?php echo ($user->status=='resigned')?'<span class="badge bg-inverse-danger">Deactivated</span>':'<span class="badge bg-inverse-success">Active</span>'; ?>
                                             </h3>
                                             
                                             <h6 class="text-muted">
-                                                {{$user->employee_designation ? ucfirst($user->employee_designation->name) : ""}}
-                                                {{$user->employee_department ?'('. ucfirst($user->employee_department->name).')' : ""}}
+                                                <?php echo e($user->employee_designation ? ucfirst($user->employee_designation->name) : ""); ?>
+
+                                                <?php echo e($user->employee_department ?'('. ucfirst($user->employee_department->name).')' : ""); ?>
+
                                             </h6>
 
-                                            <small class="text-muted">{{$user->employee_company ? $user->employee_company->name : ""}}</small>
-                                            <div class="staff-id">Branch : {{(isset($user->employee_branch))?$user->employee_branch->name:''}}</div>
-                                            <div class="staff-id">Employee ID :{{$user->emp_generated_id ? $user->emp_generated_id : "--"}}</div>
-                                            <div class="small doj text-muted">Date of Join : {{$user->joining_date ? dateDisplayFormat($user->joining_date) : "--"}}</div>
-                                            <div class="staff-id">Civil Id : {{isset($user->employee_details->c_id) ? $user->employee_details->c_id : " --"}}</div>
+                                            <small class="text-muted"><?php echo e($user->employee_company ? $user->employee_company->name : ""); ?></small>
+                                            <div class="staff-id">Branch : <?php echo e((isset($user->employee_branch))?$user->employee_branch->name:''); ?></div>
+                                            <div class="staff-id">Employee ID :<?php echo e($user->emp_generated_id ? $user->emp_generated_id : "--"); ?></div>
+                                            <div class="small doj text-muted">Date of Join : <?php echo e($user->joining_date ? dateDisplayFormat($user->joining_date) : "--"); ?></div>
+                                            <div class="staff-id">Civil Id : <?php echo e(isset($user->employee_details->c_id) ? $user->employee_details->c_id : " --"); ?></div>
                                             
                                                
                                             </div>
@@ -70,23 +73,23 @@ if ($currentMonth >= 4) {
                                             <ul class="personal-info">
                                                 <li>
                                                 <div class="title">Phone:</div>
-                                                <div class="text"><a href="">{{$user->phone ? $user->phone : "--"}}</a></div>
+                                                <div class="text"><a href=""><?php echo e($user->phone ? $user->phone : "--"); ?></a></div>
                                             </li>
                                             <li>
                                                 <div class="title">Email:</div>
-                                                <div class="text"><a href="">{{$user->email ? $user->email : "--"}}</a></div>
+                                                <div class="text"><a href=""><?php echo e($user->email ? $user->email : "--"); ?></a></div>
                                             </li>
                                             <li>
                                                 <div class="title">Birthday:</div>
-                                                <div class="text">{{$user->employee_details ? dateDisplayFormat($user->employee_details->birthday)  : "--"}}</div>
+                                                <div class="text"><?php echo e($user->employee_details ? dateDisplayFormat($user->employee_details->birthday)  : "--"); ?></div>
                                             </li>
                                             <li>
                                                 <div class="title">Address:</div>
-                                                <div class="text">{{$user->local_address ? $user->local_address : "--"}}</div>
+                                                <div class="text"><?php echo e($user->local_address ? $user->local_address : "--"); ?></div>
                                             </li>
                                             <li>
                                                 <div class="title">Gender:</div>
-                                                <div class="text">{{$user->employee_details ? ucfirst($user->employee_details->gender)  : "--"}}</div>
+                                                <div class="text"><?php echo e($user->employee_details ? ucfirst($user->employee_details->gender)  : "--"); ?></div>
                                             </li>
                                             <li>
                                                 <div class="title"></div>
@@ -104,7 +107,7 @@ if ($currentMonth >= 4) {
                                 </div>
                             </div>
 
-                            <div class="pro-edit"><a data-bs-target="#profile_info" data-bs-toggle="modal" class="edit-icon" href="{{'/emp_profile_edit?id='.$user->id }}" ><i class="fa fa-pencil"></i></a></div>
+                            <div class="pro-edit"><a data-bs-target="#profile_info" data-bs-toggle="modal" class="edit-icon" href="<?php echo e('/emp_profile_edit?id='.$user->id); ?>" ><i class="fa fa-pencil"></i></a></div>
                         </div>
                     </div>
                 </div>
@@ -140,38 +143,38 @@ if ($currentMonth >= 4) {
                                 <ul class="personal-info">
                                     <li>
                                         <div class="title">Visa No.</div>
-                                        <div class="text">{{$user->visa_no ? $user->visa_no : "--"}}</div>
+                                        <div class="text"><?php echo e($user->visa_no ? $user->visa_no : "--"); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">Passport No.</div>
-                                        <div class="text">{{$user->passport_no ? $user->passport_no : "--"}}</div>
+                                        <div class="text"><?php echo e($user->passport_no ? $user->passport_no : "--"); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">Passport Exp.</div>
-                                        <div class="text">{{$user->passport_expiry ? dateDisplayFormat($user->passport_expiry) : "--"}}</div>
+                                        <div class="text"><?php echo e($user->passport_expiry ? dateDisplayFormat($user->passport_expiry) : "--"); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">Address</div>
-                                        <div class="text">{{(isset($user->local_address)) ? $user->local_address : "--"}}</div>
+                                        <div class="text"><?php echo e((isset($user->local_address)) ? $user->local_address : "--"); ?></div>
 
                                     </li>
                                     <li>
                                         <div class="title">Religion</div>
-                                        <div class="text">{{$user->employee_details? $user->employee_details->religion : "--"}}</div>
+                                        <div class="text"><?php echo e($user->employee_details? $user->employee_details->religion : "--"); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">Marital status</div>
-                                        <div class="text">{{$user->employee_details ? $user->employee_details->marital_status : "--"}}</div>
+                                        <div class="text"><?php echo e($user->employee_details ? $user->employee_details->marital_status : "--"); ?></div>
                                     </li>
                                    
                                     <li>
                                         <div class="title">No. of children</div>
-                                        <div class="text">{{$user->employee_details ? $user->employee_details->child : "--"}}</div>
+                                        <div class="text"><?php echo e($user->employee_details ? $user->employee_details->child : "--"); ?></div>
                                     </li>
                                     
                                      <li>
                                         <div class="title">Employment of spouse</div>
-                                        <div class="text">{{$user->employee_details ? $user->employee_details->spouse_employment : "--"}}</div>
+                                        <div class="text"><?php echo e($user->employee_details ? $user->employee_details->spouse_employment : "--"); ?></div>
                                     </li>
                                     
                                     
@@ -188,15 +191,15 @@ if ($currentMonth >= 4) {
                                 <ul class="personal-info">
                                     <li>
                                         <div class="title">Name</div>
-                                        <div class="text">{{$user->employee_contacts ? $user->employee_contacts->pri_con_name : "--"}}</div>
+                                        <div class="text"><?php echo e($user->employee_contacts ? $user->employee_contacts->pri_con_name : "--"); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">Relationship</div>
-                                        <div class="text">{{$user->employee_contacts ? $user->employee_contacts->pri_con_relation : "--"}}</div>
+                                        <div class="text"><?php echo e($user->employee_contacts ? $user->employee_contacts->pri_con_relation : "--"); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">Phone </div>
-                                        <div class="text">{{$user->employee_contacts ? $user->employee_contacts->pri_con_phone : "--"}}{{$user->employee_contacts ?','. $user->employee_contacts->pri_con_phone2 : ""}}</div>
+                                        <div class="text"><?php echo e($user->employee_contacts ? $user->employee_contacts->pri_con_phone : "--"); ?><?php echo e($user->employee_contacts ?','. $user->employee_contacts->pri_con_phone2 : ""); ?></div>
                                     </li>
                                 </ul>
                                 <hr>
@@ -204,15 +207,15 @@ if ($currentMonth >= 4) {
                                 <ul class="personal-info">
                                     <li>
                                         <div class="title">Name</div>
-                                        <div class="text">{{$user->employee_contacts ? $user->employee_contacts->sec_con_name : "--"}} </div>
+                                        <div class="text"><?php echo e($user->employee_contacts ? $user->employee_contacts->sec_con_name : "--"); ?> </div>
                                     </li>
                                     <li>
                                         <div class="title">Relationship</div>
-                                        <div class="text">{{$user->employee_contacts ? $user->employee_contacts->sec_con_relation : "--"}}</div>
+                                        <div class="text"><?php echo e($user->employee_contacts ? $user->employee_contacts->sec_con_relation : "--"); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">Phone </div>
-                                        <div class="text">{{$user->employee_contacts ? $user->employee_contacts->sec_con_phone : "--"}} {{$user->employee_contacts ? ','.$user->employee_contacts->sec_con_phone2 : ""}}</div>
+                                        <div class="text"><?php echo e($user->employee_contacts ? $user->employee_contacts->sec_con_phone : "--"); ?> <?php echo e($user->employee_contacts ? ','.$user->employee_contacts->sec_con_phone2 : ""); ?></div>
                                     </li>
                                 </ul>
                             </div>
@@ -228,51 +231,42 @@ if ($currentMonth >= 4) {
                                 <div class="experience-box">
                                     <ul class="experience-list">  
                                         
-                                        @forelse($user->employee_education as $education)
-                                        @php
+                                        <?php $__empty_1 = true; $__currentLoopData = $user->employee_education; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $education): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                        <?php
                                             $check_column = $education->institution || $education->degree || $education->start ||  $education->end;
                                             $data_avl = '';
                                             if(!$check_column){
                                                 $data_avl = "No education to show";  
                                             }
-                                        @endphp
+                                        ?>
                                         <li> 
-                                            @if(!$data_avl)
+                                            <?php if(!$data_avl): ?>
                                                 <div class="experience-user">
                                                     <div class="before-circle"></div>
                                                 </div>
                                                 <div class="experience-content">
                                                     
                                                     <div class="timeline-content">
-                                                        <a href="#/" class="name">{{ $education->institution ?? "NA" }}</a>
-                                                        <!-- <div>{{ "$user->employee_education->degree" }}</div> -->
+                                                        <a href="#/" class="name"><?php echo e($education->institution ?? "NA"); ?></a>
+                                                        <!-- <div><?php echo e("$user->employee_education->degree"); ?></div> -->
                                                         <div>   
-                                                            {{ $education->degree ?? "NA" }}
+                                                            <?php echo e($education->degree ?? "NA"); ?>
+
                                                         </div>
-                                                        <span class="time">{{ $education->start ?? "NA" }}  - {{ $education->end ?? "NA"}}</span>
+                                                        <span class="time"><?php echo e($education->start ?? "NA"); ?>  - <?php echo e($education->end ?? "NA"); ?></span>
 
 
                                                     </div>
                                                 </div>
-                                            @else
-                                                {{$data_avl}}
-                                            @endif
+                                            <?php else: ?>
+                                                <?php echo e($data_avl); ?>
+
+                                            <?php endif; ?>
                                         </li>
-                                        @empty
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                         No Information to show
-                                        @endforelse
-                                        {{-- <li>
-                                            <div class="experience-user">
-                                                <div class="before-circle"></div>
-                                            </div>
-                                            <div class="experience-content">
-                                                <div class="timeline-content">
-                                                    <a href="#/" class="name">International College of Arts and Science (PG)</a>
-                                                    <div>Msc Computer Science</div>
-                                                    <span class="time">2000 - 2003</span>
-                                                </div>
-                                            </div>
-                                        </li> --}}
+                                        <?php endif; ?>
+                                        
                                     </ul>
                                 </div>
                             </div>
@@ -285,43 +279,22 @@ if ($currentMonth >= 4) {
                                 <h3 class="card-title">Experience <a href="#" class="edit-icon" data-bs-toggle="modal" data-bs-target="#experience_info"><i class="fa fa-pencil"></i></a></h3>
                                 <div class="experience-box">
                                     <ul class="experience-list">
-                                         @forelse($user->employee_experiences as $experience_value)<li>
+                                         <?php $__empty_1 = true; $__currentLoopData = $user->employee_experiences; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $experience_value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><li>
                                          <div class="experience-user">
                                                 <div class="before-circle"></div>
                                             </div>
                                             <div class="experience-content">
                                                 <div class="timeline-content">
-                                                    <a href="#/" class="name">{{$experience_value->company}}</a>
-                                                    <span class="time">{{$experience_value->period_from}} - {{$experience_value->period_to}} </span>
+                                                    <a href="#/" class="name"><?php echo e($experience_value->company); ?></a>
+                                                    <span class="time"><?php echo e($experience_value->period_from); ?> - <?php echo e($experience_value->period_to); ?> </span>
                                                 </div>
                                             </div>
                                         </li>
-                            @empty
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                 No experience to show
-                            @endforelse
+                            <?php endif; ?>
                                          
-                                       {{-- <li>
-                                            <div class="experience-user">
-                                                <div class="before-circle"></div>
-                                            </div>
-                                            <div class="experience-content">
-                                                <div class="timeline-content">
-                                                    <a href="#/" class="name">Web Designer at Ron-tech</a>
-                                                    <span class="time">Jan 2013 - Present (5 years 2 months)</span>
-                                                </div>
-                                            </div>
-                                        </li> 
-                                        <li>
-                                            <div class="experience-user">
-                                                <div class="before-circle"></div>
-                                            </div>
-                                            <div class="experience-content">
-                                                <div class="timeline-content">
-                                                    <a href="#/" class="name">Web Designer at Dalt Tech--logy</a>
-                                                    <span class="time">Jan 2013 - Present (5 years 2 months)</span>
-                                                </div>
-                                            </div>
-                                        </li>  --}}
+                                       
                                     </ul>
                                 </div>
                             </div>
@@ -373,7 +346,7 @@ if ($currentMonth >= 4) {
                                                             <!-- <a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
                                                             <div class="dropdown-menu dropdown-menu-right">
                                                                 <a class="dropdown-item" href="javascript:void(0)"><i class="fa fa-pencil m-r-5"></i> Edit</a> -->
-                                                                <a class="dropdown-item deleteDocButton" href="#" data-bs-toggle="modal" data-bs-target="#delete_doc" data-data="{{$edoc->id}}"><i class="fa fa-trash-o m-r-5 text-danger"></i></a>
+                                                                <a class="dropdown-item deleteDocButton" href="#" data-bs-toggle="modal" data-bs-target="#delete_doc" data-data="<?php echo e($edoc->id); ?>"><i class="fa fa-trash-o m-r-5 text-danger"></i></a>
                                                             <!-- </div> -->
                                                         </div>
                                                     </td>
@@ -417,29 +390,29 @@ if ($currentMonth >= 4) {
                                 <ul class="personal-info">
                                     <li>
                                         <div class="title">Bank Name.</div>
-                                        <div class="text">{{$user->employee_accounts?$user->employee_accounts->bank_name:'--'}}</div>
+                                        <div class="text"><?php echo e($user->employee_accounts?$user->employee_accounts->bank_name:'--'); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">Branch.</div>
-                                        <div class="text">{{$user->employee_accounts?$user->employee_accounts->branch_name:'--'}}</div>
+                                        <div class="text"><?php echo e($user->employee_accounts?$user->employee_accounts->branch_name:'--'); ?></div>
                                     </li>
                                     
                                     <li>
                                         <div class="title">Branch Code</div>
-                                        <div class="text">{{$user->employee_accounts?$user->employee_accounts->branch_code:'--'}}</div>
+                                        <div class="text"><?php echo e($user->employee_accounts?$user->employee_accounts->branch_code:'--'); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">Acoount Number</div>
-                                        <div class="text">{{$user->employee_accounts?$user->employee_accounts->account_number:'--'}}</div>
+                                        <div class="text"><?php echo e($user->employee_accounts?$user->employee_accounts->account_number:'--'); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">IFSC NUMBER</div>
-                                        <div class="text">{{$user->employee_accounts?$user->employee_accounts->ifsc_number:'--'}}</div>
+                                        <div class="text"><?php echo e($user->employee_accounts?$user->employee_accounts->ifsc_number:'--'); ?></div>
                                     </li>
                                    
                                     <li>
                                         <div class="title">Swift Code</div>
-                                        <div class="text">{{$user->employee_accounts?$user->employee_accounts->swift_code:'--'}}</div>
+                                        <div class="text"><?php echo e($user->employee_accounts?$user->employee_accounts->swift_code:'--'); ?></div>
                                     </li>
                                     
                                     
@@ -465,39 +438,39 @@ if ($currentMonth >= 4) {
                                 <ul class="personal-info salary-info">
                                     <li>
                                         <div class="title">Financal Year</div>
-                                        <div class="text">{{(isset($user->employee_salary) && (isset($user->employee_salary->financal_year)) && $user->employee_salary->financal_year > 0) ?$financial_year[$user->employee_salary->financal_year-1]['year_range'] : date('Y').'-'.date('Y')+1}}</div>
+                                        <div class="text"><?php echo e((isset($user->employee_salary) && (isset($user->employee_salary->financal_year)) && $user->employee_salary->financal_year > 0) ?$financial_year[$user->employee_salary->financal_year-1]['year_range'] : date('Y').'-'.date('Y')+1); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">Basic Salary</div>
-                                        <div class="text">{{(isset($user->employee_salary) && $user->employee_salary->basic_salary!=NULL) ?'₹ '.number_format($user->employee_salary->basic_salary,2) : '--'}}</div>
+                                        <div class="text"><?php echo e((isset($user->employee_salary) && $user->employee_salary->basic_salary!=NULL) ?'₹ '.number_format($user->employee_salary->basic_salary,2) : '--'); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">Travel Allowance</div>
-                                        <div class="text">{{(isset($user->employee_salary) && $user->employee_salary->travel_allowance!=NULL) ?'₹ '.number_format($user->employee_salary->travel_allowance,2):'--'}}</div>
+                                        <div class="text"><?php echo e((isset($user->employee_salary) && $user->employee_salary->travel_allowance!=NULL) ?'₹ '.number_format($user->employee_salary->travel_allowance,2):'--'); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">Food Allowance </div>
-                                        <div class="text">{{(isset($user->employee_salary) && $user->employee_salary->food_allowance!=NULL) ?'₹ '.number_format($user->employee_salary->food_allowance,2) : '--'}}</div>
+                                        <div class="text"><?php echo e((isset($user->employee_salary) && $user->employee_salary->food_allowance!=NULL) ?'₹ '.number_format($user->employee_salary->food_allowance,2) : '--'); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">House Allowance</div>
-                                        <div class="text">{{(isset($user->employee_salary) && $user->employee_salary->house_allowance!=NULL) ?'₹ '.number_format($user->employee_salary->house_allowance,2):'--'}}</div>
+                                        <div class="text"><?php echo e((isset($user->employee_salary) && $user->employee_salary->house_allowance!=NULL) ?'₹ '.number_format($user->employee_salary->house_allowance,2):'--'); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">Position Allowance </div>
-                                        <div class="text">{{(isset($user->employee_salary) && $user->employee_salary->position_allowance!=NULL) ?'₹ '.number_format($user->employee_salary->position_allowance,2) : '--'}}</div>
+                                        <div class="text"><?php echo e((isset($user->employee_salary) && $user->employee_salary->position_allowance!=NULL) ?'₹ '.number_format($user->employee_salary->position_allowance,2) : '--'); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">Phone Allowance</div>
-                                        <div class="text">{{(isset($user->employee_salary) && $user->employee_salary->phone_allowance!=NULL) ?'₹ '.number_format($user->employee_salary->phone_allowance,2):'--'}}</div>
+                                        <div class="text"><?php echo e((isset($user->employee_salary) && $user->employee_salary->phone_allowance!=NULL) ?'₹ '.number_format($user->employee_salary->phone_allowance,2):'--'); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">Other Allowance </div>
-                                        <div class="text">{{(isset($user->employee_salary) && $user->employee_salary->other_allowance!=NULL) ?'₹ '.number_format($user->employee_salary->other_allowance,2) : '--'}}</div>
+                                        <div class="text"><?php echo e((isset($user->employee_salary) && $user->employee_salary->other_allowance!=NULL) ?'₹ '.number_format($user->employee_salary->other_allowance,2) : '--'); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">Total Salary</div>
-                                        <div class="text">{{(isset($user->employee_salary) && $user->employee_salary->total_salary!=NULL) ?'₹ '.number_format($user->employee_salary->total_salary,2) : '--'}}</div>
+                                        <div class="text"><?php echo e((isset($user->employee_salary) && $user->employee_salary->total_salary!=NULL) ?'₹ '.number_format($user->employee_salary->total_salary,2) : '--'); ?></div>
                                     </li>
                                 </ul>
                                
@@ -531,16 +504,16 @@ if ($currentMonth >= 4) {
                                 <ul class="personal-info">
                                     <li>
                                         <div class="title">Amount</div>
-                                        <div class="text">{{(isset($user->employee_loan) && $user->employee_loan->loan_amount!=NULL) ? $user->employee_loan->loan_amount : '--'}}</div>
+                                        <div class="text"><?php echo e((isset($user->employee_loan) && $user->employee_loan->loan_amount!=NULL) ? $user->employee_loan->loan_amount : '--'); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">Date .</div>
-                                        <div class="text">{{(isset($user->employee_loan) && $user->employee_loan->loan_date!=NULL) ? $user->employee_loan->loan_date:'--'}}</div>
+                                        <div class="text"><?php echo e((isset($user->employee_loan) && $user->employee_loan->loan_date!=NULL) ? $user->employee_loan->loan_date:'--'); ?></div>
                                     </li>
                                     
                                     <li>
                                         <div class="title">Installments</div>
-                                        <div class="text">{{(isset($user->employee_loan) && $user->employee_loan->installment!=NULL) ? ($user->employee_loan->installment ?$user->employee_loan->installment:'--'):'--'}}</div>
+                                        <div class="text"><?php echo e((isset($user->employee_loan) && $user->employee_loan->installment!=NULL) ? ($user->employee_loan->installment ?$user->employee_loan->installment:'--'):'--'); ?></div>
                                     </li>
                                     
                                     <Hr/>
@@ -548,16 +521,16 @@ if ($currentMonth >= 4) {
                                         <Hr/>
                                     <li>
                                         <div class="title">Total  paid</div>
-                                        <div class="text">{{number_format($paid,2)}}</div>
+                                        <div class="text"><?php echo e(number_format($paid,2)); ?></div>
                                     </li>
                                     <li>
                                         <div class="title">Insta. pending</div>
-                                        <div class="text">{{($pendingAmt==0)?0:$pendingEmiCount}}</div>
+                                        <div class="text"><?php echo e(($pendingAmt==0)?0:$pendingEmiCount); ?></div>
                                     </li>
                                    
                                     <li>
                                         <div class="title">Outstanding KWD</div>
-                                        <div class="text">{{number_format($pendingAmt,2)}}</div>
+                                        <div class="text"><?php echo e(number_format($pendingAmt,2)); ?></div>
                                     </li>
                                     
                                     
@@ -855,17 +828,17 @@ if ($currentMonth >= 4) {
                                             <div class="">
                                                 <ul class="personal-info">
                                                     
-                                                    @if(isset($emp_leaves) && count($emp_leaves) > 0)
-                                                        @foreach($emp_leaves as $key => $val)
+                                                    <?php if(isset($emp_leaves) && count($emp_leaves) > 0): ?>
+                                                        <?php $__currentLoopData = $emp_leaves; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
                                                         <li>
                                                             
-                                                            <div class="text"><a href="#" class="an_leave_btn" data-bs-toggle="modal" data-bs-target="#an_leave_detail_modal" data-id="{{$val->id}}" data-userid="{{$user->user_id}}"><i class="fa fa-clock"></i> {{date('d M y', strtotime($val->leave_from))}} - {{date('d M y', strtotime($val->leave_to))}} ({{$val->leave_days}} Days)</a></div>
+                                                            <div class="text"><a href="#" class="an_leave_btn" data-bs-toggle="modal" data-bs-target="#an_leave_detail_modal" data-id="<?php echo e($val->id); ?>" data-userid="<?php echo e($user->user_id); ?>"><i class="fa fa-clock"></i> <?php echo e(date('d M y', strtotime($val->leave_from))); ?> - <?php echo e(date('d M y', strtotime($val->leave_to))); ?> (<?php echo e($val->leave_days); ?> Days)</a></div>
                                                         </li>
-                                                        @endforeach
-                                                    @else
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                    <?php else: ?>
                                                         <li>No data found</li>
-                                                    @endif
+                                                    <?php endif; ?>
 
                                                 </ul>
                                                 
@@ -885,17 +858,17 @@ if ($currentMonth >= 4) {
                                             <div class="">
                                                 <ul class="personal-info">
                                                     
-                                                    @if(isset($emp_leaves_history) && count($emp_leaves_history) > 0)
-                                                        @foreach($emp_leaves_history as $key => $val)
+                                                    <?php if(isset($emp_leaves_history) && count($emp_leaves_history) > 0): ?>
+                                                        <?php $__currentLoopData = $emp_leaves_history; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
                                                         <li>
                                                             
-                                                            <div class="text"><a href="#" class="an_leave_btn" data-bs-toggle="modal" data-bs-target="#an_leave_detail_modal" data-id="{{$val->id}}" data-userid="{{$user->user_id}}" data-type="history"><i class="fa fa-clock"></i> {{date('d M y', strtotime($val->leave_from))}} - {{date('d M y', strtotime($val->leave_to))}} ({{$val->leave_days}} Days)</a></div>
+                                                            <div class="text"><a href="#" class="an_leave_btn" data-bs-toggle="modal" data-bs-target="#an_leave_detail_modal" data-id="<?php echo e($val->id); ?>" data-userid="<?php echo e($user->user_id); ?>" data-type="history"><i class="fa fa-clock"></i> <?php echo e(date('d M y', strtotime($val->leave_from))); ?> - <?php echo e(date('d M y', strtotime($val->leave_to))); ?> (<?php echo e($val->leave_days); ?> Days)</a></div>
                                                         </li>
-                                                        @endforeach
-                                                    @else
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                    <?php else: ?>
                                                         <li>No data found</li>
-                                                    @endif
+                                                    <?php endif; ?>
 
                                                 </ul>
                                                 
@@ -929,16 +902,16 @@ if ($currentMonth >= 4) {
                                                     </li>
                                                     <li>
                                                         <div class="title">Used Leave Days</div>
-                                                        <div class="text">{{$annualleavedetails['used'] ?? 0}}</div>
+                                                        <div class="text"><?php echo e($annualleavedetails['used'] ?? 0); ?></div>
                                                     </li>
                                                     <li>
                                                         <div class="title">Balance Days</div>
-                                                        <div class="text">{{(isset($user->opening_leave_days) && !empty($user->opening_leave_days)) ? $user->opening_leave_days : 0}}</div>
+                                                        <div class="text"><?php echo e((isset($user->opening_leave_days) && !empty($user->opening_leave_days)) ? $user->opening_leave_days : 0); ?></div>
                                                     </li>
                                                     <li>
                                                         <div class="title">Balance Amount</div>
                                                         <div class="text"> 
-                                                        {{number_format($annualleavedetails['leaveAmount'],2)  ?? 0}} KWD
+                                                        <?php echo e(number_format($annualleavedetails['leaveAmount'],2)  ?? 0); ?> KWD
                                                         </div>
                                                     </li>
 
@@ -961,17 +934,17 @@ if ($currentMonth >= 4) {
                                                                     $cur_year = date('Y');
                                                                     $leave_year = date('Y', strtotime($el->leave_to)); 
                                                                     ?>
-                                                            @if($cur_year == $leave_year)
+                                                            <?php if($cur_year == $leave_year): ?>
                                                                 <tr>
-                                                                    <td>{{date('d M y', strtotime($el->leave_from))}} - {{date('d M y', strtotime($el->leave_to))}}</td>
-                                                                    <td>{{($el->claimed_annual_days_rem ?? 0) + $el->claimed_annual_days}} Days</td>
-                                                                    <td>{{$el->leave_days ?? 0}} Days</td>
-                                                                    <td>{{$el->claimed_annual_days ?? 0}} Days</td>
-                                                                    <td>{{number_format((_calculate_salary_by_days($el->basic_salary,$el->claimed_annual_days ?? 0)) + (_calculate_salary_by_days($el->basic_salary,$el->claimed_annual_days_rem ?? 0)),2)}} KWD</td>
-                                                                    <td>{{number_format((_calculate_salary_by_days($el->basic_salary,$el->claimed_annual_days ?? 0)),2)}} KWD</td>
-                                                                    <td>{{number_format((_calculate_salary_by_days($el->basic_salary,$el->claimed_annual_days_rem ?? 0)),2)}} KWD</td>
+                                                                    <td><?php echo e(date('d M y', strtotime($el->leave_from))); ?> - <?php echo e(date('d M y', strtotime($el->leave_to))); ?></td>
+                                                                    <td><?php echo e(($el->claimed_annual_days_rem ?? 0) + $el->claimed_annual_days); ?> Days</td>
+                                                                    <td><?php echo e($el->leave_days ?? 0); ?> Days</td>
+                                                                    <td><?php echo e($el->claimed_annual_days ?? 0); ?> Days</td>
+                                                                    <td><?php echo e(number_format((_calculate_salary_by_days($el->basic_salary,$el->claimed_annual_days ?? 0)) + (_calculate_salary_by_days($el->basic_salary,$el->claimed_annual_days_rem ?? 0)),2)); ?> KWD</td>
+                                                                    <td><?php echo e(number_format((_calculate_salary_by_days($el->basic_salary,$el->claimed_annual_days ?? 0)),2)); ?> KWD</td>
+                                                                    <td><?php echo e(number_format((_calculate_salary_by_days($el->basic_salary,$el->claimed_annual_days_rem ?? 0)),2)); ?> KWD</td>
                                                                 </tr>
-                                                            @endif
+                                                            <?php endif; ?>
                                                         <?php } } } else { ?>
                                                             <tr>
                                                                 <td colspan="7" align="center">No data found</td>
@@ -1038,7 +1011,7 @@ if ($currentMonth >= 4) {
                                                                 <td>
                                                                     <?php if($el->leave_status!=='paid' && $el->leave_status!=='hold'){ ?>
                                                                         <form method="post" action="/employeeLeaveAmountUpdate/<?php echo $el->id; ?>">
-                                                                            @csrf
+                                                                            <?php echo csrf_field(); ?>
                                                                             <input type="hidden" name="userid" value="<?php echo $user->id; ?>">
                                                                             <input type="hidden" name="nodays" value="<?php echo $el->leave_days; ?>">
                                                                             <input type="hidden" name="lamount" value="<?php echo $perday * $el->leave_days; ?>">
@@ -1113,7 +1086,7 @@ if ($currentMonth >= 4) {
                                                     <?php } } ?>
                                                     <tr>    
                                                         <td colspan="3">Today days worked <small>(Based on scheduling)</small></td>
-                                                        <td>{{$user->public_holidays_balance ?? 0}} - days </td>
+                                                        <td><?php echo e($user->public_holidays_balance ?? 0); ?> - days </td>
                                                     </tr>
                                                 </table>
 
@@ -1177,7 +1150,7 @@ if ($currentMonth >= 4) {
                                                             <td>
                                                                 <?php if($el->leave_status!=='paid' && $el->leave_status!=='hold'){ ?>
                                                                     <form method="post" action="/employeeLeaveAmountUpdate/<?php echo $el->id; ?>">
-                                                                        @csrf
+                                                                        <?php echo csrf_field(); ?>
                                                                         <input type="hidden" name="userid" value="<?php echo $user->id; ?>">
                                                                         <input type="hidden" name="nodays" value="<?php echo $el->leave_days; ?>">
                                                                         <input type="hidden" name="lamount" value="<?php echo $perday * $el->leave_days; ?>">
@@ -1222,11 +1195,11 @@ if ($currentMonth >= 4) {
                                                 </li>
                                                 <li>
                                                     <div class="title">Used Leave Days</div>
-                                                    <div class="text">{{(isset($user->sick_leave_days) && !empty($user->sick_leave_days)) ? $user->sick_leave_days : 0}}</div>
+                                                    <div class="text"><?php echo e((isset($user->sick_leave_days) && !empty($user->sick_leave_days)) ? $user->sick_leave_days : 0); ?></div>
                                                 </li>
                                                 <li>
                                                     <div class="title">Balance Days</div>
-                                                    <div class="text">{{$sickleavedetails['remaining_leave_withoutreq']  ?? 0}}</div>
+                                                    <div class="text"><?php echo e($sickleavedetails['remaining_leave_withoutreq']  ?? 0); ?></div>
                                                 </li>
                                                 <!-- <li>
                                                     <div class="title">Balance Amount</div>
@@ -1258,7 +1231,7 @@ if ($currentMonth >= 4) {
                                                                 $cur_year = date('Y');
                                                                 $leave_year = date('Y', strtotime($el->leave_to)); 
                                                                 ?>
-                                                        @if($cur_year == $leave_year)
+                                                        <?php if($cur_year == $leave_year): ?>
                                                             <tr>
                                                                 <td><?php echo $el->leave_from; ?> to <?php echo $el->leave_to; ?></td>
                                                                 <td><?php echo $el->leave_days; ?></td>
@@ -1267,7 +1240,7 @@ if ($currentMonth >= 4) {
                                                                 <!-- <td>
                                                                     <?php if($el->leave_status!=='paid' && $el->leave_status!=='hold'){ ?>
                                                                         <form method="post" action="/employeeLeaveAmountUpdate/<?php echo $el->id; ?>">
-                                                                            @csrf
+                                                                            <?php echo csrf_field(); ?>
                                                                             <input type="hidden" name="userid" value="<?php echo $user->id; ?>">
                                                                             <input type="hidden" name="nodays" value="<?php echo $el->leave_days; ?>">
                                                                             <input type="hidden" name="lamount" value="<?php echo $perday * $el->leave_days; ?>">
@@ -1281,7 +1254,7 @@ if ($currentMonth >= 4) {
                                                                     <?php } ?>
                                                                 </td> -->
                                                             </tr>
-                                                        @endif
+                                                        <?php endif; ?>
                                                     <?php } } } ?>
                                                 </table>
 
@@ -1313,7 +1286,7 @@ if ($currentMonth >= 4) {
                                 <div class="card profile-box flex-fill">
                                     <div class="card-body">
                                     <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" name="is_manual_punchin" data-id="<?php echo $user->user_id; ?>" id="is_manual_punchin" value="{{$user->is_manual_punchin ?? 1}}" @if(isset($user->is_manual_punchin) && $user->is_manual_punchin==1) checked @endif>
+                                    <input class="form-check-input" type="checkbox" name="is_manual_punchin" data-id="<?php echo $user->user_id; ?>" id="is_manual_punchin" value="<?php echo e($user->is_manual_punchin ?? 1); ?>" <?php if(isset($user->is_manual_punchin) && $user->is_manual_punchin==1): ?> checked <?php endif; ?>>
                                     <label class="form-check-label" for="is_manual_punchin">
                                         Enable Manual Punch-In and Out
                                     </label>
@@ -1372,7 +1345,7 @@ if ($currentMonth >= 4) {
                                                             <td>
                                                                 <?php if($el->leave_status!=='paid' && $el->leave_status!=='hold'){ ?>
                                                                     <form method="post" action="/employeeLeaveAmountUpdate/<?php echo $el->id; ?>">
-                                                                        @csrf
+                                                                        <?php echo csrf_field(); ?>
                                                                         <input type="hidden" name="userid" value="<?php echo $user->id; ?>">
                                                                         <input type="hidden" name="nodays" value="<?php echo $el->leave_days; ?>">
                                                                         <input type="hidden" name="lamount" value="<?php echo $perday * $el->leave_days; ?>">
@@ -1419,7 +1392,7 @@ if ($currentMonth >= 4) {
                 </div>
                 <div class="modal-body">
                     <form  action="/employeeOpeningLeaveUpdate/<?php echo $user->id; ?>" method="post" id="employee_opening_leave_update" enctype="multipart/form-data">
-                        @csrf
+                        <?php echo csrf_field(); ?>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="row">
@@ -1429,7 +1402,7 @@ if ($currentMonth >= 4) {
                                             
             <!-- name -->                                
                                             <label>Leave Balance Days</label>
-                                            <input type="text" class="form-control" value="{{$user->opening_leave_days ? $user->opening_leave_days : ''}}" name="leave_balance_days" required>
+                                            <input type="text" class="form-control" value="<?php echo e($user->opening_leave_days ? $user->opening_leave_days : ''); ?>" name="leave_balance_days" required>
                                         </div>
                                     </div>
                                     
@@ -1437,7 +1410,7 @@ if ($currentMonth >= 4) {
                                     <!-- <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Leave Balance Amount</label>
-                                            <input type="text" class="form-control" value="{{$user->opening_leave_amount ? $user->opening_leave_amount : ''}}" name="leave_balance_amount">
+                                            <input type="text" class="form-control" value="<?php echo e($user->opening_leave_amount ? $user->opening_leave_amount : ''); ?>" name="leave_balance_amount">
                                         </div>
                                     </div> -->
                                     
@@ -1466,7 +1439,7 @@ if ($currentMonth >= 4) {
                 </div>
                 <div class="modal-body">
                     <form  action="/employeephUpdate/<?php echo $user->id; ?>" method="post" id="employee_ph_update" enctype="multipart/form-data">
-                        @csrf
+                        <?php echo csrf_field(); ?>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="row">
@@ -1476,7 +1449,7 @@ if ($currentMonth >= 4) {
                                             
             <!-- name -->                                
                                             <label>Leave Balance Days</label>
-                                            <input type="text" class="form-control" value="{{(isset($user->public_holidays_balance))?$user->public_holidays_balance:0;}}" name="ph_balance_days" required>
+                                            <input type="text" class="form-control" value="<?php echo e((isset($user->public_holidays_balance))?$user->public_holidays_balance:0); ?>" name="ph_balance_days" required>
                                         </div>
                                     </div>
                                     
@@ -1484,7 +1457,7 @@ if ($currentMonth >= 4) {
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label>Leave Balance Amount</label>
-                                            <input type="text" class="form-control" value="{{(isset($user->public_holidays_amount))?$user->public_holidays_amount:0}}" name="ph_balance_amount">
+                                            <input type="text" class="form-control" value="<?php echo e((isset($user->public_holidays_amount))?$user->public_holidays_amount:0); ?>" name="ph_balance_amount">
                                         </div>
                                     </div>
                                     
@@ -1514,13 +1487,13 @@ if ($currentMonth >= 4) {
                 </div>
                 <div class="modal-body">
                     <form  action="/employeeInformationUpdate/<?php echo $user->id; ?>" method="post" id="employee_info_update" enctype="multipart/form-data">
-                        @csrf
+                        <?php echo csrf_field(); ?>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="profile-img-wrap edit-img">
                                       
     <!-- Profile picture -->
-                                    <img class="inline-block" src="{{ ($user->profile!=null)?'uploads/profile/'.$user->profile:'assets/img/profiles/avatar.png'}}" alt="user" id="blah">
+                                    <img class="inline-block" src="<?php echo e(($user->profile!=null)?'uploads/profile/'.$user->profile:'assets/img/profiles/avatar.png'); ?>" alt="user" id="blah">
                                     <div class="fileupload btn">
                                         <span class="btn-text">edit</span>
                                         <input class="upload" type="file" id="imgInp" name="profile">
@@ -1533,7 +1506,7 @@ if ($currentMonth >= 4) {
                                             
             <!-- name -->                                
                                             <label>First Name</label>
-                                            <input type="text" class="form-control" value="{{$user->first_name ? $user->first_name : ''}}" name="first_name">
+                                            <input type="text" class="form-control" value="<?php echo e($user->first_name ? $user->first_name : ''); ?>" name="first_name">
                                         </div>
                                     </div>
                                     
@@ -1541,7 +1514,7 @@ if ($currentMonth >= 4) {
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Last Name</label>
-                                            <input type="text" class="form-control" value="{{$user->last_name ? $user->last_name : ''}}" name="last_name">
+                                            <input type="text" class="form-control" value="<?php echo e($user->last_name ? $user->last_name : ''); ?>" name="last_name">
                                         </div>
                                     </div>
                                     
@@ -1551,7 +1524,7 @@ if ($currentMonth >= 4) {
                                         <div class="form-group">
                                             <label>Birth Date</label>
                                             <div class="cal-icon">
-                                                <input class="form-control datetimepicker" type="text" value="{{$user->employee_details ? dateDisplayFormat($user->employee_details->birthday)  : ''}}" name="birthday">
+                                                <input class="form-control datetimepicker" type="text" value="<?php echo e($user->employee_details ? dateDisplayFormat($user->employee_details->birthday)  : ''); ?>" name="birthday">
                                             </div>
                                         </div>
                                     </div>
@@ -1559,10 +1532,10 @@ if ($currentMonth >= 4) {
                                         <div class="form-group">
                                             <label>Gender</label>
                                             <select class="select form-control " name="gender" >
-                                                <!-- <option value="{{$user->employee_details ? $user->employee_details->gender : 'Selectgender'}}">
-                                               {{$user->employee_details ? $user->employee_details->gender : ''}}</option> -->
-                                                <option value="male" {{isset($user->employee_details->gender) && $user->employee_details->gender=='male' ? 'selected' : ''}}>Male</option>
-                                                <option value="female" {{isset($user->employee_details->gender) && $user->employee_details->gender=='female' ? 'selected' : ''}}>Female</option>
+                                                <!-- <option value="<?php echo e($user->employee_details ? $user->employee_details->gender : 'Selectgender'); ?>">
+                                               <?php echo e($user->employee_details ? $user->employee_details->gender : ''); ?></option> -->
+                                                <option value="male" <?php echo e(isset($user->employee_details->gender) && $user->employee_details->gender=='male' ? 'selected' : ''); ?>>Male</option>
+                                                <option value="female" <?php echo e(isset($user->employee_details->gender) && $user->employee_details->gender=='female' ? 'selected' : ''); ?>>Female</option>
                                             </select>
                                         </div>
                                     </div>
@@ -1574,44 +1547,44 @@ if ($currentMonth >= 4) {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Country <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" value="{{$user->employee_details ? $user->employee_details->country : ''}}" name="country" >
+                                    <input type="text" class="form-control" value="<?php echo e($user->employee_details ? $user->employee_details->country : ''); ?>" name="country" >
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>State <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" value="{{$user->employee_details ? $user->employee_details->state : ''}}" name="state" >
+                                    <input type="text" class="form-control" value="<?php echo e($user->employee_details ? $user->employee_details->state : ''); ?>" name="state" >
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label>Address <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" value="{{$user->local_address ? $user->local_address : ''}}" name="local_address" >
+                                    <input type="text" class="form-control" value="<?php echo e($user->local_address ? $user->local_address : ''); ?>" name="local_address" >
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Pin Code <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" value="{{$user->employee_details ? $user->employee_details->pin_code : ''}}" name="pin_code" >
+                                    <input type="text" class="form-control" value="<?php echo e($user->employee_details ? $user->employee_details->pin_code : ''); ?>" name="pin_code" >
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Phone Number</label>
-                                    <input type="text" class="form-control"  value="{{$user->phone ? $user->phone : ''}}" name="phone">
+                                    <input type="text" class="form-control"  value="<?php echo e($user->phone ? $user->phone : ''); ?>" name="phone">
                                 </div>
                             </div>
                              <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Email</label>
-                                    <input type="text" class="form-control"  value="{{$user->email ? $user->email : ''}}" name="email">
+                                    <input type="text" class="form-control"  value="<?php echo e($user->email ? $user->email : ''); ?>" name="email">
                                 </div>
                             </div>
                              <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Date of joining</label>
                                             <div class="cal-icon">
-                                                <input class="form-control datetimepicker" type="text" value="{{$user->joining_date ? dateDisplayFormat($user->joining_date) : ''}}" name="joining_date">
+                                                <input class="form-control datetimepicker" type="text" value="<?php echo e($user->joining_date ? dateDisplayFormat($user->joining_date) : ''); ?>" name="joining_date">
                                             </div>
                                         </div>
                                     </div>
@@ -1619,42 +1592,42 @@ if ($currentMonth >= 4) {
                              <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Civil Id <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control"  value="{{$user->employee_details ? $user->employee_details->c_id : ''}}" name="c_id">
+                                    <input type="text" class="form-control"  value="<?php echo e($user->employee_details ? $user->employee_details->c_id : ''); ?>" name="c_id">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Expiry date of Civil ID</label>
                                             <div class="cal-icon">
-                                                <input class="form-control datetimepicker" type="text"  value="{{$user->employee_details? dateDisplayFormat($user->employee_details->expi_c_id) : ''}}" name="expi_c_id">
+                                                <input class="form-control datetimepicker" type="text"  value="<?php echo e($user->employee_details? dateDisplayFormat($user->employee_details->expi_c_id) : ''); ?>" name="expi_c_id">
                                             </div>
                                         </div>
                                     </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Baladiya Id <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control"  value="{{$user->employee_details ? $user->employee_details->b_id : ''}}" name="b_id">
+                                    <input type="text" class="form-control"  value="<?php echo e($user->employee_details ? $user->employee_details->b_id : ''); ?>" name="b_id">
                                 </div>
                             </div>
                              <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Expiry of Baladiya ID</label>
                                             <div class="cal-icon">
-                                                <input class="form-control datetimepicker" type="text"  value="{{$user->employee_details ? dateDisplayFormat($user->employee_details->expi_b_id): ''}}" name="expi_b_id">
+                                                <input class="form-control datetimepicker" type="text"  value="<?php echo e($user->employee_details ? dateDisplayFormat($user->employee_details->expi_b_id): ''); ?>" name="expi_b_id">
                                             </div>
                                         </div>
                                     </div>
                              <div class="col-md-6">
                                 <div class="form-group">
                                     <label>License </label>
-                                    <input type="text" class="form-control"  value="{{$user->employee_details ? $user->employee_details->license: ''}}" name="license">
+                                    <input type="text" class="form-control"  value="<?php echo e($user->employee_details ? $user->employee_details->license: ''); ?>" name="license">
                                 </div>
                             </div>
                           <div class="col-md-6">
                                         <div class="form-group">
                                             <label>license Exp.</label>
                                             <div class="cal-icon">
-                                                <input class="form-control datetimepicker" type="text"  value="{{$user->employee_details ? dateDisplayFormat($user->employee_details->license_exp): ''}}" name="license_exp">
+                                                <input class="form-control datetimepicker" type="text"  value="<?php echo e($user->employee_details ? dateDisplayFormat($user->employee_details->license_exp): ''); ?>" name="license_exp">
                                             </div>
                                         </div>
                                     </div>
@@ -1668,7 +1641,7 @@ if ($currentMonth >= 4) {
                                         <option  value="">Select Company</option>
                                         <?php
                                         foreach ($company_dropdown as $company_value) {?>
-                                            <option  value="<?=$company_value->id?>" {{$user->company==$company_value->id ? 'selected' : ''}}><?=$company_value->name?></option>
+                                            <option  value="<?=$company_value->id?>" <?php echo e($user->company==$company_value->id ? 'selected' : ''); ?>><?=$company_value->name?></option>
                                              <?php  } ?>    
                                              
                                     </select>
@@ -1683,7 +1656,7 @@ if ($currentMonth >= 4) {
                                         if(isset($user->branch))
                                         {
                                             foreach ($branch_dropdown as $branch_value) {?>
-                                            <option value="<?=$branch_value->id?>" {{$user->branch==$branch_value->id ? 'selected' : ''}}><?=$branch_value->name?></option>
+                                            <option value="<?=$branch_value->id?>" <?php echo e($user->branch==$branch_value->id ? 'selected' : ''); ?>><?=$branch_value->name?></option>
                                         <?php } } ?>
                                     </select>
                                 </div>
@@ -1699,7 +1672,7 @@ if ($currentMonth >= 4) {
                                         if(isset($user->department))
                                         {
                                             foreach ($department_dropdown as $department_value) {?>
-                                            <option value="<?=$department_value->id?>" {{$user->department==$department_value->id ? 'selected' : ''}}><?=$department_value->name?></option>
+                                            <option value="<?=$department_value->id?>" <?php echo e($user->department==$department_value->id ? 'selected' : ''); ?>><?=$department_value->name?></option>
                                         <?php } } ?>
                                     </select>
                                 </div>
@@ -1715,7 +1688,7 @@ if ($currentMonth >= 4) {
                                         if(isset($user->designation))
                                         {
                                             foreach ($designation_dropdown as $designation_value) {?>
-                                            <option value="<?=$designation_value->id?>" {{$user->designation==$designation_value->id ? 'selected' : ''}}><?=$designation_value->name?></option>
+                                            <option value="<?=$designation_value->id?>" <?php echo e($user->designation==$designation_value->id ? 'selected' : ''); ?>><?=$designation_value->name?></option>
                                         <?php } } ?>
                                     </select>
                                 </div>
@@ -1731,7 +1704,7 @@ if ($currentMonth >= 4) {
                                         if(isset($user->subcompany))
                                         {
                                             foreach ($subcompany_dropdown as $subcompany_value) {?>
-                                            <option value="<?=$subcompany_value->id?>" {{$user->subcompany==$subcompany_value->id ? 'selected' : ''}}><?=$subcompany_value->name?></option>
+                                            <option value="<?=$subcompany_value->id?>" <?php echo e($user->subcompany==$subcompany_value->id ? 'selected' : ''); ?>><?=$subcompany_value->name?></option>
                                         <?php } } ?>
                                     </select>
                                 </div>
@@ -1759,7 +1732,7 @@ if ($currentMonth >= 4) {
                 </div>
                 <div class="modal-body">
                     <form  action="/employeeDocuments/<?php echo $user->id; ?>" method="post" id="employee_accounts" enctype="multipart/form-data">
-                        @csrf
+                        <?php echo csrf_field(); ?>
                         <div class="row docdiv">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -1796,7 +1769,7 @@ if ($currentMonth >= 4) {
         </div>
     </div>  
     <div id="an_leave_detail_modal" class="modal custom-modal fade " role="dialog">
-        @include('edbr/an_leave_detail_modal')
+        <?php echo $__env->make('edbr/an_leave_detail_modal', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     </div>  
 
     <!-- banking Info Modal -->
@@ -1817,12 +1790,12 @@ if ($currentMonth >= 4) {
                 
                 <div class="modal-body">
                     <form  action="/employeeAccounts/<?php echo $user->id; ?>" method="post" id="bank_account">
-                        @csrf
+                        <?php echo csrf_field(); ?>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Bank Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="bank_name" value="{{$user->employee_accounts?$user->employee_accounts->bank_name:''}}">
+                                    <input type="text" class="form-control" name="bank_name" value="<?php echo e($user->employee_accounts?$user->employee_accounts->bank_name:''); ?>">
                                 </div>
                             </div>
                            
@@ -1831,7 +1804,7 @@ if ($currentMonth >= 4) {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Account Number <span class="text-danger">*</span></label>
-                                    <input class="form-control" type="text" name="account_number" value="{{$user->employee_accounts?$user->employee_accounts->account_number:''}}">
+                                    <input class="form-control" type="text" name="account_number" value="<?php echo e($user->employee_accounts?$user->employee_accounts->account_number:''); ?>">
                                 </div>
                                 
                             </div>
@@ -1840,7 +1813,7 @@ if ($currentMonth >= 4) {
                                 <div class="form-group">
                                     <label>Branch Code <span class="text-danger">*</span></label>
                                     <div >
-                                        <input class="form-control" type="text" name="branch_code" value="{{$user->employee_accounts?$user->employee_accounts->branch_code:''}}">
+                                        <input class="form-control" type="text" name="branch_code" value="<?php echo e($user->employee_accounts?$user->employee_accounts->branch_code:''); ?>">
                                     </div>
                                 </div>
                             </div>
@@ -1849,7 +1822,7 @@ if ($currentMonth >= 4) {
                                 <div class="form-group">
                                     <label>IFC NUMBER <span class="text-danger">*</span></label>
                                     <div >
-                                        <input class="form-control" type="text" name="ifsc_number" value="{{$user->employee_accounts?$user->employee_accounts->ifsc_number:''}}">
+                                        <input class="form-control" type="text" name="ifsc_number" value="<?php echo e($user->employee_accounts?$user->employee_accounts->ifsc_number:''); ?>">
                                     </div>
                                 </div>
                             </div>
@@ -1859,13 +1832,13 @@ if ($currentMonth >= 4) {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>swift code <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control"  name="swift_code" value="{{$user->employee_accounts?$user->employee_accounts->swift_code:''}}">
+                                    <input type="text" class="form-control"  name="swift_code" value="<?php echo e($user->employee_accounts?$user->employee_accounts->swift_code:''); ?>">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Branch <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control"  name="branch_name" value="{{$user->employee_accounts?$user->employee_accounts->branch_name:''}}">
+                                    <input type="text" class="form-control"  name="branch_name" value="<?php echo e($user->employee_accounts?$user->employee_accounts->branch_name:''); ?>">
                                 </div>
                             </div>
                             
@@ -1909,7 +1882,7 @@ if ($currentMonth >= 4) {
                     <div class="card-body">
                         <h3 class="card-title"> Loan Details</h3>
                         <form  action="/employeeLoan/<?php echo $user->user_id; ?>" method="post" id="employee_loan">
-                            @csrf
+                            <?php echo csrf_field(); ?>
                             <div class="row"> </div>
                             
                             <hr>
@@ -1917,21 +1890,21 @@ if ($currentMonth >= 4) {
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Loan Amount <span class="text-danger">*</span></label>
-                                        <input class="form-control" type="text" id="loan_amount" name="loan_amount" value="{{$user->employee_loan ? $user->employee_loan->loan_amount : ''}}">
+                                        <input class="form-control" type="text" id="loan_amount" name="loan_amount" value="<?php echo e($user->employee_loan ? $user->employee_loan->loan_amount : ''); ?>">
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
                                         <label>Date <span class="text-danger">*</span></label>
                                         <div class="cal-icon">
-                                            <input class="form-control datetimepicker" type="text" name="loan_date" value="{{$user->employee_loan ? $user->employee_loan->loan_date : ''}}">
+                                            <input class="form-control datetimepicker" type="text" name="loan_date" value="<?php echo e($user->employee_loan ? $user->employee_loan->loan_date : ''); ?>">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Number of installments <span class="text-danger">*</span></label>
-                                        <input class="form-control" type="text" name="installment" value="{{$user->employee_loan ? $user->employee_loan->installment : ''}}">
+                                        <input class="form-control" type="text" name="installment" value="<?php echo e($user->employee_loan ? $user->employee_loan->installment : ''); ?>">
                                     </div>
                                 </div>
                               </div>
@@ -1940,20 +1913,20 @@ if ($currentMonth >= 4) {
                                 <div class="col-sm-4">
                                     <div class="form-group">
                                         <label>Total Amount paid <span class="text-danger">*</span></label>
-                                        <input class="form-control" type="text" id="total_amount_paid" name="total_amount_paid" value="{{$user->employee_loan ? $user->employee_loan->total_paid : ''}}">
+                                        <input class="form-control" type="text" id="total_amount_paid" name="total_amount_paid" value="<?php echo e($user->employee_loan ? $user->employee_loan->total_paid : ''); ?>">
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
                                         <label>Installment pending <span class="text-danger">*</span></label>
-                                        <input class="form-control" type="text" name="install_pending" value="{{$user->employee_loan ? $user->employee_loan->install_pending : ''}}">
+                                        <input class="form-control" type="text" name="install_pending" value="<?php echo e($user->employee_loan ? $user->employee_loan->install_pending : ''); ?>">
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
                                         <label>Amount pending <span class="text-danger">*</span></label>
                                         
-                                        <input class="form-control" type="text" id="amount_pending" name="amount_pending" value="{{$user->employee_loan ? $user->employee_loan->amount_pending : ''}}">
+                                        <input class="form-control" type="text" id="amount_pending" name="amount_pending" value="<?php echo e($user->employee_loan ? $user->employee_loan->amount_pending : ''); ?>">
                                     </div>
                                 </div>
                             </div>       
@@ -1961,7 +1934,7 @@ if ($currentMonth >= 4) {
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Remarks</label> 
-                                        <textarea class="form-control" name="remarks">{{$user->employee_loan ? $user->employee_loan->remarks : ''}}</textarea>
+                                        <textarea class="form-control" name="remarks"><?php echo e($user->employee_loan ? $user->employee_loan->remarks : ''); ?></textarea>
                                     </div> 
                                 </div>
                             </div>
@@ -1999,17 +1972,18 @@ if ($currentMonth >= 4) {
              
                 <div class="modal-body">
                     <form  action="/employeeSalary/<?php echo $user->id; ?>" method="post" id="employee_salary">
-                        @csrf
+                        <?php echo csrf_field(); ?>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Financial Year</label>
                                     <select class="select form-control" name="financial_year">
-                                @foreach ($financial_year as $year)
-                                    <option value="{{ $year['id'] }}" {{ $currentMonthYear == $year['year_range'] ? 'selected' : '' }}>
-                                        {{ $year['year_range'] }}
+                                <?php $__currentLoopData = $financial_year; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $year): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($year['id']); ?>" <?php echo e($currentMonthYear == $year['year_range'] ? 'selected' : ''); ?>>
+                                        <?php echo e($year['year_range']); ?>
+
                                     </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                                 </div>
                             </div>
@@ -2019,7 +1993,7 @@ if ($currentMonth >= 4) {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Basic Salary</label>
-                                    <input class="form-control salary_add" type="text" name="basic_salary" value="{{$user->employee_salary ?$user->employee_salary->basic_salary : 0}}" onkeypress="return /[0-9]/i.test(event.key)">
+                                    <input class="form-control salary_add" type="text" name="basic_salary" value="<?php echo e($user->employee_salary ?$user->employee_salary->basic_salary : 0); ?>" onkeypress="return /[0-9]/i.test(event.key)">
                                 </div>
                                 
                             </div>
@@ -2027,7 +2001,7 @@ if ($currentMonth >= 4) {
                                 <div class="form-group">
                                     <label>Travel Allowance </label>
                                     <div >
-                                        <input class="form-control salary_add" type="text" name="travel_allowance" value="{{$user->employee_salary ?$user->employee_salary->travel_allowance : 0}}" onkeypress="return /[0-9]/i.test(event.key)">
+                                        <input class="form-control salary_add" type="text" name="travel_allowance" value="<?php echo e($user->employee_salary ?$user->employee_salary->travel_allowance : 0); ?>" onkeypress="return /[0-9]/i.test(event.key)">
                                     </div>
                                 </div>
                             </div>
@@ -2035,7 +2009,7 @@ if ($currentMonth >= 4) {
                                 <div class="form-group">
                                     <label>Food Allowance</label>
                                     <div >
-                                        <input class="form-control salary_add" type="text" name="food" value="{{$user->employee_salary ?$user->employee_salary->food_allowance : 0}}" onkeypress="return /[0-9]/i.test(event.key)">
+                                        <input class="form-control salary_add" type="text" name="food" value="<?php echo e($user->employee_salary ?$user->employee_salary->food_allowance : 0); ?>" onkeypress="return /[0-9]/i.test(event.key)">
                                     </div>
                                 </div>
                             </div>
@@ -2043,7 +2017,7 @@ if ($currentMonth >= 4) {
                                 <div class="form-group">
                                     <label>House Allowance</label>
                                     <div >
-                                        <input class="form-control salary_add" type="text" name="house" value="{{$user->employee_salary ?$user->employee_salary->house_allowance : 0}}" onkeypress="return /[0-9]/i.test(event.key)">
+                                        <input class="form-control salary_add" type="text" name="house" value="<?php echo e($user->employee_salary ?$user->employee_salary->house_allowance : 0); ?>" onkeypress="return /[0-9]/i.test(event.key)">
                                     </div>
                                 </div>
                             </div>
@@ -2051,7 +2025,7 @@ if ($currentMonth >= 4) {
                                 <div class="form-group">
                                     <label>Position Allowance</label>
                                     <div >
-                                        <input class="form-control salary_add" type="text" name="position" value="{{$user->employee_salary ?$user->employee_salary->position_allowance : 0}}" onkeypress="return /[0-9]/i.test(event.key)">
+                                        <input class="form-control salary_add" type="text" name="position" value="<?php echo e($user->employee_salary ?$user->employee_salary->position_allowance : 0); ?>" onkeypress="return /[0-9]/i.test(event.key)">
                                     </div>
                                 </div>
                             </div>
@@ -2059,7 +2033,7 @@ if ($currentMonth >= 4) {
                                 <div class="form-group">
                                     <label>Phone Allowance</label>
                                     <div >
-                                        <input class="form-control salary_add" type="text" name="phone" value="{{$user->employee_salary ?$user->employee_salary->phone_allowance : 0}}" onkeypress="return /[0-9]/i.test(event.key)">
+                                        <input class="form-control salary_add" type="text" name="phone" value="<?php echo e($user->employee_salary ?$user->employee_salary->phone_allowance : 0); ?>" onkeypress="return /[0-9]/i.test(event.key)">
                                     </div>
                                 </div>
                             </div>
@@ -2067,14 +2041,14 @@ if ($currentMonth >= 4) {
                                 <div class="form-group">
                                     <label>Other Allowance</label>
                                     <div >
-                                        <input class="form-control salary_add" type="text" name="other" value="{{$user->employee_salary ?$user->employee_salary->other_allowance : 0}}" onkeypress="return /[0-9]/i.test(event.key)">
+                                        <input class="form-control salary_add" type="text" name="other" value="<?php echo e($user->employee_salary ?$user->employee_salary->other_allowance : 0); ?>" onkeypress="return /[0-9]/i.test(event.key)">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Total Salary</label>
-                                    <input type="text" class="form-control" id="total_salary" name="total_salary" value="{{$user->employee_salary ?$user->employee_salary->total_salary : 0}}" readonly>
+                                    <input type="text" class="form-control" id="total_salary" name="total_salary" value="<?php echo e($user->employee_salary ?$user->employee_salary->total_salary : 0); ?>" readonly>
                                 </div>
                             </div> 
                         </div>
@@ -2227,19 +2201,19 @@ if ($currentMonth >= 4) {
                 
                 <div class="modal-body">
                     <form  action="/employeeDetails/<?php echo $user->id; ?>" method="post" id="employeeDetails">
-                            @csrf
+                            <?php echo csrf_field(); ?>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Passport No</label>
-                                    <input type="text" class="form-control"  name="passport_no" value="{{$user->passport_no ? $user->passport_no : ''}}">
+                                    <input type="text" class="form-control"  name="passport_no" value="<?php echo e($user->passport_no ? $user->passport_no : ''); ?>">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Passport Expiry</label>
                                     <div class="cal-icon">
-                                        <input class="form-control datetimepicker"  name="pass_expiry"  type="text" value="{{$user->passport_expiry ? dateDisplayFormat($user->passport_expiry) : ''}}">
+                                        <input class="form-control datetimepicker"  name="pass_expiry"  type="text" value="<?php echo e($user->passport_expiry ? dateDisplayFormat($user->passport_expiry) : ''); ?>">
                                     </div>
                                 </div>
                             </div>
@@ -2248,7 +2222,7 @@ if ($currentMonth >= 4) {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Religion</label>
-                                    <input class="form-control" type="text"  name="religion" value="{{$user->employee_details ? $user->employee_details->religion : ''}}">
+                                    <input class="form-control" type="text"  name="religion" value="<?php echo e($user->employee_details ? $user->employee_details->religion : ''); ?>">
                                 </div>
                                 
                             </div>
@@ -2256,7 +2230,7 @@ if ($currentMonth >= 4) {
                                 <div class="form-group">
                                     <label>Blood Group</label>
                                     <div >
-                                        <input class="form-control" type="text"  name="blood_group" value="{{$user->employee_details ? $user->employee_details->blood_group : ''}}">
+                                        <input class="form-control" type="text"  name="blood_group" value="<?php echo e($user->employee_details ? $user->employee_details->blood_group : ''); ?>">
                                     </div>
                                 </div>
                             </div>
@@ -2267,16 +2241,16 @@ if ($currentMonth >= 4) {
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label>Address</label>
-                                    <input type="text" class="form-control" name="pi_address"  value="{{(isset($user->employee_details->pi_address)) ? $user->employee_details->pi_address : ''}}">
+                                    <input type="text" class="form-control" name="pi_address"  value="<?php echo e((isset($user->employee_details->pi_address)) ? $user->employee_details->pi_address : ''); ?>">
                                 </div>
                             </div>
                              
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Marital status</label>
-                                    <select class="select form-control {{$user->employee_details ? 'selected' : ''}}" name="marital_status" >
-                                        <option value="{{$user->employee_details ? $user->employee_details->marital_status : ''}}">
-                                       {{$user->employee_details ? $user->employee_details->marital_status : '-'}}</option>
+                                    <select class="select form-control <?php echo e($user->employee_details ? 'selected' : ''); ?>" name="marital_status" >
+                                        <option value="<?php echo e($user->employee_details ? $user->employee_details->marital_status : ''); ?>">
+                                       <?php echo e($user->employee_details ? $user->employee_details->marital_status : '-'); ?></option>
                                         <option value="Single">Single</option>
                                         <option value="Married">Married</option>
                                     </select>
@@ -2285,13 +2259,13 @@ if ($currentMonth >= 4) {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Employment of spouse</label>
-                                    <input class="form-control" type="text" name="spouse" value="{{$user->employee_details ? $user->employee_details->spouse_employment : ''}}">
+                                    <input class="form-control" type="text" name="spouse" value="<?php echo e($user->employee_details ? $user->employee_details->spouse_employment : ''); ?>">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>No. of children </label>
-                                    <input class="form-control" type="text" name="children" value="{{$user->employee_details ? $user->employee_details->child : ''}}">
+                                    <input class="form-control" type="text" name="children" value="<?php echo e($user->employee_details ? $user->employee_details->child : ''); ?>">
                                 </div>
                             </div>
                         </div>
@@ -2444,7 +2418,7 @@ if ($currentMonth >= 4) {
                 </div>
                 <div class="modal-body">
                 <form  action="/emergencyContact/<?php echo $user->id; ?>" method="post" id="emergency_contact">
-                            @csrf
+                            <?php echo csrf_field(); ?>
                         <div class="card">
                             <div class="card-body">
                                 <h3 class="card-title">Primary Contact</h3>
@@ -2452,25 +2426,25 @@ if ($currentMonth >= 4) {
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Name <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="pri_con_name"  value="{{$user->employee_contacts?$user->employee_contacts->pri_con_name:''}}">
+                                            <input type="text" class="form-control" name="pri_con_name"  value="<?php echo e($user->employee_contacts?$user->employee_contacts->pri_con_name:''); ?>">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Relationship <span class="text-danger">*</span></label>
-                                            <input class="form-control" type="text" name="pri_con_relation"  value="{{$user->employee_contacts?$user->employee_contacts->pri_con_relation:''}}">
+                                            <input class="form-control" type="text" name="pri_con_relation"  value="<?php echo e($user->employee_contacts?$user->employee_contacts->pri_con_relation:''); ?>">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Phone <span class="text-danger">*</span></label>
-                                            <input class="form-control" type="text" name="pri_con_phone"  value="{{$user->employee_contacts?$user->employee_contacts->pri_con_phone:''}}">
+                                            <input class="form-control" type="text" name="pri_con_phone"  value="<?php echo e($user->employee_contacts?$user->employee_contacts->pri_con_phone:''); ?>">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Phone 2</label>
-                                            <input class="form-control" type="text" name="pri_con_phone2"  value="{{$user->employee_contacts?$user->employee_contacts->pri_con_phone2:''}}">
+                                            <input class="form-control" type="text" name="pri_con_phone2"  value="<?php echo e($user->employee_contacts?$user->employee_contacts->pri_con_phone2:''); ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -2484,25 +2458,25 @@ if ($currentMonth >= 4) {
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Name <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="sec_con_name"  value="{{$user->employee_contacts?$user->employee_contacts->sec_con_name:''}}">
+                                            <input type="text" class="form-control" name="sec_con_name"  value="<?php echo e($user->employee_contacts?$user->employee_contacts->sec_con_name:''); ?>">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Relationship <span class="text-danger">*</span></label>
-                                            <input class="form-control" type="text" name="sec_con_relation"  value="{{$user->employee_contacts?$user->employee_contacts->sec_con_relation:''}}">
+                                            <input class="form-control" type="text" name="sec_con_relation"  value="<?php echo e($user->employee_contacts?$user->employee_contacts->sec_con_relation:''); ?>">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Phone <span class="text-danger">*</span></label>
-                                            <input class="form-control" type="text" name="sec_con_phone"  value="{{$user->employee_contacts?$user->employee_contacts->sec_con_phone:''}}">
+                                            <input class="form-control" type="text" name="sec_con_phone"  value="<?php echo e($user->employee_contacts?$user->employee_contacts->sec_con_phone:''); ?>">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Phone 2</label>
-                                            <input class="form-control" type="text" name="sec_con_phone2"  value="{{$user->employee_contacts?$user->employee_contacts->sec_con_phone2:''}}">
+                                            <input class="form-control" type="text" name="sec_con_phone2"  value="<?php echo e($user->employee_contacts?$user->employee_contacts->sec_con_phone2:''); ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -2530,34 +2504,34 @@ if ($currentMonth >= 4) {
                 </div>
                 <div class="modal-body">
                 <form  action="/employeeEducation/<?php echo $user->id; ?>" method="post" id="employee_education">
-                 @csrf
+                 <?php echo csrf_field(); ?>
 
                         <div class="form-scroll"> 
                             
-                            @foreach($user->employee_education as $education_value)
+                            <?php $__currentLoopData = $user->employee_education; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $education_value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="card">
                                 <div class="card-body">
                                     <h3 class="card-title">Education Informations 
-                                        <a href="javascript:void(0);" class="delete-icon deleteEduButton" data-bs-toggle="modal" data-bs-target="#delete_edu" data-data="{{$education_value->id}}"><i class="fa fa-trash-o"></i></a>
+                                        <a href="javascript:void(0);" class="delete-icon deleteEduButton" data-bs-toggle="modal" data-bs-target="#delete_edu" data-data="<?php echo e($education_value->id); ?>"><i class="fa fa-trash-o"></i></a>
                                     </h3>
-                                    <input type="hidden" name="edu_info_id[]" value="{{$education_value->id}}">
+                                    <input type="hidden" name="edu_info_id[]" value="<?php echo e($education_value->id); ?>">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group form-focus focused">
-                                                <input type="text" class="form-control floating" name="institute[]" value="{{$education_value->institution}}">
+                                                <input type="text" class="form-control floating" name="institute[]" value="<?php echo e($education_value->institution); ?>">
                                                 <label class="focus-label">Institution</label>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group form-focus focused">
-                                                <input type="text" class="form-control floating" name="subject[]" value="{{$education_value->subject}}">
+                                                <input type="text" class="form-control floating" name="subject[]" value="<?php echo e($education_value->subject); ?>">
                                                 <label class="focus-label">Specialization</label>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group form-focus focused">
                                                 <div class="cal-icon">
-                                                    <input type="text"  class="form-control floating datetimepicker" name="started[]" value="{{dateDisplayFormat($education_value->start)}}">
+                                                    <input type="text"  class="form-control floating datetimepicker" name="started[]" value="<?php echo e(dateDisplayFormat($education_value->start)); ?>">
                                                 </div>
                                                 <label class="focus-label">Starting Date</label>
                                             </div>
@@ -2565,27 +2539,27 @@ if ($currentMonth >= 4) {
                                         <div class="col-md-6">
                                             <div class="form-group form-focus focused">
                                                 <div class="cal-icon">
-                                                    <input type="text" class="form-control floating datetimepicker" name="completed[]" value="{{$education_value->end}}">
+                                                    <input type="text" class="form-control floating datetimepicker" name="completed[]" value="<?php echo e($education_value->end); ?>">
                                                 </div>
                                                 <label class="focus-label">Complete Date</label>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group form-focus focused">
-                                                <input type="text"  class="form-control floating" name="degree[]" value="{{$education_value->degree}}">
+                                                <input type="text"  class="form-control floating" name="degree[]" value="<?php echo e($education_value->degree); ?>">
                                                 <label class="focus-label">Degree</label>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group form-focus focused">
-                                                <input type="text"  class="form-control floating" name="grade[]" value="{{$education_value->grade}}">
+                                                <input type="text"  class="form-control floating" name="grade[]" value="<?php echo e($education_value->grade); ?>">
                                                 <label class="focus-label">Grade</label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             
                             <div class="card" id="rowEdudiv0">
                                 <div class="card-body">
@@ -2665,40 +2639,40 @@ if ($currentMonth >= 4) {
                 </div>
                 <div class="modal-body">
                     <form  action="/employeeExperience/<?php echo $user->id; ?>" method="post" id="employee_experience">
-                        @csrf
+                        <?php echo csrf_field(); ?>
                         <div class="form-scroll">
 
-                            @foreach($user->employee_experiences as $experience_value)
+                            <?php $__currentLoopData = $user->employee_experiences; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $experience_value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="card">
                                 <div class="card-body">
                                     <h3 class="card-title">Experience Informations 
                                         <!-- <a href="javascript:void(0);" class="delete-icon"><i class="fa fa-trash-o"></i></a> -->
-                                        <a href="javascript:void(0);" class="delete-icon deleteExpButton" data-bs-toggle="modal" data-bs-target="#delete_exp" data-data="{{$experience_value->id}}"><i class="fa fa-trash-o"></i></a>
+                                        <a href="javascript:void(0);" class="delete-icon deleteExpButton" data-bs-toggle="modal" data-bs-target="#delete_exp" data-data="<?php echo e($experience_value->id); ?>"><i class="fa fa-trash-o"></i></a>
                                     </h3>
-                                    <input type="hidden" name="exp_info_id[]" value="{{$experience_value->id}}">
+                                    <input type="hidden" name="exp_info_id[]" value="<?php echo e($experience_value->id); ?>">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group form-focus">
-                                                <input type="text" class="form-control floating" name="company[]" value="{{$experience_value->company}}" required>
+                                                <input type="text" class="form-control floating" name="company[]" value="<?php echo e($experience_value->company); ?>" required>
                                                 <label class="focus-label">Company Name <span class="text-danger">*</span></label>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group form-focus">
-                                                <input type="text" class="form-control floating" name="location[]" value="{{$experience_value->location}}" required>
+                                                <input type="text" class="form-control floating" name="location[]" value="<?php echo e($experience_value->location); ?>" required>
                                                 <label class="focus-label">Location <span class="text-danger">*</span></label>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group form-focus">
-                                                <input type="text" class="form-control floating" name="job[]" value="{{$experience_value->job_position}}" required>
+                                                <input type="text" class="form-control floating" name="job[]" value="<?php echo e($experience_value->job_position); ?>" required>
                                                 <label class="focus-label">Job Position <span class="text-danger">*</span></label>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group form-focus">
                                                 <div class="cal-icon">
-                                                    <input type="text" class="form-control floating datetimepicker" name="from[]" value="{{$experience_value->period_from}}" required>
+                                                    <input type="text" class="form-control floating datetimepicker" name="from[]" value="<?php echo e($experience_value->period_from); ?>" required>
                                                 </div>
                                                 <label class="focus-label">Period From <span class="text-danger">*</span></label>
                                             </div>
@@ -2706,7 +2680,7 @@ if ($currentMonth >= 4) {
                                         <div class="col-md-6">
                                             <div class="form-group form-focus">
                                                 <div class="cal-icon">
-                                                    <input type="text" class="form-control floating datetimepicker" name="to[]" required value="{{$experience_value->period_to}}">
+                                                    <input type="text" class="form-control floating datetimepicker" name="to[]" required value="<?php echo e($experience_value->period_to); ?>">
                                                 </div>
                                                 <label class="focus-label">Period To <span class="text-danger">*</span></label>
                                             </div>
@@ -2714,7 +2688,7 @@ if ($currentMonth >= 4) {
                                     </div>
                                 </div>
                             </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             <div class="card" id="rowExpdiv0">
                                 <div class="card-body">
                                     <h3 class="card-title">Experience Informations 
@@ -2791,7 +2765,7 @@ if ($currentMonth >= 4) {
                 </div>
                 <div class="modal-btn delete-action">
                     <form method="post" action="/employeeDocumentDelete">
-                        @csrf
+                        <?php echo csrf_field(); ?>
                         <div class="row">
                             <div class="col-6">
                                     <input type="hidden" name="document_id" id="document_id" value="">
@@ -2820,7 +2794,7 @@ if ($currentMonth >= 4) {
                 </div>
                 <div class="modal-btn delete-action">
                     <form method="post" action="/employeeEducationDelete">
-                        @csrf
+                        <?php echo csrf_field(); ?>
                         <div class="row">
                             <div class="col-6">
                                     <input type="hidden" name="education_id" id="education_id" value="">
@@ -2849,7 +2823,7 @@ if ($currentMonth >= 4) {
                 </div>
                 <div class="modal-btn delete-action">
                     <form method="post" action="/employeeExperienceDelete">
-                        @csrf
+                        <?php echo csrf_field(); ?>
                         <div class="row">
                             <div class="col-6">
                                     <input type="hidden" name="experience_id" id="experience_id" value="">
@@ -2893,7 +2867,7 @@ if ($currentMonth >= 4) {
 
 </html>
 
-@include('includes/footer')
+<?php echo $__env->make('includes/footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 <script type="text/javascript">
     $(document).on('click','#is_manual_punchin',function(){
         var check_val = $(this).val();
@@ -3170,7 +3144,7 @@ if ($currentMonth >= 4) {
             url: '/getanLeaveDetailsById/',
             type: "POST",
             dataType: "json",
-            data: {"_token": "{{ csrf_token() }}", id:id,user_id:user_id,type:type},
+            data: {"_token": "<?php echo e(csrf_token()); ?>", id:id,user_id:user_id,type:type},
             success:function(response)
                 {
                     $('#an_leave_detail_modal').html(response.html).fadeIn();
@@ -3323,4 +3297,4 @@ function resign(status) {
         }
     });
 }
-</script>
+</script><?php /**PATH C:\wamp64\www\hrm\resources\views/edbr/profile.blade.php ENDPATH**/ ?>

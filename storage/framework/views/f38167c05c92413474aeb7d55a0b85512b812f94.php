@@ -126,18 +126,18 @@
     <table style="width:600px;margin:auto;">
         <thead>
             <tr>
-                <th colspan="2" style="text-align:center;">{{(isset($employee->employee_company_details) &&
+                <th colspan="2" style="text-align:center;"><?php echo e((isset($employee->employee_company_details) &&
                     !empty($employee->employee_company_details)) ?
-                    $employee->employee_company_details->company_name : ''}} </th>
+                    $employee->employee_company_details->company_name : ''); ?> </th>
             </tr>
             <tr>
-                <th colspan="2" style="text-align:center;">Vacation settlement ({{date('d M y',
-                    strtotime($leave_data->updated_at))}}) </th>
+                <th colspan="2" style="text-align:center;">Vacation settlement (<?php echo e(date('d M y',
+                    strtotime($leave_data->updated_at))); ?>) </th>
             </tr>
             <tr>
-                <th colspan="2" style="text-align:center;">{{$employee->full_name ?? ''}} -
-                    {{$employee->emp_generated_id ?? ''}} -
-                    {{$employee->employee_details ? $employee->employee_details->c_id : '--'}}</th>
+                <th colspan="2" style="text-align:center;"><?php echo e($employee->full_name ?? ''); ?> -
+                    <?php echo e($employee->emp_generated_id ?? ''); ?> -
+                    <?php echo e($employee->employee_details ? $employee->employee_details->c_id : '--'); ?></th>
             </tr>
         </thead>
     </table>
@@ -146,71 +146,71 @@
         <tbody>
             <tr>
                 <td style="width:40%;background:#f5f5f5;border-bottom: 1px solid #dee2e6;padding:8px 10px;">Salary of employee :</td>
-                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;">{{number_format($leave_data->basic_salary,2) ?? 0}} KWD</td>
+                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;"><?php echo e(number_format($leave_data->basic_salary,2) ?? 0); ?> KWD</td>
             </tr>
             <tr>
                 <td style="width:40%;background:#f5f5f5;border-bottom: 1px solid #dee2e6;padding:8px 10px;">Number of leave in bucket :</td>
-                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;">{{$leave_data->claimed_annual_days +
-                    $leave_data->claimed_annual_days_rem}}</td>
+                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;"><?php echo e($leave_data->claimed_annual_days +
+                    $leave_data->claimed_annual_days_rem); ?></td>
             </tr>
             <tr>
                 <td style="width:40%;background:#f5f5f5;border-bottom: 1px solid #dee2e6;padding:8px 10px;">Number of leave approved :</td>
-                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;">{{$leave_data->claimed_annual_days ?? ''}}</td>
+                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;"><?php echo e($leave_data->claimed_annual_days ?? ''); ?></td>
             </tr>
             <tr>
                 <td style="width:40%;background:#f5f5f5;border-bottom: 1px solid #dee2e6;padding:8px 10px;">Date of leaves approved :</td>
-                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;">{{date('d M y', strtotime($leave_approve_date))}}</td>
+                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;"><?php echo e(date('d M y', strtotime($leave_approve_date))); ?></td>
             </tr>
             <tr>
                 <td style="width:40%;background:#f5f5f5;border-bottom: 1px solid #dee2e6;padding:8px 10px;">No of leave remaining :</td>
-                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;">{{$leave_data->claimed_annual_days_rem ?? ''}}</td>
+                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;"><?php echo e($leave_data->claimed_annual_days_rem ?? ''); ?></td>
             </tr>
             <tr>
                 <td style="width:40%;background:#f5f5f5;border-bottom: 1px solid #dee2e6;padding:8px 10px;">Number of leaved paying :</td>
-                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;">{{number_format(_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_annual_days
-                    ?? 0),2)}} KWD</td>
+                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;"><?php echo e(number_format(_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_annual_days
+                    ?? 0),2)); ?> KWD</td>
             </tr>
             <tr>
                 <td style="width:40%;background:#f5f5f5;border-bottom: 1px solid #dee2e6;padding:8px 10px;">Balance amount remains :</td>
-                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;">{{number_format(_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_annual_days_rem
-                    ?? 0),2)}} KWD</td>
+                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;"><?php echo e(number_format(_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_annual_days_rem
+                    ?? 0),2)); ?> KWD</td>
             </tr>
             <tr>
                 <td style="width:40%;background:#f5f5f5;border-bottom: 1px solid #dee2e6;padding:8px 10px;">No of public holidays :</td>
-                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;">{{$leave_data->claimed_public_days ?? 0 +
-                    $leave_data->claimed_public_days_rem ?? 0}}</td>
+                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;"><?php echo e($leave_data->claimed_public_days ?? 0 +
+                    $leave_data->claimed_public_days_rem ?? 0); ?></td>
             </tr>
             <tr>
                 <td style="width:40%;background:#f5f5f5;border-bottom: 1px solid #dee2e6;padding:8px 10px;">No of public holidays paying :</td>
-                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;">{{number_format(_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_public_days
-                    ?? 0),2)}} KWD</td>
+                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;"><?php echo e(number_format(_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_public_days
+                    ?? 0),2)); ?> KWD</td>
             </tr>
             <tr>
                 <td style="width:40%;background:#f5f5f5;border-bottom: 1px solid #dee2e6;padding:8px 10px;">No of public holidays Remains :</td>
-                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;">{{$leave_data->claimed_public_days_rem ?? 0}}</td>
+                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;"><?php echo e($leave_data->claimed_public_days_rem ?? 0); ?></td>
             </tr>
             <tr>
                 <td style="width:40%;background:#f5f5f5;border-bottom: 1px solid #dee2e6;padding:8px 10px;">Payable amount :</td>
-                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;">{{number_format((_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_annual_days
+                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;"><?php echo e(number_format((_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_annual_days
                     ?? 0)) +
                     (_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_public_days ??
-                    0)),2)}} KWD</td>
+                    0)),2)); ?> KWD</td>
             </tr>
             <tr>
                 <td style="width:40%;background:#f5f5f5;border-bottom: 1px solid #dee2e6;padding:8px 10px;">Number of leaved paying :</td>
-                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;">{{$leave_data->claimed_annual_days +
-                    $leave_data->claimed_public_days}}</td>
+                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;"><?php echo e($leave_data->claimed_annual_days +
+                    $leave_data->claimed_public_days); ?></td>
             </tr>
             <tr>
                 <td style="width:40%;background:#f5f5f5;border-bottom: 1px solid #dee2e6;padding:8px 10px;">No of public holidays Remains : </td>
-                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;">{{$employee->public_holidays_balance ?? 0}}</td>
+                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;"><?php echo e($employee->public_holidays_balance ?? 0); ?></td>
             </tr>
             <tr>
                 <td style="width:40%;background:#f5f5f5;border-bottom: 1px solid #dee2e6;padding:8px 10px;">Total Payable amount :</td>
-                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;">{{number_format((_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_annual_days
+                <td style="border-bottom: 1px solid #dee2e6;padding:8px 10px;"><?php echo e(number_format((_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_annual_days
                     ?? 0)) +
                     (_calculate_salary_by_days($leave_data->basic_salary,$leave_data->claimed_public_days ??
-                    0)),2)}} KWD</td>
+                    0)),2)); ?> KWD</td>
             </tr>
         </tbody>
     </table>
@@ -227,4 +227,4 @@
 </body>
 
 </html>
-<?php //exit; ?>
+<?php //exit; ?><?php /**PATH C:\wamp64\www\hrm\resources\views/edbr/vacation_history_pdf.blade.php ENDPATH**/ ?>

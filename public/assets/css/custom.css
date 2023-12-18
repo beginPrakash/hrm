@@ -154,6 +154,18 @@
     color: #ffffff;
 }
 
+.modal-dialog {
+    max-width: 560px;
+}
+
+.sidebar .sidebar-menu ul li a {
+    text-decoration: none !important;
+}
+
+.page-wrapper a {
+    color: #ff9b44;
+}
+
 @media (max-width: 991px) {
     .begin-filters {
         flex-direction: column;

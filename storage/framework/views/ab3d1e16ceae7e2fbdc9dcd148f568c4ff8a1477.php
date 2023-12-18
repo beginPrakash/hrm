@@ -33,7 +33,7 @@ if ($currentMonth >= 4) {
         <?php echo $__env->make('includes/breadcrumbs', ['title' => $title], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
         <!-- /Page Header -->
-        <div class="card mb-0">
+        <div class="card">
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-12">
@@ -114,8 +114,8 @@ if ($currentMonth >= 4) {
             </div>
         </div>
 
-        <div class="card tab-box">
-            <div class="row user-tabs">
+        <div class="card tab-box mb-0">
+            <div class="row user-tabs ">
                 <div class="col-lg-12 col-md-12 col-sm-12 line-tabs">
                     <ul class="nav nav-tabs nav-tabs-bottom">
                         <li class="nav-item"><a href="#emp_profile" data-bs-toggle="tab" class="nav-link <?php echo ($tabActive==1)?'active':''; ?>">Profile</a></li>
@@ -484,7 +484,7 @@ if ($currentMonth >= 4) {
                 <!----------------------------------------Lone---------------------------------------->    
                 <div class="row">
                     <div class="col-md-6 d-flex">
-                        <div class="card profile-box flex-fill">
+                        <div class="card profile-box flex-fill ">
                             <div class="card-body">
                                 <?php
                                 $emiCount = 0;
@@ -553,7 +553,7 @@ if ($currentMonth >= 4) {
                             <div class="card-body">
                                 <h3 class="card-title">Full and Final Settlement<a href="#" class="edit-icon" data-bs-toggle="modal" data-bs-target="#personal_info_modal"><i class="fa fa-pencil"></i></a></h3>
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 mb-2">
                                         <?php if($user->status == 'active') { ?>
                                             <button class="btn btn-warning btn-sm" id="generate_fnf" data-id="<?php echo $user->user_id; ?>" data-bs-toggle="modal" data-bs-target="#confirmModal">Generate FNF</button>
 
@@ -806,7 +806,7 @@ if ($currentMonth >= 4) {
                     
 
                     <div class="tab-pane fade" id="leave_management">
-                        <div class="card tab-box">
+                        <div class="card tab-box mb-0">
                             <div class="row user-tabs">
                                 <div class="col-lg-12 col-md-12 col-sm-12 line-tabs">
                                     <ul class="nav nav-tabs nav-tabs-bottom">
@@ -819,13 +819,13 @@ if ($currentMonth >= 4) {
                                 </div>
                             </div>
                         </div>
-
+                        <div class="tab-content">
                         <div class="tab-pane fade show active" id="vacation_settlement">
                             <div class="row">
                                 <div class="col-md-6 d-flex">
                                     <div class="card profile-box flex-fill">
                                         <div class="card-body">
-                                            <div class="row">
+                                            <div class="">
                                                 <ul class="personal-info">
                                                     
                                                     <?php if(isset($emp_leaves) && count($emp_leaves) > 0): ?>
@@ -855,7 +855,7 @@ if ($currentMonth >= 4) {
                                 <div class="col-md-6 d-flex">
                                     <div class="card profile-box flex-fill">
                                         <div class="card-body">
-                                            <div class="row">
+                                            <div class="">
                                                 <ul class="personal-info">
                                                     
                                                     <?php if(isset($emp_leaves_history) && count($emp_leaves_history) > 0): ?>
@@ -888,7 +888,7 @@ if ($currentMonth >= 4) {
                                             <h3 class="card-title">Annual Leave Information<?php //echo date('Y'); ?>
                                             <!-- <a href="#" class="edit-icon" data-bs-toggle="modal" data-bs-target="#opening_leave_info_modal"><i class="fa fa-pencil"></i></a> -->
                                         </h3>
-                                            <div class="row">
+                                            <div class="">
                                                 <ul class="personal-info">
                                                     
                                                     <?php
@@ -964,7 +964,7 @@ if ($currentMonth >= 4) {
                                 <div class="col-md-6 d-flex" style="display: none!important;">
                                     <div class="card profile-box flex-fill">
                                         <div class="card-body">
-                                            <div class="row">
+                                            <div class="">
                                                 <ul class="personal-info">
                                                     <Hr/>
                                                         <h4>Public Holiday Information</h4>
@@ -1047,7 +1047,7 @@ if ($currentMonth >= 4) {
                                 <div class="card profile-box flex-fill">
                                     <div class="card-body">
                                         <h3 class="card-title">Public Holidays </h3>
-                                        <div class="row">
+                                        <div class="">
                                             <ul class="personal-info">
                                                 <Hr/>
                                                     <h4>Public Holiday Information</h4>
@@ -1085,7 +1085,7 @@ if ($currentMonth >= 4) {
                                                         </tr>
                                                     <?php } } ?>
                                                     <tr>    
-                                                        <td colspan="2">Today days worked <small>(Based on scheduling)</small></td>
+                                                        <td colspan="3">Today days worked <small>(Based on scheduling)</small></td>
                                                         <td><?php echo e($user->public_holidays_balance ?? 0); ?> - days </td>
                                                     </tr>
                                                 </table>
@@ -1128,7 +1128,7 @@ if ($currentMonth >= 4) {
 
                                                 <Hr/>
                                                     <h4>Leave Requests - <?php echo date('Y'); ?></h4>
-                                                <Hr/>
+                                                
 
                                                 <table class="table">
                                                     <tr>
@@ -1185,7 +1185,7 @@ if ($currentMonth >= 4) {
                                 <div class="card profile-box flex-fill">
                                     <div class="card-body">
                                         <h3>Sick Leave Information</h3>
-                                        <div class="row">
+                                        <div class="mt-3">
                                             <ul class="personal-info">
                                                 
 
@@ -1212,9 +1212,9 @@ if ($currentMonth >= 4) {
                                                     </div>
                                                 </li> -->
 
-                                                <Hr/>
-                                                    <h4>Leave Requests - <?php echo date('Y'); ?></h4>
-                                                <Hr/>
+                                                
+                                                    <h4 class="mt-3">Leave Requests - <?php echo date('Y'); ?></h4>
+                                              
 
                                                 <table class="table">
                                                     <tr>
@@ -1271,6 +1271,7 @@ if ($currentMonth >= 4) {
                         </div>
                         
                     </div>
+                    </div>
                         
                     </div>
 
@@ -1297,7 +1298,7 @@ if ($currentMonth >= 4) {
                             <div class="col-md-6 d-flex" style="display: none!important;">
                                 <div class="card profile-box flex-fill">
                                     <div class="card-body">
-                                        <div class="row">
+                                        <div class="">
                                             <ul class="personal-info">
                                                 <Hr/>
                                                     <h4>Public Holiday Information</h4>

@@ -162,9 +162,9 @@
     text-decoration: none !important;
 }
 
-.page-wrapper a {
+/* .page-wrapper a {
     color: #ff9b44;
-}
+} */
 
 @media (max-width: 991px) {
     .begin-filters {

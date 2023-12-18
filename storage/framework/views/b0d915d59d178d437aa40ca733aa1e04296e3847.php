@@ -563,7 +563,7 @@
         an_taken = parseInt(an_taken);
         if(an_taken <= an_avail){
             var total = an_avail - an_taken;
-            console.log(total);
+            //console.log(total);
             $('.annual_remaining_leave').text(total+' Days');
         }
     });

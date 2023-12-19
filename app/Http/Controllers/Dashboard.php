@@ -79,7 +79,7 @@ class Dashboard extends Controller
         $indemnityDetails = Indemnity::get();
         // echo '<pre>';print_r($indemnityDetails);
         // echo '--------Values test-----------<br>';
-        if(isset($indemnityDetails))
+        if(isset($indemnityDetails) && !empty($indemnityDetails[0]))
         { 
                 // echo '......indemnity exists......<br>';
             if($diffExplode[0] >= $indemnityDetails[0]->min_year)

@@ -29,8 +29,8 @@ function getInformation()
 
 function calculateSalaryByFilter($user_id,$empid,$mid,$year,$type='')
 {
-     //$empid = 1012;
-     //$user_id = 251; 
+     $empid = 201;
+     $user_id = 492; 
     $endDateOrg = $year.'-'.$mid.'-'.'19';//date('Y-m-20');
     $startDateOrg =  date('Y-m-d', strtotime('-1 month', strtotime($endDateOrg)));
     $startDateOrg = date('Y-m-d', strtotime('+1 days', strtotime($startDateOrg)));
@@ -41,6 +41,11 @@ function calculateSalaryByFilter($user_id,$empid,$mid,$year,$type='')
         $commonWorkingDays = $commonWorkingHoursDetails->working_days;
         //dd($emp_id);
         $total_schedule_hours = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('employee_id',$empid)->sum('schedule_hours');
+        $total_working_days = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('punch_state','clockin')->where('employee_id',$empid)->count();
+        $total_off_days = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('day_type','off')->where('employee_id',$empid)->count();
+        if($total_off_days >= 5):
+            $total_schedule_hours = $total_schedule_hours + $commonWorkingHours;
+        endif;
         $find_fs_days = Scheduling::whereBetween('shift_on', [$startDateOrg, $endDateOrg])->where('employee',$user_id)->whereIn('shift',[3,8,2])->count();
         $find_fs_hours = $find_fs_days * 8;
         //find employee salary details

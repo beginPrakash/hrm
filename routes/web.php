@@ -245,9 +245,11 @@ Route::post('/updateIndemnity', [App\Http\Controllers\IndemnityController::class
 
 
 // Indemnity
-Route::get('/company-settings', [App\Http\Controllers\SettingsController::class, 'companySettings'])->name('company-settings');
+Route::match(array('GET','POST'),'/company-settings', [App\Http\Controllers\SettingsController::class, 'companySettings'])->name('company-settings');
 Route::get('/company-settings-edit/{id}', [App\Http\Controllers\SettingsController::class, 'companySettingsEdit']);
-Route::post('/company-settings-update/{id}', [App\Http\Controllers\SettingsController::class, 'companySettingsUpdate']);
+Route::post('/getcompanyDetailsById',[App\Http\Controllers\SettingsController::class, 'getcompanyDetailsById'] );
+Route::post('/company-delete',[App\Http\Controllers\SettingsController::class, 'delete'])->name('company.delete');
+Route::post('/company-settings/store', [App\Http\Controllers\SettingsController::class, 'store'])->name('company.store');
 
 
 // Payroll Items

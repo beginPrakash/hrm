@@ -14,65 +14,18 @@ class SettingsController extends Controller
         $this->title = 'Company Settings';
     }
 
-    public function companySettings()
+    public function companySettings(Request $request)
     { 
-        $title = $this->title;
-        if (request()->ajax())
+        $query = Residency::where('status','active');
+        $search = [];
+        if(isset($request->company_name))
         {
-            return datatables()->of(Residency::where('status','active')->get())
-                ->setRowId(function ($residency)
-                {
-                    return $residency->id;
-                })
-                ->addColumn('name', function ($row)
-                { 
-                    $name = '';
-                    if($row->logo != NULL)
-                    {
-                        $name = '<img src="uploads/logo/'.$row->logo.'">';
-                    }
-                    $name .= ucfirst($row->name)?? '';
-                    return $name;
-                })
-                ->addColumn('city', function ($row)
-                { 
-                    return ucfirst($row->city)?? '';
-                })
-                ->addColumn('email', function ($row)
-                { 
-                    return ucfirst($row->email)?? '';
-                })
-                ->addColumn('phone', function ($row)
-                { 
-                    return ucfirst($row->phone_number)?? '';
-                })
-                ->addColumn('website', function ($row)
-                { 
-                    return ucfirst($row->website)?? '';
-                })
-                ->addColumn('action', function ($residency)
-                {
-                    $encodedData = base64_encode(json_encode($residency));
-                    $button = '<div class="dropdown dropdown-action pull-right">
-                                    <a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
-                                    <div class="dropdown-menu dropdown-menu-right">';
-                    // if (auth()->user()->can('edit-department'))
-                    // {
-                        $button .= '<a class="dropdown-item editButton" href="company-settings-edit/'.$residency->id.'"><i class="fa fa-pencil m-r-5"></i> Edit</a>';
-                    // }
-                    // if (auth()->user()->can('delete-department'))
-                    // {
-                        // $button .= '<a class="dropdown-item deleteButton" href="#" data-bs-toggle="modal" data-bs-target="#delete_form" data-data="'.$encodedData.'"><i class="fa fa-trash-o m-r-5" ></i> Delete</a>';
-                    // }
-                    $button .= '</div></div>';
-                    return $button;
-
-                })
-                ->rawColumns(['action', 'name'])
-                ->make(true);
-
+            $search['company_name'] = $request->company_name;
+            $query->where('name','like',"%$request->company_name%");
         }
-        return view('settings.residencysettings', compact('title'));
+        $result = $query->get(); 
+        $residency_list = $result;
+        return view('settings.residencysettings', compact('residency_list','search'));
     }
 
     public function companySettingsEdit(Request $request)
@@ -110,29 +63,45 @@ class SettingsController extends Controller
         return redirect('/company-settings')->with('success','Settings updated successfully!');
     }
     
-    public function store()
+    public function store(Request $request)
     {
         $company_id  = Session::get('company_id');
-        $insertArray = array(
-            'name' => $_POST['subresidency'],
-            'residency' => $_POST['residency'],
-            'company_id'    =>  $company_id
+        $insertArr = array(
+            'company_id' => $company_id,
+            'name'      =>  $request->name,
+            'address'   =>  $request->address,
+            'country'   =>  $request->country,
+            'city'      =>  $request->city,
+            'state'     =>  $request->state,
+            'postal_code'  =>  $request->postal_code,
+            'email'     =>  $request->email,
+            'phone_number'  =>  $request->phone_number,
+            'fax'       =>  $request->fax,
+            'website'   =>  $request->website,
+            'created_at'    =>  date('Y-m-d h:i:s')
         );
 
-        Subresidency::insert($insertArray);
-        return redirect('/subresidency')->with('success', 'Sub Residency added successfully!');
-
+        if($request->has('image1')) 
+        {
+            $image = $request->file('image1');
+            $filename = $image->getClientOriginalName();
+            $image->move(public_path('uploads/logo'), $filename);
+            $insertArr['logo'] = $filename;
+        } 
+        if(!empty($request->id)):
+            Residency::where('id', $request->id)->update($insertArr);
+        else:
+            Residency::insert($insertArr);
+        endif;
+        return redirect('/company-settings')->with('success','Data saved successfully!');
+        
     } 
 
     
-    public function delete()
+    public function delete(Request $request)
     {
-        $deleteArray = array(
-            'status' => 'inactive',
-            'updated_at'  =>  date('Y-m-d h:i:s')
-        );
-        Subresidency::where('id', $_POST['subresidency_id'])->update($deleteArray);
-        return redirect('/subresidency')->with('success','Sub Residency deleted successfully!');
+        Residency::where('id', $request->residency_id)->delete();
+        return redirect('/company-settings')->with('success','Data deleted successfully!');
 
     }
 
@@ -159,6 +128,21 @@ class SettingsController extends Controller
         {
             echo "true";
         }
+    }
+
+    public function getcompanyDetailsById(Request $request)
+    {
+        $residency = Residency::where('id',$request->id)->first();
+        $pass_array=array(
+			'residency' => $residency,
+        );
+        $html =  view('settings.company_modal', $pass_array )->render();
+		$arr = [
+			'success' => 'true',
+			'html' => $html
+		];
+		return response()->json($arr);
+
     }
         
 }

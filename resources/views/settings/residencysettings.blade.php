@@ -48,24 +48,24 @@
                 <div class="col-md-4 col-sm-6 col-12 col-lg-4 col-xl-3 m-ht-3">
                     <div class="profile-widget">
                         <div class="profile-img">
-                            <a href="#" class="avatar">
+                            <a href="{{route('company.detail',$val->id)}}" class="avatar">
                                 <img src="{{ ($val->logo!=null)?'uploads/profile/'.$val->logo:'assets/img/profiles/avatar.png'}}" alt=""></a>
                         </div>
                         <div class="dropdown profile-action">
-                            <a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+                            <a href="{{route('company.detail',$val->id)}}" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
                             <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item editButton" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#add_company" data-id="{{$val->id}}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
+                                <a class="dropdown-item" href="{{route('company.detail',$val->id)}}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
                                 <a class="dropdown-item deleteButton" href="#" data-bs-toggle="modal" data-bs-target="#delete_company" data-id="{{$val->id}}"><i class="fa fa-trash-o m-r-5" ></i> Delete</a>
                             </div>
                         </div>
-                        <h4 class="user-name m-t-10 mb-0 text-ellipsis"><a href="#">{{ ucfirst($val->name) }}</a>
+                        <h4 class="user-name m-t-10 mb-0 text-ellipsis"><a href="{{route('company.detail',$val->id)}}">{{ ucfirst($val->name) }}</a>
                         </h4>
                       
                     </div>
                 </div>
                 @endforeach
             @else
-                <div class="col-12 py-5 text-center">No employee found</div>
+                <div class="col-12 py-5 text-center">No company found</div>
             @endif
         </div>
 
@@ -200,20 +200,6 @@
 </script>
 
 <script>
-    $(document).on('click','.editButton',function(){
-        $('#add_company').html('');
-        var id= $(this).attr('data-id');
-        $.ajax({
-        url: '/getcompanyDetailsById/',
-        type: "POST",
-        dataType: "json",
-        data: {"_token": "{{ csrf_token() }}", id:id},
-        success:function(response)
-            {
-                $('#add_company').html(response.html).fadeIn();
-            }
-        });
-    });
 
     $('#add_company').on('hidden.bs.modal', function () {
         $("input[type=text], textarea").val("");

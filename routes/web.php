@@ -250,7 +250,10 @@ Route::get('/company-settings-edit/{id}', [App\Http\Controllers\SettingsControll
 Route::post('/getcompanyDetailsById',[App\Http\Controllers\SettingsController::class, 'getcompanyDetailsById'] );
 Route::post('/company-delete',[App\Http\Controllers\SettingsController::class, 'delete'])->name('company.delete');
 Route::post('/company-settings/store', [App\Http\Controllers\SettingsController::class, 'store'])->name('company.store');
+Route::get('/company-settings/detail/{id}', [App\Http\Controllers\SettingsController::class, 'detail'])->name('company.detail');
 
+//Document
+Route::post('/documents/store', [App\Http\Controllers\DocumentController::class, 'store'])->name('document.store');
 
 // Payroll Items
 Route::get('/payroll-items', [App\Http\Controllers\PayrollController::class, 'items']);

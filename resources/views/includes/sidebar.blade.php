@@ -35,7 +35,7 @@ $user_id = Session::get('user_id');
                         
                         <li><a class="<?php echo ($page == 'branch')?'active':'';?>" href="/branch">Branch</a></li>
                         
-                        <li><a class="<?php echo ($page == 'residency')?'active':'';?>" href="/residency">Company</a></li>
+                        <!-- <li><a class="<?php echo ($page == 'residency')?'active':'';?>" href="/residency">Company</a></li> -->
                          <li><a class="<?php echo ($page == 'subresidency')?'active':'';?>" href="/subresidency">Licence</a></li>
                     </ul>
                 </li>
@@ -101,11 +101,11 @@ $user_id = Session::get('user_id');
 
                 <li>
                     <?php if($is_admin > 0) { ?>
-                        <a href="/company-settings"><i class="la la-cog"></i> <span>Company Settings</span></a>
+                        <a href="/company-settings"><i class="la la-cog"></i> <span>Company</span></a>
                     <?php } else { 
                         $employeeDetails = App\Models\Employee::where('user_id',$user_id)->first();
                     ?>
-                        <a href="/company-settings-edit/<?php echo (isset($employeeDetails))?$employeeDetails->company:4; ?>"><i class="la la-cog"></i> <span>Company Settings</span></a>
+                        <a href="/company-settings-edit/<?php echo (isset($employeeDetails))?$employeeDetails->company:4; ?>"><i class="la la-cog"></i> <span>Company</span></a>
                     <?php } ?>
                 </li>
             </ul>

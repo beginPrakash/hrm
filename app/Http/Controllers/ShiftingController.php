@@ -22,14 +22,20 @@ class ShiftingController extends Controller
         $title = $this->title;
         if (request()->ajax())
         {
-            return datatables()->of(Shifting::where('status','active')->get())
+            return datatables()->of(Shifting::where('status','active')->where('parent_shift',0)->get())
                 ->setRowId(function ($shiftsArray)
                 {
                     return $shiftsArray->id;
                 })
                 ->addColumn('shift_name', function ($shiftsArray)
                 {
-                    return ($shiftsArray->shift_name)?ucfirst($shiftsArray->shift_name).' ('.$shiftsArray->suid.')' : '';
+                    $cod_shift = _get_cod_shift_name($shiftsArray->id);
+                    if(!empty($cod_shift)):
+                        $shift = $shiftsArray->suid.' , '.$cod_shift;
+                    else:
+                        $shift = $shiftsArray->suid;
+                    endif;
+                    return ($shiftsArray->shift_name)?ucfirst($shiftsArray->shift_name).' ('.$shift.')' : '';
                 })
                 ->addColumn('min_start_time', function ($shiftsArray)
                 {
@@ -117,11 +123,37 @@ class ShiftingController extends Controller
             'indefinite'        =>  $request->indefinite,
             'tag'               =>  $request->tag,
             'note'              =>  $request->note,
-            'is_cod'            =>  $request->is_cod ?? 0,
+            'is_cod'            =>  '0',
             'created_at'        =>  date('Y-m-d h:i:s')
         );
         // echo '<pre>';print_r($insertArray);exit;
         $shiftid = Shifting::create($insertArray);
+        if(!empty($shiftid)):
+            $lastid = $this->getLastIdShift();
+            $insertArray = array(
+                'suid'              =>  'SH'.(100+$lastid+1),
+                'company_id'        =>  $company_id,
+                'shift_name'        =>  $request->shift_name,
+                'min_start_time'    =>  date('h:i:s a', strtotime($request->min_start_time)),
+                'start_time'        =>  date('h:i:s a', strtotime($request->start_time)),
+                'max_start_time'    =>  date('h:i:s a', strtotime($request->max_start_time)),
+                'min_end_time'      =>  date('h:i:s a', strtotime($request->min_end_time)),
+                'end_time'          =>  date('h:i:s a', strtotime($request->end_time)),
+                'max_end_time'      =>  date('h:i:s a', strtotime($request->max_end_time)),
+                'break_time'        =>  $request->break_time,
+                'recurring_shift'   =>  $request->recurring_shift,
+                'repeat_every'      =>  $request->repeat_every,
+                'week_day'          =>  (isset($request->week_day) && !empty($request->week_day)) ? implode(',',$request->week_day) : '',
+                'end_on'            =>  date('Y-m-d', strtotime(str_replace('/','-',$request->end_on))),
+                'indefinite'        =>  $request->indefinite,
+                'tag'               =>  $request->tag,
+                'note'              =>  $request->note,
+                'is_cod'            =>  '1',
+                'parent_shift' => $shiftid->id,
+                'created_at'        =>  date('Y-m-d h:i:s')
+            );
+            Shifting::create($insertArray);
+        endif;
         return redirect('/shifting')->with('success', 'Shifting created successfully!');
     }
 
@@ -145,10 +177,10 @@ class ShiftingController extends Controller
             'indefinite'        =>  $request->indefinite,
             'tag'               =>  $request->tag,
             'note'              =>  $request->note,
-            'is_cod'            =>  $request->is_cod ?? 0,
             'created_at'        =>  date('Y-m-d h:i:s')
         );
-        Shifting::where('id', $_POST['id'])->update($updateArray);
+
+        Shifting::where('id', $_POST['id'])->orWhere('parent_shift', $_POST['id'])->update($updateArray);
         return redirect('/shifting')->with('success','Shift updated successfully!');
     }
 
@@ -171,7 +203,7 @@ class ShiftingController extends Controller
             'status' => 'inactive',
             'updated_at'  =>  date('Y-m-d h:i:s')
         );
-        Shifting::where('id', $request['shift_delete_id'])->update($deleteArray);
+        Shifting::where('id', $request['shift_delete_id'])->orWhere('parent_shift', $request['shift_delete_id'])->update($deleteArray);
         return redirect('/shifting')->with('success','Shift deleted successfully!');
 
     }
@@ -289,13 +321,38 @@ class ShiftingController extends Controller
                 // 'repeat_every'      =>  $request->repeat_every,
                 // 'week_day'          =>  implode(',',$request->week_day),
                 'end_on'            =>  date('Y-m-d', strtotime($importData[9])),
+                'is_cod' => '0',
                 // 'indefinite'        =>  $request->indefinite,
                 // 'tag'               =>  $request->tag,
                 // 'note'              =>  $request->note,
                 'created_at'        =>  date('Y-m-d h:i:s')
             );
-            
+           
             $shiftid = Shifting::create($insertArray);
+            if(!empty($shiftid)):
+                $lastid = $this->getLastIdShift();
+                $insertArray = array(
+                    'suid'              =>  'SH'.(100+$lastid+1),
+                    'company_id'        =>  $company_id,
+                    'shift_name'        =>  $importData[1],
+                    'min_start_time'    =>  date('h:i:s a', strtotime($importData[2])),
+                    'start_time'        =>  date('h:i:s a', strtotime($importData[3])),
+                    'max_start_time'    =>  date('h:i:s a', strtotime($importData[4])),
+                    'min_end_time'      =>  date('h:i:s a', strtotime($importData[5])),
+                    'end_time'          =>  date('h:i:s a', strtotime($importData[6])),
+                    'max_end_time'      =>  date('h:i:s a', strtotime($importData[7])),
+                    'break_time'        =>  $importData[8],
+                    // 'recurring_shift'   =>  $request->recurring_shift,
+                    // 'repeat_every'      =>  $request->repeat_every,
+                    // 'week_day'          =>  implode(',',$request->week_day),
+                    'end_on'            =>  date('Y-m-d', strtotime($importData[9])),
+                    'is_cod' => '1',
+                    'parent_shift' => $shiftid->id,
+                    'created_at'        =>  date('Y-m-d h:i:s')
+                );
+                //dd($insertArray);
+                Shifting::create($insertArray);
+            endif;
         }
         $return['message'] = 'Import Successful.';
         $return['status'] = 1;

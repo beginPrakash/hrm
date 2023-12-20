@@ -1079,15 +1079,19 @@ if ($currentMonth >= 4) {
                                                 <Hr/>
                                                     <h4>Public Holiday Information</h4>
                                                 <Hr/>
-                                                <!-- <li>
-                                                    <div class="title">Worked Days</div>
-                                                    <div class="text"><?php echo (isset($user->public_holidays_balance))?$user->public_holidays_balance:0; ?></div>
-                                                </li>-->
                                                 <li>
-                                                    <div class="title">Available public holidays</div>
+                                                    <div class="title" style="width: 50%;">Available public holidays</div>
                                                     <div class="text"> <?php echo (isset($user->public_holidays_balance))?$user->public_holidays_balance:0; ?></div>
                                                 </li>
-
+                                                @php 
+                                                $days = $user->public_holidays_balance ?? 0;
+                                                $sal = $user->employee_salary ?$user->employee_salary->basic_salary : 0;
+                                                $bal = _calculate_salary_by_days($sal,$days);
+                                                @endphp
+                                                <li>
+                                                    <div class="title" style="width: 50%;">Public holidays Balance</div>
+                                                    <div class="text"> {{number_format($bal,2)}} KWD</div>
+                                                </li>
                                                 <!-- <Hr/>
                                                     <h4 class="pr-3">Work Information</h4>
                                                 <Hr/> -->

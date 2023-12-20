@@ -14,6 +14,7 @@ use App\Models\EmployeeBonus;
 use App\Models\EmployeeOvertimeData;
 use App\Models\EmployeeDeduction;
 use App\Models\Holidays;
+use App\Models\Shifting;
 
 function getLastId()
 {
@@ -29,12 +30,13 @@ function getInformation()
 
 function calculateSalaryByFilter($user_id,$empid,$mid,$year,$type='')
 {
-     $empid = 201;
-     $user_id = 492; 
+    //  $empid = 201;
+    //  $user_id = 492; 
     $endDateOrg = $year.'-'.$mid.'-'.'19';//date('Y-m-20');
     $startDateOrg =  date('Y-m-d', strtotime('-1 month', strtotime($endDateOrg)));
     $startDateOrg = date('Y-m-d', strtotime('+1 days', strtotime($startDateOrg)));
     $total_calculate_salary = 0;
+
     if(!empty($mid)):
         $commonWorkingHoursDetails = Overtime::first();
         $commonWorkingHours = $commonWorkingHoursDetails->working_hours - 1;
@@ -379,7 +381,7 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $balance = floatval($balance);
         $used = ($balance > 0 && $totalLeaveDays > 0)?$totalLeaveDays - $balance:0;
         $leaveBalance = $totalLeaveDays - $used;
-        $sal = (isset($employee->employee_salary->total_salary))?$employee->employee_salary->total_salary:0;
+        $sal = (isset($employee->employee_salary->basic_salary))?$employee->employee_salary->basic_salary:0;
         $perday = $sal / 26;
         $leaveAmount = $perday * $leaveBalance;
         $total_request_leave = $employee->request_leave_days ?? 0;
@@ -417,7 +419,7 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $used = ($balance > 0 && $totalLeaveDays > 0)?$totalLeaveDays - $balance:0;
         $leaveBalance = $totalLeaveDays - $used;
         
-        $sal = (isset($employee->employee_salary->total_salary))?$employee->employee_salary->total_salary:0;
+        $sal = (isset($employee->employee_salary->basic_salary))?$employee->employee_salary->basic_salary:0;
         $perday = $sal / 26;
         $leaveAmount = $perday * $leaveBalance;
         $total_request_leave = $employee->sick_leave_request_days ?? 0;
@@ -474,6 +476,11 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $hourlySalary = ($daySalary>0)?($daySalary/$commonWorkingHours):0;
         $total_salary = $daySalary * $days;
         return $total_salary;
+    }
+
+    function _get_cod_shift_name($shift_id){
+        $data = Shifting::where('parent_shift',$shift_id)->first();
+        return $data->suid ?? '';
     }
 
     

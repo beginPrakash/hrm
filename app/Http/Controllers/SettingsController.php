@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Yajra\Datatables\Datatables;
 use Session;
-
+use App\Models\CompanyDocuments;
 use App\Models\Residency;
+use App\Models\CompanyDocFiles;
 
 class SettingsController extends Controller
 {
@@ -93,7 +94,7 @@ class SettingsController extends Controller
         else:
             Residency::insert($insertArr);
         endif;
-        return redirect('/company-settings')->with('success','Data saved successfully!');
+        return redirect()->back()->with('success','Data saved successfully!');
         
     } 
 
@@ -142,6 +143,16 @@ class SettingsController extends Controller
 			'html' => $html
 		];
 		return response()->json($arr);
+
+    }
+
+    public function detail(Request $request,$id)
+    {
+        $title='Company Detail';
+        $company_detail = Residency::where('id',$id)->first();
+        $documents = CompanyDocuments::where('company_id',$id)->get();
+        $documents_file = CompanyDocuments::where('company_id',$id)->get();
+        return view('settings.company_detail',compact('company_detail','title','documents'));
 
     }
         

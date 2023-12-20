@@ -164,12 +164,12 @@
                                             <label class="form-check-label" name="recurring_shift" for="customCheck1">Recurring Shift</label>
                                         </div>
                                     </div>
-                                    <div class="col-sm-12">
+                                    <!-- <div class="col-sm-12">
                                         <div class="custom-control form-check">
                                             <input type="checkbox" class="form-check-input" id="is_cod" name="is_cod" value="1">
                                             <label class="form-check-label" name="is_cod" for="is_cod">Is COD?</label>
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <div class="col-sm-12">
                                         <div class="form-group">
                                             <label class="col-form-label">Repeat Every</label>
@@ -255,7 +255,7 @@
                                     <div class="col-sm-12">
                                         <div class="form-group">
                                             <label class="col-form-label">Shift Name <span class="text-danger">*</span></label>
-                                            <div class="input-groupx time timepicker">
+                                            <div class="input-groupx time">
                                                 <input class="form-control" id="shift_name" name="shift_name" onkeypress="return /[^/]/i.test(event.key)">
                                             </div>
                                         </div>
@@ -750,9 +750,6 @@
             {
                 if(key == 'id' && value<10){
                     $('.cod_div').addClass('d-none');
-                }
-                if(key == 'is_cod' && value == '1'){
-                    $('#is_cod_edit').attr('checked',true);
                 }
                 if(key != 'is_cod'){
                     $('#editForm [name="'+key+'"]').val(value);

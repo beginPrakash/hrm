@@ -93,44 +93,88 @@ function calculateDeductionByMonth($empid,$mid,$year,$type='')
     return $total;
 }
 
-function calculateOvertimeByFilter($user_id,$empid,$mid,$year,$type='')
-{
-    //$empid = 1012;
-    //$user_id = 251;
-    $endDateOrg = $year.'-'.$mid.'-'.'19';//date('Y-m-20');
-    $startDateOrg =  date('Y-m-d', strtotime('-1 month', strtotime($endDateOrg)));
-    $startDateOrg = date('Y-m-d', strtotime('+1 days', strtotime($startDateOrg)));
-    $total_calculate_salary = 0;
-    if(!empty($mid)):
-        $commonWorkingHoursDetails = Overtime::first();
-        $commonWorkingHours = $commonWorkingHoursDetails->working_hours - 1;
-        $commonWorkingDays = $commonWorkingHoursDetails->working_days;
-        $total_overtime_hours = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('employee_id',$empid)->sum('overtime_hours');
-        //find employee salary details
-        $employee = Employee::where('user_id',$user_id)->where('emp_generated_id',$empid)->first();
-        //calculate salary now
-        if(!empty($employee)):
-            $currentMonthSalary = (isset($employee->employee_salary))?$employee->employee_salary->basic_salary:0;
-            $daySalary = ($currentMonthSalary>0)?($currentMonthSalary/$commonWorkingDays):0;
-            $hourlySalary = ($daySalary>0)?($daySalary/$commonWorkingHours):0;
-            $total_calculate_salary = $total_overtime_hours * $hourlySalary;
-        endif;
-        $res_arr = [];
-        if($type=='report_pdf'):
-            $res_arr['hourly_salary'] = $hourlySalary;
-            $res_arr['day_salary'] = $daySalary;
-            $res_arr['total_overtime_hours'] = $total_overtime_hours;
-            $res_arr['total_salary'] = $total_calculate_salary;
-            $res_arr['dates_between'] = $startDateOrg.','.$endDateOrg;
-            return $res_arr;
+function clockalize($in){
+    $explode_data =  explode('.',$in);
+    $h = $explode_data[0] ?? 0;
+    $m = 0;
+    if(isset($explode_data[1]) && !empty($explode_data[1])):
+        if(strlen($explode_data[1]) == 1):
+            //add 0
+            $addm = $explode_data[1].'0';
+            $m = $addm;
         else:
-            $res_arr['total_overtime_hours'] = $total_overtime_hours;
-            $res_arr['total_salary'] = $total_calculate_salary;
-            $res_arr['dates_between'] = $startDateOrg.','.$endDateOrg;
-            return $res_arr;
+            $m = $explode_data[1] ?? 0;
         endif;
     endif;
-}
+    $s=0;
+    return sprintf('%02d:%02d:%02d', $h, $m,$s);
+ }
+ 
+ function calculateOvertimeByFilter($user_id,$empid,$mid,$year,$type='')
+ {
+    //   $empid = 1231;
+    //   $user_id = 500;
+     $endDateOrg = $year.'-'.$mid.'-'.'19';//date('Y-m-20');
+     $startDateOrg =  date('Y-m-d', strtotime('-1 month', strtotime($endDateOrg)));
+     $startDateOrg = date('Y-m-d', strtotime('+1 days', strtotime($startDateOrg)));
+     $total_calculate_salary = 0;
+     if(!empty($mid)):
+         $commonWorkingHoursDetails = Overtime::first();
+         $commonWorkingHours = $commonWorkingHoursDetails->working_hours - 1;
+         $commonWorkingDays = $commonWorkingHoursDetails->working_days;
+         $total_overtime_data = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('employee_id',$empid)->whereNotNull('overtime_hours')->pluck('overtime_hours')->toArray();
+         //dd($total_overtime_data);
+         $sum = strtotime('00:00:00');
+         $totaltime = 0;
+         $h = $m = 0;
+         if(count($total_overtime_data) > 0): 
+             foreach( $total_overtime_data as $element ) {
+                 $ctime = clockalize($element);
+                 //echo $ctime;exit;
+                 // Converting the time into seconds
+                 $timeinsec = strtotime($ctime) - $sum;
+                 
+                 // Sum the time with previous value
+                 $totaltime = $totaltime + $timeinsec;
+                 //echo $totaltime;echo'<pre>';
+             }
+            // dd($totaltime );
+             $h = intval($totaltime / 3600);
+             $totaltime = $totaltime - ($h * 3600);
+             
+             // Minutes is obtained by dividing
+             // remaining total time with 60
+             $m = intval($totaltime / 60);
+         
+             // Remaining value is seconds
+             $s = $totaltime - ($m * 60);
+         endif;
+         $total_overtime_hours = $h.'.'.$m;
+         //find employee salary details
+         $employee = Employee::where('user_id',$user_id)->where('emp_generated_id',$empid)->first();
+         //calculate salary now
+         if(!empty($employee)):
+             $currentMonthSalary = (isset($employee->employee_salary))?$employee->employee_salary->basic_salary:0;
+             $daySalary = ($currentMonthSalary>0)?($currentMonthSalary/$commonWorkingDays):0;
+             $hourlySalary = ($daySalary>0)?($daySalary/$commonWorkingHours):0;
+             $total_calculate_salary = $total_overtime_hours * $hourlySalary;
+         endif;
+         $res_arr = [];
+         if($type=='report_pdf'):
+             $res_arr['hourly_salary'] = $hourlySalary;
+             $res_arr['day_salary'] = $daySalary;
+             $res_arr['total_overtime_hours'] = $total_overtime_hours;
+             $res_arr['total_salary'] = $total_calculate_salary;
+             $res_arr['dates_between'] = $startDateOrg.','.$endDateOrg;
+             return $res_arr;
+         else:
+             $res_arr['total_overtime_hours'] = $total_overtime_hours;
+             $res_arr['total_salary'] = $total_calculate_salary;
+             $res_arr['dates_between'] = $startDateOrg.','.$endDateOrg;
+             return $res_arr;
+         endif;
+     endif;
+ }
 
 function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
     {
@@ -297,7 +341,8 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
             $final_diff = 0;
             $total_attendanace_hours = floatval($total_attendanace_hours);
             $commonWorkingHours = (int)$commonWorkingHours;
-            if($shiftDetails->shift == 4):
+
+            if($is_cod== '0'):
                 if($total_attendanace_hours > $commonWorkingHours):
                     $diff = $total_attendanace_hours - $commonWorkingHours;
                     $final_diff =  $diff < 0 ? (-1) * $diff : $diff;
@@ -310,7 +355,7 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
                 //save schedule hours and overtime data in attanedance detail yable
                 $save_data = AttendanceDetails::where('user_id',$user_id)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
                 $save_data->schedule_hours = 0;
-                $save_data->overtime_hours = $total_attendanace_hours;
+                $save_data->overtime_hours = $total_attendanace_hours-1;
                 $save_data->save();
                 //dd($save_data);
                 return true;
@@ -320,6 +365,7 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
                 $save_data->schedule_hours = $commonWorkingHours-1;
                 $save_data->overtime_hours = $final_diff ?? 0;
                 $save_data->save();
+                //dd($save_data);
                 return true;
             endif;
         endif;
@@ -359,6 +405,33 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $total = EmployeeOvertimeData::where('es_month',$month)->where('es_year',$year)->where('company_id',$company_id)->where('type',$type)->groupBy('company_id')->sum('total_earning');
         return $total;
     }
+    
+    function calculateLeave($joiningDate, $currentDate) {
+        $joiningDateTime = new DateTime($joiningDate);
+
+        $currentDateTime = new DateTime($currentDate);
+       
+        $curl_url = 'https://test.hrmado.com/annual_leave_calculator.php?date='.$joiningDate.'&cdate='.$currentDate.'';
+
+        // create & initialize a curl session
+        $curl = curl_init();
+
+        // set our url with curl_setopt()
+        curl_setopt($curl, CURLOPT_URL, $curl_url);
+
+        // return the transfer as a string, also with setopt()
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        // curl_exec() executes the started curl session
+        // $output contains the output string
+        $output = curl_exec($curl);
+
+        // close curl resource to free up system resources
+        // (deletes the variable made by curl_init)
+        curl_close($curl);
+        return $output;
+
+    }
 
     function getAnnualLeaveDetails($id)
     {
@@ -369,13 +442,8 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
             $todaydate = $employee->resigned_date;
         }
         $joining_date = (isset($employee->joining_date)) ? $employee->joining_date : $todaydate;
-        $totalLeaveYearMonths = getDateDiff($joining_date, $todaydate);
-        // echo $totalLeaveYearMonths;
-        $exYM = explode('.', $totalLeaveYearMonths);
-        
-        $totalLeaveMonths = ($exYM[0] * 12) +$exYM[1];
-        // echo $employee->opening_leave_days;
-        $totalLeaveDays = $totalLeaveMonths * 2.5;
+        $totalLeaveDays = calculateLeave($joining_date, $todaydate);
+       
         $totalLeaveDays = floatval($totalLeaveDays);
         $balance = (!empty($employee) && (isset($employee->opening_leave_days)))?$employee->opening_leave_days:0;
         $balance = floatval($balance);
@@ -396,7 +464,6 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
             'remaining_leave'   =>  $remaining_leave,
             'remaining_leave_withoutreq'   =>  $remaining_leave_withoutreq,
             'balance_leave_amount' => $balance_leave_amount);
-
         return $result;
     }
 

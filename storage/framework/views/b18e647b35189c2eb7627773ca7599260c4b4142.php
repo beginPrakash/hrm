@@ -70,7 +70,7 @@ if(isset($emloyeeAttendance))
                         <div class="col-md-6 col-6 text-center">
                             <div class="stats-box">
                                 <p>Overtime</p>
-                                <h6><?php echo ($emloyeeAttendance[0]['ottime']!='')?$emloyeeAttendance[0]['ottime']:0; ?> hrs</h6>
+                                <h6><?php echo ($emloyeeAttendance[0]['overtime_hours']!='')?$emloyeeAttendance[0]['overtime_hours']:0; ?> hrs</h6>
                             </div>
                         </div>
                     </div>

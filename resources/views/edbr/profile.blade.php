@@ -938,7 +938,8 @@ if ($currentMonth >= 4) {
                                                     <li>
                                                         <div class="title">Balance Amount</div>
                                                         <div class="text"> 
-                                                        {{number_format($annualleavedetails['leaveAmount'],2)  ?? 0}} KWD
+                                                            @php $e_sal = (isset($user->employee_salary) && !empty($user->employee_salary)) ? $user->employee_salary->basic_salary : 0; @endphp
+                                                            {{number_format(_calculate_salary_by_days($e_sal,$user->opening_leave_days ?? 0),2)}} KWD
                                                         </div>
                                                     </li>
 

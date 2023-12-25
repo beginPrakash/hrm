@@ -244,8 +244,11 @@ $username = Session::get('username');
                     <div class="card-body">
                         <span class="dash-widget-icon"><i class="fa fa-tree" aria-hidden="true"></i></span>
                         <div class="dash-widget-info pl-2" style="text-align: left;">
-                            <h4><?php echo e(number_format($balance_annual_leave_total['balance_leave_amount'],2) ?? 0); ?> KWD</h4>
-                            <h4><?php echo e($balance_annual_leave_total['remaining_leave_withoutreq'] ?? 0); ?> DAYS</h4>
+                            <h4>
+                            <?php $e_sal = (isset($sched_data[0]->employee_salary) && !empty($sched_data[0]->employee_salary)) ? $sched_data[0]->employee_salary->basic_salary : 0; ?>
+                                 <?php echo e(number_format(_calculate_salary_by_days($e_sal,$sched_data[0]->opening_leave_days ?? 0),2)); ?> KWD
+                            </h4>
+                            <h4><?php echo e($sched_data[0]->opening_leave_days ?? 0); ?> DAYS</h4>
                             <span>Annual leave</span>
                         </div>
                     </div>

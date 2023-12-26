@@ -28,7 +28,7 @@
                         <div class="profile-view">
                             <div class="profile-img-wrap">
                                 <div class="profile-img">
-                                    <a href="#"><img alt="" src="<?php echo e(($company_detail->logo!=null)?'uploads/logo/'.$company_detail->logo:'assets/img/profiles/avatar.png'); ?>"></a>
+                                    <a href="#"><img alt="" src="<?php echo e(($company_detail->logo!=null)? asset('uploads/logo/'.$company_detail->logo):asset('assets/img/profiles/avatar.png')); ?>"></a>
                                 </div>
                             </div>
                             <div class="profile-basic">
@@ -137,7 +137,7 @@
                                             <div class="profile-widget">
                                                 <div class="profile-img">
                                                     <a href="<?php echo e(route('company.detail',$val->id)); ?>" class="avatar">
-                                                        <img src="<?php echo e(($val->logo!=null)?'uploads/profile/'.$val->logo:'assets/img/profiles/avatar.png'); ?>" alt=""></a>
+                                                        <img src="<?php echo e(($val->logo!=null)?'uploads/profile/'.$val->logo:asset('assets/img/profiles/avatar.png')); ?>" alt=""></a>
                                                 </div>
                                                 <div class="dropdown profile-action">
                                                     <a href="<?php echo e(route('company.detail',$val->id)); ?>" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
@@ -211,5 +211,16 @@
         $('.company_id_hid').val('');
         $('.leave_m_title').text('Add Company');
     });
+
+    var len = 0;
+    $('#doc_addmore').click(function()
+    {
+        len++;// = $('.rowdiv').length;
+        $('#div_doc_addmore').before('<div class="row rowdiv" id="rowdiv'+len+'"><div class="col-md-5"><div class="form-group"><input class="form-control" type="file" name="doc_file[]" value=""></div></div><div class="col-md-1"><span class="mt-4 trashDiv" onclick="removeDiv('+len+')"><i class="fa fa-trash text-danger"></i></span></div></div>');
+    });
+
+    function removeDiv(tid) {
+        $('#rowdiv'+tid).remove();
+    }
 </script>
 <?php /**PATH C:\wamp64_new\www\hrm\resources\views/settings/company_detail.blade.php ENDPATH**/ ?>

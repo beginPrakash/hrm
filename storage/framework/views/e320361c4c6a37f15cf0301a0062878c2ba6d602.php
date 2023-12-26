@@ -161,7 +161,7 @@
                                     <td><?php echo e((isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->other_allowance : 0); ?></td>
                                     <td><?php echo e($deduction); ?></td>
                                     <td><?php echo e(($salary_calc + $total_allowence) - $deduction); ?></td>
-                                    <td>Cash</td>
+                                    <td><?php echo e((isset($emp->employee_accounts) && !empty($emp->employee_accounts)) ? 'Bank' : 'Cash'); ?></td>
                                 </tr>
                                 <?php
                                 $i++;

@@ -49,7 +49,7 @@
                     <div class="profile-widget">
                         <div class="profile-img">
                             <a href="{{route('company.detail',$val->id)}}" class="avatar">
-                                <img src="{{ ($val->logo!=null)?'uploads/profile/'.$val->logo:'assets/img/profiles/avatar.png'}}" alt=""></a>
+                                <img src="{{ ($val->logo!=null)?'uploads/logo/'.$val->logo:'assets/img/profiles/avatar.png'}}" alt=""></a>
                         </div>
                         <div class="dropdown profile-action">
                             <a href="{{route('company.detail',$val->id)}}" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>

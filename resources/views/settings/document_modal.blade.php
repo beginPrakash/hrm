@@ -95,10 +95,17 @@
                             <label for="file-input4">
                                 <img src="<?php echo (isset($residency) && $residency->logo!=NULL)?'../uploads/logo/'.$residency->logo:""; ?>" id="img1"/>
                             </label>
-                            <input id="file-input1" name="file" id="logo" type="file" onchange="previewFile(this, 'img1');"/>
+                            <input id="file-input1" name="doc_file[]" type="file" onchange="previewFile(this, 'img1');"/>
                         </div>
                     </div>
                 </div>
+                <div id="div_doc_addmore"></div> 
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-sm btn-success pull-right" id="doc_addmore">Add More</button>
+                    </div>
+                </div> 
             </div>
             <div class="submit-section">
                 <button type="submit" class="btn btn-primary submit-btn">Update</button>

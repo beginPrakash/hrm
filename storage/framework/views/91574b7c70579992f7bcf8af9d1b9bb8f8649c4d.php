@@ -49,12 +49,12 @@
                     <div class="profile-widget">
                         <div class="profile-img">
                             <a href="<?php echo e(route('company.detail',$val->id)); ?>" class="avatar">
-                                <img src="<?php echo e(($val->logo!=null)?'uploads/profile/'.$val->logo:'assets/img/profiles/avatar.png'); ?>" alt=""></a>
+                                <img src="<?php echo e(($val->logo!=null)?'uploads/logo/'.$val->logo:'assets/img/profiles/avatar.png'); ?>" alt=""></a>
                         </div>
                         <div class="dropdown profile-action">
                             <a href="<?php echo e(route('company.detail',$val->id)); ?>" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
                             <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item editButton" href="<?php echo e(route('company.detail',$val->id)); ?>"><i class="fa fa-pencil m-r-5"></i> Edit</a>
+                                <a class="dropdown-item" href="<?php echo e(route('company.detail',$val->id)); ?>"><i class="fa fa-pencil m-r-5"></i> Edit</a>
                                 <a class="dropdown-item deleteButton" href="#" data-bs-toggle="modal" data-bs-target="#delete_company" data-id="<?php echo e($val->id); ?>"><i class="fa fa-trash-o m-r-5" ></i> Delete</a>
                             </div>
                         </div>
@@ -65,7 +65,7 @@
                 </div>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             <?php else: ?>
-                <div class="col-12 py-5 text-center">No employee found</div>
+                <div class="col-12 py-5 text-center">No company found</div>
             <?php endif; ?>
         </div>
 
@@ -200,20 +200,6 @@
 </script>
 
 <script>
-    $(document).on('click','.editButton',function(){
-        $('#add_company').html('');
-        var id= $(this).attr('data-id');
-        $.ajax({
-        url: '/getcompanyDetailsById/',
-        type: "POST",
-        dataType: "json",
-        data: {"_token": "<?php echo e(csrf_token()); ?>", id:id},
-        success:function(response)
-            {
-                $('#add_company').html(response.html).fadeIn();
-            }
-        });
-    });
 
     $('#add_company').on('hidden.bs.modal', function () {
         $("input[type=text], textarea").val("");

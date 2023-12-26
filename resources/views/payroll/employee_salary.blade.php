@@ -160,7 +160,7 @@
                                     <td>{{(isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->other_allowance : 0}}</td>
                                     <td>{{$deduction}}</td>
                                     <td>{{($salary_calc + $total_allowence) - $deduction}}</td>
-                                    <td>Cash</td>
+                                    <td>{{(isset($emp->employee_accounts) && !empty($emp->employee_accounts)) ? 'Bank' : 'Cash'}}</td>
                                 </tr>
                                 <?php
                                 $i++;

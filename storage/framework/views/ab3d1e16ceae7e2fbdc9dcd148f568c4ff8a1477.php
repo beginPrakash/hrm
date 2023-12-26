@@ -1078,6 +1078,7 @@ if ($currentMonth >= 4) {
                                                         <th>Holiday</th>
                                                         <th>PH Leave Balance</th>
                                                     </tr>
+                                                    
                                                     <?php //echo '<pre>';print_r($user->employee_leaves); 
                                                     if(isset($holidayWork)) { 
                                                         foreach($holidayWork as $hw) {

@@ -17,6 +17,7 @@ class DocumentController extends Controller
     
     public function store(Request $request)
     {
+        
         $insertArr = array(
             'company_id'=>$request->company_id ?? 0,
             'reg_name' => $request->reg_name,
@@ -29,13 +30,30 @@ class DocumentController extends Controller
             'cost'     =>  $request->cost,
         );
 
-        if($request->has('file')) 
+        if(isset($request->doc_file))
         {
-            $image = $request->file('file');
-            $filename = $image->getClientOriginalName();
-            $image->move(public_path('uploads/company_documents'), $filename);
-            $doc_file = $filename;
-        } 
+            foreach($request->doc_file as $dockey => $doc)
+            {
+                $dataArray = array(
+                    'document_id'            =>  $id,
+                );
+                $employee_docs = EmployeeDocuments::where($dataArray)->first();
+
+                if($doc) 
+                {
+                    $document = $doc;
+                    $filename = $document->getClientOriginalName();
+                    $document->move(public_path('uploads/company_documents'), $filename);
+                    $dataArray['doc_file'] = $filename;
+                }
+                if ($employee_docs  ==  null) {
+                    EmployeeDocuments::create($dataArray);
+                } else {
+                    EmployeeDocuments::where('id', $employee_docs->id)->update($dataArray);
+                }
+            }
+            return redirect()->back()->with("success", "Documents saved successfully!");
+        }
         
         if(!empty($request->id)):
             Residency::where('id', $request->id)->update($insertArr);

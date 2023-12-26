@@ -164,6 +164,7 @@ class EmployeeController extends Controller
                                  ->on('a.attendance_on', '=', 'sh.shift_on');
                         })
                         ->where('a.user_id', $user_id)
+                        ->where('a.day_type', 'work')
                         ->groupBy('a.user_id', 'a.attendance_on','h.holiday_day', 'h.holiday_date','h.title', 'sh.shift')
                         ->get();
         $indemnityDetails = EmployeeIndemnity::where('user_id', $employee->user_id)->get();

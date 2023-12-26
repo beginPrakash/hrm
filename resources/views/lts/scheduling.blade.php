@@ -476,7 +476,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>Break Time (In Minutes) </label>
-                                            <input type="text" class="form-control editsched" name="break_time" id="break_time">                                            
+                                            <input type="text" class="form-control editsched edit_break_time" name="break_time" id="break_time">                                            
                                         </div>
                                     </div>
                                     <div class="col-sm-12">
@@ -641,7 +641,7 @@
             $('#edit_employee_addschedule_name').removeClass('hideit');
             $('#edit_employee_addschedule_id').removeClass('hideit');
             $.each(JSON.parse(decodedData), function(key,value){
-                console.log(key+'-'+value);
+                //console.log(key+'-'+value);
                 if(key=='first_name')
                 {
                     $('#edit_employee_addschedule_name').val(value);
@@ -658,7 +658,7 @@
                 if(key=='shift_details')
                 { 
                     var shdetails = JSON.parse(value);
-                    console.log('here-'+shdetails.shift);
+
                     // alert(parseInt(shdetails.shift));
                     if(parseInt(shdetails.shift) <= 2 && parseInt(shdetails.shift) >= 7 && parseInt(shdetails.shift) <= 9)
                     { 
@@ -668,6 +668,8 @@
                     {
                         $('#timedivedit').css('display', 'flex');
                     }
+
+                   
                     $('#edit_shift_addschedule').val(shdetails.shift).select2();
                     $('#schedule_id').val(shdetails.id);
                     $('.edit_s_time').val(shdetails.start_time);
@@ -676,6 +678,7 @@
                     $('.edit_e_time').val(shdetails.end_time);
                     $('.edit_min_e_time').val(shdetails.min_end_time);
                     $('.edit_max_e_time').val(shdetails.max_end_time);
+                    $('.edit_break_time').val(shdetails.break_time);
                     
                     // $.each(JSON.parse(value), function(k,v)
                     // {

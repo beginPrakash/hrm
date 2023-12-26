@@ -132,8 +132,8 @@ class PayrollController extends Controller
                             $save_data->es_year = $year;
                             $save_data->es_month = $month;
                             $save_data->dates_between = $salary_calc['dates_between'] ?? '';
-                            $save_data->type = 'cash';
-                            $save_data->save();
+                            $save_data->type = (isset($val->employee_accounts) && !empty($val->employee_accounts)) ? 'bank' : 'cash';
+                            $save_data->save();                            
                         endforeach;
                     endif;  
                 endif;  
@@ -790,7 +790,7 @@ class PayrollController extends Controller
                             $save_data->es_year = $year;
                             $save_data->es_month = $month;
                             $save_data->dates_between = $salary_calc['dates_between'] ?? '';
-                            $save_data->type = 'cash';
+                            $save_data->type = (isset($val->employee_accounts) && !empty($val->employee_accounts)) ? 'bank' : 'cash';
                             $save_data->save();
                         endforeach;
                     endif;

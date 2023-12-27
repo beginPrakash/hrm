@@ -155,5 +155,6 @@ class SettingsController extends Controller
         return view('settings.company_detail',compact('company_detail','title','documents'));
 
     }
+    
         
 }

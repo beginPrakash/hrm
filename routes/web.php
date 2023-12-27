@@ -247,13 +247,17 @@ Route::post('/updateIndemnity', [App\Http\Controllers\IndemnityController::class
 // Indemnity
 Route::match(array('GET','POST'),'/company-settings', [App\Http\Controllers\SettingsController::class, 'companySettings'])->name('company-settings');
 Route::get('/company-settings-edit/{id}', [App\Http\Controllers\SettingsController::class, 'companySettingsEdit']);
-Route::post('/getcompanyDetailsById',[App\Http\Controllers\SettingsController::class, 'getcompanyDetailsById'] );
+Route::post('/getcompanyDetailsById',[App\Http\Controllers\SettingsController::class, 'getcompanyDetailsById'] )->name('getcompanyDetailsById');
 Route::post('/company-delete',[App\Http\Controllers\SettingsController::class, 'delete'])->name('company.delete');
 Route::post('/company-settings/store', [App\Http\Controllers\SettingsController::class, 'store'])->name('company.store');
 Route::get('/company-settings/detail/{id}', [App\Http\Controllers\SettingsController::class, 'detail'])->name('company.detail');
 
 //Document
 Route::post('/documents/store', [App\Http\Controllers\DocumentController::class, 'store'])->name('document.store');
+Route::post('/getdocumentDetailsById', [App\Http\Controllers\DocumentController::class, 'getdocumentDetailsById'])->name('getdocumentDetailsById');
+Route::post('/delete_company_document', [App\Http\Controllers\DocumentController::class, 'delete_company_document'])->name('delete_company_document');
+Route::post('/documents/delete', [App\Http\Controllers\DocumentController::class, 'delete'])->name('document.delete');
+ 
 
 // Payroll Items
 Route::get('/payroll-items', [App\Http\Controllers\PayrollController::class, 'items']);

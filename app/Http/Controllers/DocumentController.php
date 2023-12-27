@@ -17,7 +17,7 @@ class DocumentController extends Controller
     
     public function store(Request $request)
     {
-        
+        //dd($request->all());
         $insertArr = array(
             'company_id'=>$request->company_id ?? 0,
             'reg_name' => $request->reg_name,
@@ -30,86 +30,64 @@ class DocumentController extends Controller
             'cost'     =>  $request->cost,
         );
 
-        if(isset($request->doc_file))
-        {
-            foreach($request->doc_file as $dockey => $doc)
-            {
-                $dataArray = array(
-                    'document_id'            =>  $id,
-                );
-                $employee_docs = EmployeeDocuments::where($dataArray)->first();
-
-                if($doc) 
-                {
-                    $document = $doc;
-                    $filename = $document->getClientOriginalName();
-                    $document->move(public_path('uploads/company_documents'), $filename);
-                    $dataArray['doc_file'] = $filename;
-                }
-                if ($employee_docs  ==  null) {
-                    EmployeeDocuments::create($dataArray);
-                } else {
-                    EmployeeDocuments::where('id', $employee_docs->id)->update($dataArray);
-                }
-            }
-            return redirect()->back()->with("success", "Documents saved successfully!");
-        }
         
         if(!empty($request->id)):
-            Residency::where('id', $request->id)->update($insertArr);
+            $doc_data = CompanyDocuments::where('id', $request->id)->update($insertArr);
+            $doc_id = $request->id;
         else:
             $doc_data = CompanyDocuments::create($insertArr);
-            if(!empty($doc_file)):
-                $data = new CompanyDocFiles();
-                $data->document_id = $doc_data->id;
-                $data->doc_file = $doc_file;
-                $data->save();
-            endif;
+            $doc_id = $doc_data->id;
         endif;
+            if(!empty($request->doc_file)):
+                if(isset($request->doc_file))
+                {
+                    foreach($request->doc_file as $dockey => $doc)
+                    {
+                        if($doc) 
+                        {
+                            $document = $doc;
+                            $filename = $document->getClientOriginalName();
+                            $document->move(public_path('uploads/company_documents'), $filename);
+                            $docs_file_data = new CompanyDocFiles();
+                            $docs_file_data->document_id = $doc_id;
+                            $docs_file_data->doc_file = $filename;
+                            $docs_file_data->save();
+                        }
+                    }
+                }
+            endif;
         return redirect()->back()->with('success','Data saved successfully!');
         
     } 
 
     
+    public function delete_company_document(Request $request)
+    {
+        CompanyDocFiles::where('id', $request->id)->delete();
+        $arr = [
+			'success' => 'true',
+			'id' => $request->id
+		];
+		return response()->json($arr);
+    }
+
     public function delete(Request $request)
     {
-        Residency::where('id', $request->residency_id)->delete();
-        return redirect('/company-settings')->with('success','Data deleted successfully!');
-
+        CompanyDocuments::where('id', $request->document_id)->delete();
+        return redirect()->back()->with('success','Data deleted successfully!');
     }
 
-    public function isSubresidencyExists(Request $request)
-    { 
-        $status = 'active';
-        $where = ['status'=>$status];
-        if(isset($request['id']))
-        {
-            $where['name'] = $request['subresidency_name'];
-            $count = Subresidency::where($where)->where('id', '!=', $request['id'])->where('residency', $request['residency'])->get();
-        }
-        else
-        {
-            $where['name'] = $request['subresidency'];
-            $count = Subresidency::where($where)->where('residency', $request['residency'])->get();
-        }
-        
-        if(count($count) > 0)
-        {
-            echo "false";
-        }
-        else
-        {
-            echo "true";
-        }
-    }
 
-    public function getcompanyDetailsById(Request $request)
+    public function getdocumentDetailsById(Request $request)
     {
-        $residency = Residency::where('id',$request->id)->first();
+        $doc_data = CompanyDocuments::where('id',$request->id)->first();
+        $doc_files = CompanyDocFiles::where('document_id',$request->id)->get();
+       // dd($doc_files);
         $pass_array=array(
-			'residency' => $residency,
+			'doc_data' => $doc_data,
+            'doc_files'=>$doc_files,
         );
-        $html =  view('settings.company_modal', $pass_array )->render();
+        $html =  view('settings.document_modal', $pass_array )->render();
 		$arr = [
 			'success' => 'true',
 			'html' => $html

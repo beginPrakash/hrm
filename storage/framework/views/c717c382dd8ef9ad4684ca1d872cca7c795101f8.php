@@ -50,7 +50,7 @@
                         <label>Logo</label>
                         <div class="image-upload">
                             <label for="file-input4">
-                                <img src="<?php echo (isset($residency) && $residency->logo!=NULL)?'../uploads/logo/'.$residency->logo:""; ?>" id="img1"/>
+                                <img src="<?php echo (isset($residency) && $residency->logo!=NULL)?'/uploads/logo/'.$residency->logo:""; ?>" id="img1"/>
                             </label>
                             <input id="file-input1" name="image1" id="logo" type="file" onchange="previewFile(this, 'img1');"/>
                         </div>
@@ -118,7 +118,7 @@
                 </div>
             </div>
             <div class="submit-section">
-                <button type="submit" name="update" class="btn btn-primary submit-btn">Update</button>
+                <button type="submit" name="update" class="btn btn-primary submit-btn">Submit</button>
             </div>
         </form> 
         </div>

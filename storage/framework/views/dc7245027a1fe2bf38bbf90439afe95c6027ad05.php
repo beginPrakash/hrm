@@ -50,7 +50,7 @@ $username = Session::get('username');
                         <div class="card-body py-4">
                             <span class="dash-widget-icon"><i class="fas fa-gem"></i></span>
                             <div class="dash-widget-info text-center">
-                                <h3><?php echo e(number_format($totpayable,2) ?? 0); ?> KWD</h3>
+                                <h3><?php echo e(number_format(($indemnityDetails->total_amount ?? 0),2)); ?> KWD</h3>
                                 <span>Total Indemnity Amount</span>
                             </div>
                         </div>
@@ -255,12 +255,17 @@ $username = Session::get('username');
                 </div>
             </div>
             <div class="col-md-4 col-sm-4 col-lg-4 col-xl-4">
-                <div class="card dash-widget three-box">
+                <div class="card dash-widget three-box" data-bs-toggle="modal" data-bs-target="#phleaveModal">
                     <div class="card-body">
                         <span class="dash-widget-icon"><i class="fa fa-briefcase" aria-hidden="true"></i></span>
                         <div class="dash-widget-info pl-2" style="text-align: left;">
-                            <h4>250 KWD</h4>
-                            <h4>20 DAYS</h4>
+                            <?php 
+                            $days = $user->public_holidays_balance ?? 0;
+                            $sal = (isset($user->employee_salary) && !empty($user->employee_salary))  ?$user->employee_salary->basic_salary : 0;
+                            $bal = _calculate_salary_by_days($sal,$days);
+                            ?>
+                            <h4><?php echo e(number_format($bal,2)); ?> KWD</h4>
+                            <h4><?php echo e($days); ?> DAYS</h4>
                             <span>Public Holidays</span>
                         </div>
                     </div>
@@ -361,6 +366,53 @@ $username = Session::get('username');
                                     <td colspan="2" align="center">No dat found</td>
                                 </tr>
                                 <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="phleaveModal" tabindex="-1" aria-labelledby="phleaveModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="phleaveModalLabel">Public Holidays</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <table width="100%" class="table-striped custom-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Day</th>
+                                <th>Holiday</th>
+                                <th>PH Leave Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if(isset($holidayWork) && count($holidayWork) > 0): ?>
+                                <?php $__currentLoopData = $holidayWork; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $hw): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+
+                                <tr>
+                                    <td><?php echo $hw->attendance_on; ?> </td>
+                                    <td><?php echo $hw->holiday_day; ?></td>
+                                    <td><?php echo $hw->title ?></td>
+                                    <td>1</td>
+                                </tr>
+
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php else: ?>
+                                <tr>
+                                    <td colspan="4" align="center">No dat found</td>
+                                </tr>
+                                <?php endif; ?>
+                                <tr>    
+                                    <td colspan="3">Today days worked <small>(Based on scheduling)</small></td>
+                                    <td><?php echo e($user->public_holidays_balance ?? 0); ?> - days </td>
+                                </tr>
                         </tbody>
                     </table>
                 </div>

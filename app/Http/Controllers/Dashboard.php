@@ -41,6 +41,7 @@ class Dashboard extends Controller
         $annualleavedetails = getAnnualLeaveDetails($user_id);
         $public_holidays_amount = $user->public_holidays_amount ?? 0;
         $totIndemnity = $this->calculateIndemnity($user_id);
+        $indemnityDetails = EmployeeIndemnity::where('user_id', $user_id)->first();
         $total_overtime_salary = (isset($salaryDetails->total_overtime_salary) && $salaryDetails->total_overtime_salary >0)?$salaryDetails->total_overtime_salary:0;
         $totpayable = ($totsalary + $additions + $total_overtime_salary + $totIndemnity + $annualleavedetails['leaveAmount'] + $public_holidays_amount) - $deductions;
         //for attendance details
@@ -49,8 +50,19 @@ class Dashboard extends Controller
         )->first();
         $lastclockout = AttendanceDetails::where('user_id', $user_id)->where('punch_state', 'clockout')->whereDate('attendance_on', $attnDate 
         )->limit(1)->orderBy('id', 'desc')->first();
+        $holidayWork = AttendanceDetails::select('a.user_id', 'a.attendance_on','h.holiday_day', 'h.holiday_date','h.title', 'sh.shift')
+                        ->from('attendance_details as a')
+                        ->join('holidays as h', 'a.attendance_on', '=', 'h.holiday_date')
+                        ->leftJoin('scheduling as sh', function ($join) use ($user_id) {
+                            $join->on('sh.employee', '=', 'a.employee_id')
+                                 ->on('a.attendance_on', '=', 'sh.shift_on');
+                        })
+                        ->where('a.user_id', $user_id)
+                        ->where('a.day_type', 'work')
+                        ->groupBy('a.user_id', 'a.attendance_on','h.holiday_day', 'h.holiday_date','h.title', 'sh.shift')
+                        ->get();
         
-        return view('dashboard',compact('sched_data','user_id','balance_annual_leave_total','annual_leave_list','balance_sick_leave_total','sick_leave_list','totpayable','firstclockin','lastclockout'));
+        return view('dashboard',compact('sched_data','user_id','balance_annual_leave_total','annual_leave_list','balance_sick_leave_total','sick_leave_list','totpayable','firstclockin','lastclockout','holidayWork','user','indemnityDetails'));
     }  
 
     public function calculateIndemnity($user_id)
@@ -154,7 +166,11 @@ class Dashboard extends Controller
                             $finalIndemnity += (round($indemnityEarned,6)/100) * $id->percentage_ia;
                         }
 
+                        // echo $finalIndemnity;
+                        //check if indemnity already generated
                         
+                        return $finalIndemnity ?? 0;
+                        exit;
 
                     }
                 }

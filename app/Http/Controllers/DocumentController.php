@@ -73,6 +73,7 @@ class DocumentController extends Controller
 
     public function delete(Request $request)
     {
+        CompanyDocFiles::where('document_id', $request->document_id)->delete();
         CompanyDocuments::where('id', $request->document_id)->delete();
         return redirect()->back()->with('success','Data deleted successfully!');
     }

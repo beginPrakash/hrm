@@ -10,9 +10,9 @@ use App\Models\Shifting;
 use App\Models\Scheduling;
 use App\Models\Overtime;
 use App\Models\Holidays;
-use APp\Models\AttendanceDetails;
+use App\Models\AttendanceDetails;
 
-class SchedulingController extends Controller
+class UserScheduling extends Controller
 {
 	public function __construct()
     {
@@ -68,17 +68,23 @@ class SchedulingController extends Controller
         $phDetails = Holidays::whereBetween('holiday_date', [$startDate, $enddate])->get()->pluck('holiday_date')->toArray();
     	$department   = Departments::where($depwhere)->get();
         $shifts       = Shifting::where('status', 'active')->get();
-        // $scheduling   = Scheduling::with('employees')->where($where)->get();
-    	$scheduling   = Employee::with('schedules')->where($where)->get();
-    	$allEmployees = Employee::with(["employee_designation", 'employee_department'])->where('status','active')->where($empwhere)->get();
+        $login_user_id = Session::get('user_id');
+        $login_user_detail = _is_user_role_owner($login_user_id);
+        $user_branch  = $login_user_detail->branch ?? '';
+        $user_designation  = $login_user_detail->designation ?? '';
+    	$scheduling   = Employee::with('schedules')->where($where)->where('branch',$user_branch)->where('designation','!=',$user_designation)->where('user_id','!=',$login_user_id)->get();
+    	$allEmployees = Employee::with(["employee_designation", 'employee_department'])->where('status','active')->where($empwhere)->where('branch',$user_branch)->where('designation','!=',$user_designation)->where('user_id','!=',$login_user_id)->get();
         // echo '<pre>';print_r($scheduling);exit;
-    	return view('lts.scheduling', compact('title', 'allEmployees', 'department', 'shifts', 'scheduling', 'search', 'overtimeDetails', 'phDetails', 'startDate'));
-    }
+        if(!empty($login_user_detail)):
+    	    return view('lts.user_scheduling', compact('title', 'allEmployees', 'department', 'shifts', 'scheduling', 'search', 'overtimeDetails', 'phDetails', 'startDate'));
+        else:
+            return redirect(route('dashboard'));
+        endif;
+        }
 
     public function store(Request $request)
     {
         $company_id  = Session::get('company_id');
-        $login_user_id = Session::get('user_id');
         // echo '<pre>';print_r($_POST);//exit;
         if(isset($request->employee_addschedule_id))
         {
@@ -106,9 +112,8 @@ class SchedulingController extends Controller
                 'break_time'        =>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6 || $request->shift_addschedule > 9 || $request->shift_addschedule > 9)?$request->break_time:NULL,
                 'extra_hours'   	=>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6 || $request->shift_addschedule > 9 || $request->shift_addschedule > 9)?$request->extra_hours:0,
                 'publish'      		=>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6 || $request->shift_addschedule > 9 || $request->shift_addschedule > 9)?$request->publish:0,
-                'created_at'        =>   date('Y-m-d h:i:s'),
-                'status'			=>	'active',
-                'added_by'          =>   $login_user_id
+                'created_at'        =>  date('Y-m-d h:i:s'),
+                'status'			=>	'active'
             );//echo '<pre>';print_r($insertArray);
             $schedule_date = date('Y-m-d', strtotime(str_replace('/','-',$request->shift_date)));
             $is_schedule_exists = Scheduling::where('employee',$emp)->where('shift_on',$schedule_date)->delete();
@@ -189,7 +194,7 @@ class SchedulingController extends Controller
                 endif;
             endif;  
         endif;
-        return redirect('/scheduling')->with('success', 'Schedule updated successfully!')->with('sdate' , $request->add_start_from_date);
+        return redirect('/user_scheduling')->with('success', 'Schedule updated successfully!')->with('sdate' , $request->add_start_from_date);
     }
 
     public function employeeByDepartment(Request $request)
@@ -212,7 +217,11 @@ class SchedulingController extends Controller
         {
             //call excel/csv function
             $import = $this->importCSV($request->file('schedule_file'));
-            return redirect()->back()->with("success", 'Schedule imported successfully.');
+            if($import['status'] == 1):
+                return redirect()->back()->with("success", $import['message'] ?? 'Schedule imported successfully.');
+            else:
+                return redirect()->back()->with("error", $import['message'] ?? '    ');
+            endif;
         }
         else
         {
@@ -278,25 +287,42 @@ class SchedulingController extends Controller
         $importData_arr = array();
         $i = 0;
 
+        $er = 0;
         while (($filedata = fgetcsv($file)) !== FALSE) 
         {
             $num = count($filedata );
 
             for ($c=0; $c < $num; $c++)
             {
+              
                 if($i == 0)
                 {
                     $importHeaderData_arr[] = $filedata [$c];
                 }
                 else
                 {
+                    // /echo $num-1;
+                    if($i < $num):
+                     
                     $importData_arr[$i][] = $filedata [$c];
+                    if($c != 3):
+                        if($filedata [$c] == ''):
+                            $er = 1;
+                        endif;
+                    endif;
+                endif;
                 }
+                
             }
             $i++;
         }
+        if(isset($er) && ($er == 1)):
+            //dd($er);
+            $return['message'] = 'Column should not be empty.Please fill it.';
+            $return['status'] = 0;
+            return $return;
+        endif;
         fclose($file);
-//dd($importData_arr);
         //count details
         $totalColumns = count($importHeaderData_arr);
 
@@ -313,6 +339,8 @@ class SchedulingController extends Controller
         //selvan
         $freeShiftDepartments = array(15,10);
         // Insert to MySQL database
+        $user_idarr = [];
+        $id_arr = [];
         foreach($importData_arr as $key => $importData)
         {
             //check empno exists, if not continue
@@ -321,256 +349,87 @@ class SchedulingController extends Controller
             {
                 continue;
             }
+         
             $userId = $userDetails->user_id;//by employee id
             $departmentId = $userDetails->department;
-            $login_user_id = Session::get('user_id');
+            $emp_generated_id = $userDetails->emp_generated_id;
+            
+            $i = 1;
             // loop through date_sub
+            
             for($k=4; $k<$totalColumns; $k++)
             {
-                // echo '<pre>';print_r(date('Y-m-d', strtotime(str_replace('/','-',$importHeaderData_arr[$k]))));exit;
-                //check shift exists, if not create shift
-                $explode_shift = explode('/', $importData[$k]);
-                $shiftDetails = $this->getShiftDetailsById($explode_shift[1]);//echo $importData[$k];
-                if(!empty($shiftDetails))
-                {
-                    $schedule_date = date('Y-m-d', strtotime(str_replace('/','-',$importHeaderData_arr[$k])));
-                    //check schedule is exist or not for specific date
-                    $is_schedule_exists = Scheduling::where('employee',$userId)->where('shift_on',$schedule_date)->delete();
-                    
-                    $shiftid = $shiftDetails->id;
-                    $scheduleInsertArray = array(
-                        'company_id'        =>  $company_id,
-                        'department'        =>  $departmentId,
-                        'employee'          =>  $userId,
-                        'shift_on'          =>  date('Y-m-d', strtotime(str_replace('/','-',$importHeaderData_arr[$k]))),
-                        'shift'             =>  $shiftid,
-                        'min_start_time'    =>  _convert_time_to_12hour_format($shiftDetails->min_start_time),//date('h:i:s a', strtotime($importData[4])),
-                        'start_time'        =>  _convert_time_to_12hour_format($shiftDetails->start_time),//date('h:i:s a', strtotime($importData[5])),
-                        'max_start_time'    =>  _convert_time_to_12hour_format($shiftDetails->max_start_time),//date('h:i:s a', strtotime($importData[6])),
-                        'min_end_time'      =>  _convert_time_to_12hour_format($shiftDetails->min_end_time),//date('h:i:s a', strtotime($importData[7])),
-                        'end_time'          =>  _convert_time_to_12hour_format($shiftDetails->end_time),//date('h:i:s a', strtotime($importData[8])),
-                        'max_end_time'      =>  _convert_time_to_12hour_format($shiftDetails->max_end_time),//date('h:i:s a', strtotime($importData[9])),
-                        'break_time'        =>  $shiftDetails->break_time,//$importData[10],
-                        // 'extra_hours'       =>  $request->extra_hours,
-                        // 'publish'           =>  $request->publish,
-                        'created_at'        =>  date('Y-m-d h:i:s'),
-                        'status'            =>  'active',
-                        'added_by'          =>  $login_user_id
-                    );
-                    //selvan
-                    // if( $explode_shift[1] !="SH03"){
-                    //     $shiftDetails = $this->getShiftDetailsById("SH03");
-                    //     $shiftid = $shiftDetails->id;
-                    //     $scheduleInsertArray = array(
-                    //         'company_id'        =>  $company_id,
-                    //         'department'        =>  $departmentId,
-                    //         'employee'          =>  $userId,
-                    //         'shift_on'          =>  date('Y-m-d', strtotime($importHeaderData_arr[$k])),
-                    //         'shift'             =>  $shiftid,
-                    //         // 'min_start_time'    =>  $shiftDetails->min_start_time,
-                    //         // 'start_time'        =>  $shiftDetails->start_time,
-                    //         // 'max_start_time'    =>  $shiftDetails->max_start_time,
-                    //         // 'min_end_time'      =>  $shiftDetails->min_end_time,
-                    //         // 'end_time'          =>  $shiftDetails->end_time,
-                    //         // 'max_end_time'      =>  $shiftDetails->max_end_time,
-                    //         // 'break_time'        =>  $shiftDetails->break_time,
-                    //         'min_start_time'    =>  "0:00",
-                    //         'start_time'        =>  "0:00",
-                    //         'max_start_time'    =>  "0:00",
-                    //         'min_end_time'      =>  "0:00",
-                    //         'end_time'          =>  "0:00",
-                    //         'max_end_time'      =>  "0:00",
-                    //         'break_time'        =>  "0:00",
-                    //         'created_at'        =>  date('Y-m-d h:i:s'),
-                    //         'status'            =>  'active'
-                    //     );
-
-                    // }
-                    // echo '<pre>';print_r($scheduleInsertArray);exit;
-                    $shiftid = Scheduling::create($scheduleInsertArray);
-                    //get schedule data
-                    $shiftDetails = Scheduling::find($shiftid->id ?? '');
+                $login_user_id = Session::get('user_id');
+                $login_user_detail = _is_user_role_owner($login_user_id);
+                $user_branch  = $login_user_detail->branch ?? '';
+                $user_designation  = $login_user_detail->designation ?? '';
+                $is_same_branch_user   = Employee::where('branch',$user_branch)->where('designation','!=',$user_designation)->where('user_id','!=',$login_user_id)->where('user_id',$userId)->first();
+                if(!empty($is_same_branch_user)):
+                    //check shift exists, if not create shift
+                    $explode_shift = explode('/', $importData[$k]);
+                    $shiftDetails = $this->getShiftDetailsById($explode_shift[1]);//echo $importData[$k];
                     if(!empty($shiftDetails)):
-                        $att_date = date('Y-m-d', strtotime($shiftDetails->shift_on));
-                        $flag = _check_green_icon_attendance($att_date,$shiftDetails->employee);
-                        if($flag === 0):
-                            $att_details = AttendanceDetails::where('user_id',$shiftDetails->employee)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
-                            $save_data = save_schedule_overtime_hours($shiftDetails->employee,$att_date,$att_details->start_time,$att_details->end_time);
-                        else:
-                            $save_data = AttendanceDetails::where('user_id',$shiftDetails->employee)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
-                            if(!empty($save_data)):
-                                $save_data->schedule_hours = NULL;
-                                $save_data->overtime_hours = NULL;
-                                $save_data->save();
-                            endif;
-                        endif;  
+                        $schedule_date = date('Y-m-d', strtotime(str_replace('/','-',$importHeaderData_arr[$k])));
+                        //check schedule is exist or not for specific date
+                        $is_schedule_exists = Scheduling::where('employee',$userId)->where('shift_on',$schedule_date)->delete();
+                        
+                        $shiftid = $shiftDetails->id;
+                        $scheduleInsertArray = array(
+                            'company_id'        =>  $company_id,
+                            'department'        =>  $departmentId,
+                            'employee'          =>  $userId,
+                            'shift_on'          =>  date('Y-m-d', strtotime(str_replace('/','-',$importHeaderData_arr[$k]))),
+                            'shift'             =>  $shiftid,
+                            'min_start_time'    =>  _convert_time_to_12hour_format($shiftDetails->min_start_time),//date('h:i:s a', strtotime($importData[4])),
+                            'start_time'        =>  _convert_time_to_12hour_format($shiftDetails->start_time),//date('h:i:s a', strtotime($importData[5])),
+                            'max_start_time'    =>  _convert_time_to_12hour_format($shiftDetails->max_start_time),//date('h:i:s a', strtotime($importData[6])),
+                            'min_end_time'      =>  _convert_time_to_12hour_format($shiftDetails->min_end_time),//date('h:i:s a', strtotime($importData[7])),
+                            'end_time'          =>  _convert_time_to_12hour_format($shiftDetails->end_time),//date('h:i:s a', strtotime($importData[8])),
+                            'max_end_time'      =>  _convert_time_to_12hour_format($shiftDetails->max_end_time),//date('h:i:s a', strtotime($importData[9])),
+                            'break_time'        =>  $shiftDetails->break_time,//$importData[10],
+                            'added_by' => $login_user_id,
+                            'created_at'        =>  date('Y-m-d h:i:s'),
+                            'status'            =>  'active'
+                        );
+                       
+                        $shiftid = Scheduling::create($scheduleInsertArray);
+                        //get schedule data
+                        $shiftDetails = Scheduling::find($shiftid->id ?? '');
+                        if(!empty($shiftDetails)):
+                            $att_date = date('Y-m-d', strtotime($shiftDetails->shift_on));
+                            $flag = _check_green_icon_attendance($att_date,$shiftDetails->employee);
+                            if($flag === 0):
+                                $att_details = AttendanceDetails::where('user_id',$shiftDetails->employee)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
+                                $save_data = save_schedule_overtime_hours($shiftDetails->employee,$att_date,$att_details->start_time,$att_details->end_time);
+                            else:
+                                $save_data = AttendanceDetails::where('user_id',$shiftDetails->employee)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
+                                if(!empty($save_data)):
+                                    $save_data->schedule_hours = NULL;
+                                    $save_data->overtime_hours = NULL;
+                                    $save_data->save();
+                                endif;
+                            endif;  
+                        endif;
                     endif;
-                }
+                else:
+                    $user_idarr[] = $emp_generated_id;
+                    $i++;
+                endif;
             }
             
-            // $departmentId = 0;
-            // if(empty($shiftDetails))
-            // {
-            //     //create shift
-            //     $insertArray = array(
-            //         'company_id'        =>  $company_id,
-            //         'shift_name'        =>  $importData[2],
-            //         'min_start_time'    =>  date('h:i:s a', strtotime($importData[4])),
-            //         'start_time'        =>  date('h:i:s a', strtotime($importData[5])),
-            //         'max_start_time'    =>  date('h:i:s a', strtotime($importData[6])),
-            //         'min_end_time'      =>  date('h:i:s a', strtotime($importData[7])),
-            //         'end_time'          =>  date('h:i:s a', strtotime($importData[8])),
-            //         'max_end_time'      =>  date('h:i:s a', strtotime($importData[9])),
-            //         'break_time'        =>  $importData[10],
-            //         // 'recurring_shift'   =>  $request->recurring_shift,
-            //         // 'repeat_every'      =>  $request->repeat_every,
-            //         // 'week_day'          =>  implode(',',$request->week_day),
-            //         // 'end_on'            =>  date('Y-m-d', strtotime(str_replace('/','-',$request->end_on))),
-            //         // 'indefinite'        =>  $request->indefinite,
-            //         // 'tag'               =>  $request->tag,
-            //         // 'note'              =>  $request->note,
-            //         'created_at'        =>  date('Y-m-d h:i:s')
-            //     );
-            //     $shiftid = Shifting::create($insertArray);
-            // }
-            // else
-            // {
-            //     $shiftid = $shiftDetails->id;
-            // }
-
-            // $scheduleInsertArray = array(
-            //     'company_id'        =>  $company_id,
-            //     'department'        =>  $departmentId,
-            //     'employee'          =>  $userId,
-            //     'shift_on'          =>  date('Y-m-d', strtotime($importData[3])),
-            //     'shift'             =>  $shiftid,
-            //     'min_start_time'    =>  date('h:i:s a', strtotime($importData[4])),
-            //     'start_time'        =>  date('h:i:s a', strtotime($importData[5])),
-            //     'max_start_time'    =>  date('h:i:s a', strtotime($importData[6])),
-            //     'min_end_time'      =>  date('h:i:s a', strtotime($importData[7])),
-            //     'end_time'          =>  date('h:i:s a', strtotime($importData[8])),
-            //     'max_end_time'      =>  date('h:i:s a', strtotime($importData[9])),
-            //     'break_time'        =>  $importData[10],
-            //     // 'extra_hours'       =>  $request->extra_hours,
-            //     // 'publish'           =>  $request->publish,
-            //     'created_at'        =>  date('Y-m-d h:i:s'),
-            //     'status'            =>  'active'
-            // );
-            // $shiftid = Scheduling::create($scheduleInsertArray);
         }
-        $return['message'] = 'Import Successful.';
+        if(!empty($user_idarr) && count($user_idarr) > 0):
+            $user_idarr = array_unique($user_idarr);
+            $imp_user = implode(',',$user_idarr);
+            $message = $imp_user.' employees id does not imported.';
+        else:
+            $message = 'Import Successful.';
+        endif;
+        $return['message'] = $message;
         $return['status'] = 1;
         return $return;
     }
 
-    private function importCSV_OLD($file)
-    {
-        // File Details 
-        $filename = $file->getClientOriginalName();
-        
-        // File upload location
-        $location = 'uploads/schedules';
-        // Upload file
-        $file->move(public_path($location),$filename);
-
-        // Import CSV to Database
-        $filepath = public_path($location."/".$filename);
-
-        // Reading file
-        $file = fopen($filepath,"r");
-
-        $importData_arr = array();
-        $i = 0;
-
-        while (($filedata = fgetcsv($file, 1000, ",")) !== FALSE) 
-        {
-            $num = count($filedata );
-
-            // Skip first row
-            if($i == 0)
-            {
-                $i++;
-                continue; 
-            }
-
-            for ($c=0; $c < $num; $c++)
-            {
-                $importData_arr[$i][] = $filedata [$c];
-            }
-            $i++;
-        }
-        fclose($file);
-
-        $company_id  = Session::get('company_id');
-        
-        // Insert to MySQL database
-        foreach($importData_arr as $importData)
-        {
-            //check empno exists, if not continue
-            $userDetails = $this->getUserDetailsByEmployeeId($importData[1]);
-            if(empty($userDetails))
-            {
-                continue;
-            }
-            $userId = $userDetails->user_id;//by employee id
-            $departmentId = $userDetails->department;
-
-            //check shift exists, if not create shift
-            $shiftDetails = $this->getShiftDetailsByName($importData[2]);echo $importData[2];echo '<pre>';print_r($shiftDetails);
-            $departmentId = 0;
-            if(empty($shiftDetails))
-            {
-                //create shift
-                $insertArray = array(
-                    'company_id'        =>  $company_id,
-                    'shift_name'        =>  $importData[2],
-                    'min_start_time'    =>  date('h:i:s a', strtotime($importData[4])),
-                    'start_time'        =>  date('h:i:s a', strtotime($importData[5])),
-                    'max_start_time'    =>  date('h:i:s a', strtotime($importData[6])),
-                    'min_end_time'      =>  date('h:i:s a', strtotime($importData[7])),
-                    'end_time'          =>  date('h:i:s a', strtotime($importData[8])),
-                    'max_end_time'      =>  date('h:i:s a', strtotime($importData[9])),
-                    'break_time'        =>  $importData[10],
-                    // 'recurring_shift'   =>  $request->recurring_shift,
-                    // 'repeat_every'      =>  $request->repeat_every,
-                    // 'week_day'          =>  implode(',',$request->week_day),
-                    // 'end_on'            =>  date('Y-m-d', strtotime(str_replace('/','-',$request->end_on))),
-                    // 'indefinite'        =>  $request->indefinite,
-                    // 'tag'               =>  $request->tag,
-                    // 'note'              =>  $request->note,
-                    'created_at'        =>  date('Y-m-d h:i:s')
-                );
-                $shiftid = Shifting::create($insertArray);
-            }
-            else
-            {
-                $shiftid = $shiftDetails->id;
-            }
-
-            $scheduleInsertArray = array(
-                'company_id'        =>  $company_id,
-                'department'        =>  $departmentId,
-                'employee'          =>  $userId,
-                'shift_on'          =>  date('Y-m-d', strtotime($importData[3])),
-                'shift'             =>  $shiftid,
-                'min_start_time'    =>  date('h:i:s a', strtotime($importData[4])),
-                'start_time'        =>  date('h:i:s a', strtotime($importData[5])),
-                'max_start_time'    =>  date('h:i:s a', strtotime($importData[6])),
-                'min_end_time'      =>  date('h:i:s a', strtotime($importData[7])),
-                'end_time'          =>  date('h:i:s a', strtotime($importData[8])),
-                'max_end_time'      =>  date('h:i:s a', strtotime($importData[9])),
-                'break_time'        =>  $importData[10],
-                // 'extra_hours'       =>  $request->extra_hours,
-                // 'publish'           =>  $request->publish,
-                'created_at'        =>  date('Y-m-d h:i:s'),
-                'status'            =>  'active'
-            );
-            $shiftid = Scheduling::create($scheduleInsertArray);
-        }
-        $return['message'] = 'Import Successful.';
-        $return['status'] = 1;
-        return $return;
-    }
 
     private function getUserDetailsByEmployeeId($empid)
     {

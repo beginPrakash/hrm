@@ -55,8 +55,10 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/employeeByDepartment/{id}', [SchedulingController::class, 'employeeByDepartment'])->name('employeeByDepartment');
 	Route::get('/shiftDetails/{id}', [SchedulingController::class, 'shiftDetails'])->name('shiftDetails');
 
-
-
+	// User Scheduling
+	Route::match(array('GET','POST'),'/user_scheduling', [App\Http\Controllers\UserScheduling::class, 'index'])->name('user_scheduling');
+	Route::post('/user_scheduleUpdate', [App\Http\Controllers\UserScheduling::class, 'update']);
+	Route::post('/user_scheduleImport', [App\Http\Controllers\UserScheduling::class, 'import']);
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');

@@ -6,6 +6,8 @@ $page = $components[1];
 
 $is_admin = Session::get('is_admin');
 $user_id = Session::get('user_id');
+$is_store_user = _is_user_role_owner($user_id);
+
 ?>
 <style>
     .active-ho-jao {
@@ -42,7 +44,7 @@ $user_id = Session::get('user_id');
                 <?php } ?>
                 <li class="submenu"> 
                     @php
-                    $mangae_lts = request()->is("attendance*") || request()->is("leaves*") || request()->is("shifting*") || request()->is("scheduling*");
+                    $mangae_lts = request()->is("attendance*") || request()->is("leaves*") || request()->is("shifting*") ||  request()->is("user_scheduling*") || request()->is("scheduling*");
                 @endphp
                     <a href="#" class="{{$mangae_lts ? 'active-ho-jao' : ''}}"><i class="la la-files-o"></i> <span> Manage LTS </span> <span class="menu-arrow"></span></a>
                     <ul style="display: none;">
@@ -59,6 +61,9 @@ $user_id = Session::get('user_id');
                         <li><a class="<?php echo ($page == 'shifting' || $page == 'estimate-view.php' || $page == 'edit-estimate.php' || $page == 'create-estimate.php')?'active':'';?>" href="/shifting">Shifting</a></li>
                         <li><a class="<?php echo ($page == 'scheduling' || $page == 'estimate-view.php' || $page == 'edit-estimate.php' || $page == 'create-estimate.php')?'active':'';?>" href="/scheduling">Scheduling</a></li>
                         <?php } ?>
+                        @if(!empty($is_store_user))
+                        <li><a class="<?php echo ($page == 'user_scheduling')?'active':'';?>" href="/user_scheduling">Scheduling</a></li>
+                        @endif
                     </ul>
                 </li>
 

@@ -101,6 +101,7 @@ class SettingsController extends Controller
     
     public function delete(Request $request)
     {
+        CompanyDocuments::where('company_id', $request->residency_id)->delete();
         Residency::where('id', $request->residency_id)->delete();
         return redirect('/company-settings')->with('success','Data deleted successfully!');
 

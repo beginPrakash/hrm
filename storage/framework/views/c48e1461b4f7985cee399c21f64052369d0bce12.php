@@ -320,12 +320,12 @@
                                             <label class="form-check-label" for="customCheck3">Recurring Shift</label>
                                             </div>
                                     </div>
-                                    <div class="col-sm-12 cod_div">
+                                    <!-- <div class="col-sm-12 cod_div">
                                         <div class="custom-control form-check">
                                             <input type="checkbox" class="form-check-input" id="is_cod_edit" name="is_cod" value="1">
                                             <label class="form-check-label" name="is_cod" for="is_cod">Is COD?</label>
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <div class="col-sm-12">
                                         <div class="form-group">
                                             <label class="col-form-label">Repeat Every</label>

@@ -556,5 +556,14 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         return $data->suid ?? '';
     }
 
+    function _is_user_role_owner($user_id){
+        $emp_data = Employee::where('user_id',$user_id)->select('designation','branch')->first();
+        if(!empty($emp_data)):
+            if($emp_data->designation == 51):
+                return $emp_data;
+            endif;
+        endif;
+    }
+
     
     

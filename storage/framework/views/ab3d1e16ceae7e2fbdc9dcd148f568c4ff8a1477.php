@@ -1084,12 +1084,25 @@ if ($currentMonth >= 4) {
                                                         foreach($holidayWork as $hw) {
                                                             ?>
                                                         <tr>
-                                                            <td><?php echo $hw->attendance_on; ?> </td>
+                                                            <td><?php echo e(date('d-m-Y', strtotime($hw->attendance_on))); ?></td>
                                                             <td><?php echo $hw->holiday_day; ?></td>
                                                             <td><?php echo $hw->title ?></td>
-                                                            <td>1</td>
+                                                            <td>+1</td>
                                                         </tr>
                                                     <?php } } ?>
+                                                    <?php if(isset($an_emp_leaves) && count($an_emp_leaves) > 0): ?> 
+                                                        <?php $__currentLoopData = $an_emp_leaves; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?> 
+                                                            <?php if($val->is_post_transaction == 1 && $val->claimed_public_days > 0): ?>
+                                                                <tr>
+                                                                    <td><?php echo e(date('d-m-Y', strtotime($val->leave_from))); ?> to <?php echo e(date('d-m-Y',
+                                                                    strtotime($val->leave_to))); ?></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td>-<?php echo e($val->claimed_public_days); ?></td>
+                                                                </tr>
+                                                            <?php endif; ?>
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                    <?php endif; ?>
                                                     <tr>    
                                                         <td colspan="3">Today days worked <small>(Based on scheduling)</small></td>
                                                         <td><?php echo e($user->public_holidays_balance ?? 0); ?> - days </td>

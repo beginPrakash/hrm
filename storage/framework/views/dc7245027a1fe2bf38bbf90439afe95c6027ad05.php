@@ -373,7 +373,6 @@ $username = Session::get('username');
             </div>
         </div>
     </div>
-
     <!-- Modal -->
     <div class="modal fade" id="phleaveModal" tabindex="-1" aria-labelledby="phleaveModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -397,18 +396,34 @@ $username = Session::get('username');
                                 <?php $__currentLoopData = $holidayWork; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $hw): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
                                 <tr>
-                                    <td><?php echo $hw->attendance_on; ?> </td>
+                                    <td><?php echo e(date('d-m-Y', strtotime($hw->attendance_on))); ?></td>
                                     <td><?php echo $hw->holiday_day; ?></td>
                                     <td><?php echo $hw->title ?></td>
-                                    <td>1</td>
+                                    <td>+1</td>
                                 </tr>
 
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                <?php else: ?>
-                                <tr>
-                                    <td colspan="4" align="center">No dat found</td>
-                                </tr>
-                                <?php endif; ?>
+                            <?php else: ?>
+                                    <?php if(isset($annual_leave_list) && count($annual_leave_list) < 0): ?> 
+                                        <tr>
+                                            <td colspan="4" align="center">No data found</td>
+                                        </tr>
+                                    <?php endif; ?>
+                               
+                            <?php endif; ?>
+                            <?php if(isset($annual_leave_list) && count($annual_leave_list) > 0): ?> 
+                                <?php $__currentLoopData = $annual_leave_list; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?> 
+                                    <?php if($val->is_post_transaction == 1 && $val->claimed_public_days > 0): ?>
+                                        <tr>
+                                            <td><?php echo e(date('d-m-Y', strtotime($val->leave_from))); ?> to <?php echo e(date('d-m-Y',
+                                            strtotime($val->leave_to))); ?></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>-<?php echo e($val->claimed_public_days); ?></td>
+                                        </tr>
+                                    <?php endif; ?>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            <?php endif; ?>
                                 <tr>    
                                     <td colspan="3">Today days worked <small>(Based on scheduling)</small></td>
                                     <td><?php echo e($user->public_holidays_balance ?? 0); ?> - days </td>

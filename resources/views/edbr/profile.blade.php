@@ -1111,12 +1111,25 @@ if ($currentMonth >= 4) {
                                                         foreach($holidayWork as $hw) {
                                                             ?>
                                                         <tr>
-                                                            <td><?php echo $hw->attendance_on; ?> </td>
+                                                            <td>{{date('d-m-Y', strtotime($hw->attendance_on))}}</td>
                                                             <td><?php echo $hw->holiday_day; ?></td>
                                                             <td><?php echo $hw->title ?></td>
-                                                            <td>1</td>
+                                                            <td>+1</td>
                                                         </tr>
                                                     <?php } } ?>
+                                                    @if(isset($an_emp_leaves) && count($an_emp_leaves) > 0) 
+                                                        @foreach($an_emp_leaves as $key => $val) 
+                                                            @if($val->is_post_transaction == 1 && $val->claimed_public_days > 0)
+                                                                <tr>
+                                                                    <td>{{date('d-m-Y', strtotime($val->leave_from))}} to {{date('d-m-Y',
+                                                                    strtotime($val->leave_to))}}</td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td>-{{$val->claimed_public_days}}</td>
+                                                                </tr>
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
                                                     <tr>    
                                                         <td colspan="3">Today days worked <small>(Based on scheduling)</small></td>
                                                         <td>{{$user->public_holidays_balance ?? 0}} - days </td>
@@ -3173,7 +3186,7 @@ if ($currentMonth >= 4) {
             var user_id = $(this).attr('data-userid');
             var type = $(this).attr('data-type');
             $.ajax({
-            url: '/getanLeaveDetailsById/',
+            url: "{{route('getanLeaveDetailsById')}}",
             type: "POST",
             dataType: "json",
             data: {"_token": "{{ csrf_token() }}", id:id,user_id:user_id,type:type},

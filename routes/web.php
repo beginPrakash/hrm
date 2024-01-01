@@ -189,7 +189,7 @@ Route::post('/leaveCancel',[LeavesController::class, 'leaveCancel'] );
 Route::post('/getLeaveDetails',[LeavesController::class, 'getLeaveDetails'] );
 Route::get('/leave_request',[LeavesController::class, 'leave_request'] );
 Route::post('/getmainLeaveDetailsById',[LeavesController::class, 'getLeaveDetailsById'] );
-Route::post('/getanLeaveDetailsById',[EmployeeController::class, 'getanLeaveDetailsById'] );
+Route::post('/getanLeaveDetailsById',[EmployeeController::class, 'getanLeaveDetailsById'] )->name('getanLeaveDetailsById');
 Route::post('/post_leave_transaction',[EmployeeController::class, 'post_leave_transaction'] );
 
 
@@ -253,6 +253,10 @@ Route::post('/getcompanyDetailsById',[App\Http\Controllers\SettingsController::c
 Route::post('/company-delete',[App\Http\Controllers\SettingsController::class, 'delete'])->name('company.delete');
 Route::post('/company-settings/store', [App\Http\Controllers\SettingsController::class, 'store'])->name('company.store');
 Route::get('/company-settings/detail/{id}', [App\Http\Controllers\SettingsController::class, 'detail'])->name('company.detail');
+
+//Transportation
+
+Route::match(array('GET','POST'),'/transportation', [App\Http\Controllers\Transportation::class, 'transportation_list'])->name('transportation_list');
 
 //Document
 Route::post('/documents/store', [App\Http\Controllers\DocumentController::class, 'store'])->name('document.store');

@@ -104,14 +104,14 @@ $is_store_user = _is_user_role_owner($user_id);
                     </ul>
                 </li> -->
 
-                <li>
-                    <?php if($is_admin > 0) { ?>
-                        <a href="/company-settings"><i class="la la-cog"></i> <span>Company</span></a>
-                    <?php } else { 
-                        $employeeDetails = App\Models\Employee::where('user_id',$user_id)->first();
-                    ?>
-                        <a href="/company-settings-edit/<?php echo (isset($employeeDetails))?$employeeDetails->company:4; ?>"><i class="la la-cog"></i> <span>Company</span></a>
-                    <?php } ?>
+                <li class="submenu">
+                    <a href="#"><i class="la la-cog"></i> <span> Company </span> <span class="menu-arrow"></span></a>
+                    <ul style="display: none;">
+                        <?php if($is_admin > 0) { ?>
+                            <a class="<?php echo ($page == 'company-settings')?'active':'';?>" href="/company-settings"><i class="la la-cog"></i> <span>Company</span></a>
+                            <a class="<?php echo ($page == 'transportation')?'active':'';?>" href="/transportation"><i class="la la-cog"></i> <span>Transportation</span></a>
+                        <?php } ?>
+                    </ul>
                 </li>
             </ul>
         </div>

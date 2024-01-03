@@ -18,7 +18,7 @@
                     </ul>
                 </div>
                 <div class="col-auto float-end ms-auto">
-                    <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_transp"><i class="fa fa-plus"></i> Add Company</a>
+                    <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_transp"><i class="fa fa-plus"></i> Add Transportation</a>
                 </div>
             </div>
         </div>           
@@ -48,17 +48,16 @@
                 <div class="col-md-4 col-sm-6 col-12 col-lg-4 col-xl-3 m-ht-3">
                     <div class="profile-widget">
                         <div class="profile-img">
-                            <a href="{{route('company.detail',$val->id)}}" class="avatar">
-                                <img src="{{ ($val->logo!=null)?'uploads/transportation/'.$val->logo:'assets/img/profiles/avatar.png'}}" alt=""></a>
+                            <a href="{{route('transportation.detail',$val->id)}}"><img src="{{asset('assets/img/pdf-icon.png')}}" alt=""></a>
                         </div>
                         <div class="dropdown profile-action">
-                            <a href="{{route('company.detail',$val->id)}}" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+                            <a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
                             <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="{{route('company.detail',$val->id)}}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
-                                <a class="dropdown-item deleteButton" href="#" data-bs-toggle="modal" data-bs-target="#delete_company" data-id="{{$val->id}}"><i class="fa fa-trash-o m-r-5" ></i> Delete</a>
+                                <a class="dropdown-item edit_trans_btn" href="{{route('transportation.detail',$val->id)}}"> <i class="fa fa-pencil m-r-5"></i> Edit</a>
+                                <a class="dropdown-item deleteButton" href="#" data-bs-toggle="modal" data-bs-target="#delete_transpo" data-id="{{$val->id}}"><i class="fa fa-trash-o m-r-5" ></i> Delete</a>
                             </div>
                         </div>
-                        <h4 class="user-name m-t-10 mb-0 text-ellipsis"><a href="{{route('company.detail',$val->id)}}">{{ ucfirst($val->car_name) }}</a>
+                        <h4 class="user-name m-t-10 mb-0 text-ellipsis"><a href="{{route('transportation.detail',$val->id)}}">{{ ucfirst($val->car_name) }}</a>
                         </h4>
                       
                     </div>
@@ -70,24 +69,24 @@
         </div>
 
     <!-- /Page Content -->
-    <div id="add_transp" class="modal custom-modal fade " role="dialog">
-        @include('settings/company_modal')
+    <div id="add_transp" class="modal custom-modal fade" role="dialog">
+        @include('transportation/transportation_modal')
     </div>
     <!-- Delete Company Modal -->
-    <div class="modal custom-modal fade" id="delete_company" role="dialog">
+    <div class="modal custom-modal fade" id="delete_transpo" role="dialog">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body">
                     <div class="form-header">
-                        <h3>Delete Company</h3>
+                        <h3>Delete Transportation</h3>
                         <p>Are you sure want to delete?</p>
                     </div>
                     <div class="modal-btn delete-action">
                         <div class="row">
                             <div class="col-6">
-                            <form action="{{route('company.delete')}}" method="post">
+                            <form action="{{route('transportation.delete')}}" method="post">
                                         @csrf
-                                        <input type="hidden" name="residency_id" id="residency_delete_id">
+                                        <input type="hidden" name="transp_id" id="transp_delete_id">
                                         <button type="submit" class="btn btn-primary btn-large continue-btn" style="width: 100%;">Delete</button>
                             </form>
                             </div>
@@ -117,102 +116,131 @@
 @include('includes/footer')
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        var i = 1;
 
-        var table_table = $('#dt_table').DataTable({
-            responsive: true,
-            fixedHeader: {
-                header: true,
-                footer: true
-            },
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: "{{ route('company-settings') }}",
-            },
-
-            columns: [
-                {
-                    "render": function() {
-                        return i++;
-                    }
-                },
-                {
-                    data: 'name',
-                    name: 'name',
-
-                },
-                {
-                    data: 'city',
-                    name: 'city',
-
-                },
-                {
-                    data: 'email',
-                    name: 'email',
-
-                },
-                {
-                    data: 'phone',
-                    name: 'phone',
-
-                },
-                {
-                    data: 'website',
-                    name: 'website',
-
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false
-                }
-            ],
-        });
-
-
-        $("#company_form").validate({
-            rules: {
-                name: {
-                    required : true},
-            },
-            messages: {
-                name: {
-                    required : 'Please enter company name',
-                },
-            },
-            errorPlacement: function (error, element) {
-                if (element.prop("type") == "text" || element.prop("type") == "textarea") {
-                    error.insertAfter(element);
-                } else {
-                    error.insertAfter(element.parent());
-                }
-            },
-        });
-
-        $('.digitsOnly').keypress(function(event){
-            if(event.which !=8 && isNaN(String.fromCharCode(event.which))){
-                event.preventDefault();
-            }
-        });
+var len = 0;
+    $('#doc_addmore').click(function()
+    {
+        len++;// = $('.rowdiv').length;
+        var cl = "doc_file_"+len;
+        $('#div_doc_addmore').before('<div class="row rowdiv" id="rowdiv'+len+'"><div class="col-md-5"><div class="form-group"><input class="form-control" id="doc_file_'+len+'" onchange="Filevalidation(this,'+len+')" type="file" name="doc_file[]" value=""></div></div><div class="col-md-1"><span class="mt-4 trashDiv" onclick="removeDiv('+len+')"><i class="fa fa-trash text-danger"></i></span></div></div>');
     });
-</script>
 
-<script>
+    function removeDiv(tid) {
+        $('#rowdiv'+tid).remove();
+    }
+
+    Filevalidation = (input,id) => {
+            $('.file_error').html('');
+            const fi = $(input).get(0).files[0];
+            // Check if any file is selected.
+            if (fi) {
+                    if(fi.type == 'application/pdf'){
+                        const fsize = fi.size;
+                        const file = Math.round((fsize / 1024));
+                        //console.log(file);
+                        // The size of the file.
+                        if (file >= 4096) {
+                            $('#doc_file_'+id).after("<span class='error file_error'>File too Big, please select a file less than 4mb</span>"); 
+                            $('#doc_file_'+id).val('');
+                        }
+                    }
+                    else{
+                        $('#doc_file_'+id).after("<span class='error file_error'>Select Only PDF file</span>"); 
+                        $('#doc_file_'+id).val('');
+                    }
+            }
+        }
+
+    
+
+    $('.digitsOnly').keypress(function(event){
+        if(event.which !=8 && isNaN(String.fromCharCode(event.which))){
+            event.preventDefault();
+        }
+    });
 
     $('#add_transp').on('hidden.bs.modal', function () {
         $("input[type=text], textarea").val("");
-        $('#img1').remove();
         $('.company_id_hid').val('');
-        $('.leave_m_title').text('Add Company');
+        $('.doc_table').remove();
+        $('.select').val('').trigger('change');
+        $('.leave_m_title').text('Add Transportation');
     });
+
+    $("#trans_form").validate({
+        rules: {
+            car_name: {
+                required : true
+            },
+            colour: {
+                required : true
+            },
+            model: {
+                required : true
+            },
+            license_number: {
+                required : true
+            },
+            license_expiry: {
+                required : true
+            },
+            alert_days: {
+                required : true
+            },
+            under_company: {
+                required : true
+            },
+            under_subcompany: {
+                required : true
+            },
+            cost: {
+                required : true
+            },
+        },
+        messages: {
+            car_name: {
+                required : 'Please enter car name',
+            },
+            colour: {
+                required : 'Please enter colour',
+            },
+            model: {
+                required : 'Please enter model',
+            },
+            license_number: {
+                required : 'Please enter license number',
+            },
+            license_expiry: {
+                required : 'Please select license expiry',
+            },
+            alert_days: {
+                required : 'Please enter alert days',
+            },
+            under_company: {
+                required : 'Please select company',
+            },
+            under_subcompany: {
+                required : 'Please select subcompany',
+            },
+            cost: {
+                required : 'Please enter cost',
+            },
+        },
+        errorPlacement: function (error, element) {
+            if (element.prop("type") == "text" || element.prop("type") == "textarea") {
+                error.insertAfter(element);
+            } else {
+                error.insertAfter(element.parent());
+            }
+        },
+    });
+
 </script>
 
 
 <script>
     $(document).on('click','.deleteButton',function(){
         var id = $(this).attr('data-id');
-        $('#residency_delete_id').val(id);
+        $('#transp_delete_id').val(id);
     });
 </script>

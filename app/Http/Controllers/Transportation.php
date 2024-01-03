@@ -6,7 +6,7 @@ use Yajra\Datatables\Datatables;
 use Session;
 use App\Models\CompanyDocuments;
 use App\Models\Residency;
-use App\Models\CompanyDocFiles;
+use App\Models\TranspoFiles;
 use App\Models\Transportation as TransportationModel;
 
 class Transportation extends Controller
@@ -18,82 +18,66 @@ class Transportation extends Controller
 
     public function transportation_list(Request $request)
     { 
+        $company_list = Residency::where('status','active')->get();
         $query = TransportationModel::where('status','active');
         $search = [];
         if(isset($request->car_name))
         {
             $search['car_name'] = $request->car_name;
-            $query->where('name','like',"%$request->car_name%");
+            $query->where('car_name','like',"%$request->car_name%");
         }
         $result = $query->get(); 
         $transp_list = $result;
-        return view('transportation.index', compact('transp_list','search'));
+        return view('transportation.index', compact('transp_list','search','company_list'));
     }
 
-    public function companySettingsEdit(Request $request)
-    {
-        $title = $this->title.' Update';
-        $residency = Residency::where('id',$request->id)->first();
-        return view('settings.residencysettingsUpdate', compact('title', 'residency'));
-    }
-
-    public function companySettingsUpdate(Request $request)
-    {
-        $updateArray = array(
-            'name'      => $request->name,
-            'address'   =>  $request->address,
-            'country'   =>  $request->country,
-            'city'      =>  $request->city,
-            'state'     =>  $request->state,
-            'postal_code'  =>  $request->postal_code,
-            'email'     =>  $request->email,
-            'phone_number'  =>  $request->phone_number,
-            'fax'       =>  $request->fax,
-            'website'   =>  $request->website,
-            'created_at'    =>  date('Y-m-d h:i:s')
-        );
-
-        if($request->has('image1')) 
-        {
-            $image = $request->file('image1');
-            $filename = $image->getClientOriginalName();
-            $image->move(public_path('uploads/logo'), $filename);
-            $updateArray['logo'] = $filename;
-        } 
-
-        Residency::where('id', $request->id)->update($updateArray);
-        return redirect('/company-settings')->with('success','Settings updated successfully!');
-    }
-    
     public function store(Request $request)
     {
+       // dd($request->all());
         $company_id  = Session::get('company_id');
         $insertArr = array(
-            'company_id' => $company_id,
-            'name'      =>  $request->name,
-            'address'   =>  $request->address,
-            'country'   =>  $request->country,
-            'city'      =>  $request->city,
-            'state'     =>  $request->state,
-            'postal_code'  =>  $request->postal_code,
-            'email'     =>  $request->email,
-            'phone_number'  =>  $request->phone_number,
-            'fax'       =>  $request->fax,
-            'website'   =>  $request->website,
-            'created_at'    =>  date('Y-m-d h:i:s')
+            'car_name' => $request->car_name,
+            'colour'      =>  $request->colour,
+            'model'   =>  $request->model,
+            'license_no'   =>  $request->license_no,
+            'license_expiry' =>  date('Y-m-d',strtotime($request->license_expiry)),
+            'alert_days'     =>  $request->alert_days,
+            'remarks'  =>  $request->remarks,
+            'driver'     =>  $request->driver,
+            'tag'  =>  $request->tag,
+            'baladiya_expiry' =>  (isset($request->baladiya_expiry) && !empty($request->baladiya_expiry)) ? date('Y-m-d',strtotime($request->baladiya_expiry)) : NULL,
+            'logo_expiry' =>  (isset($request->logo_expiry) && !empty($request->logo_expiry)) ? date('Y-m-d',strtotime($request->logo_expiry)) : NULL,
+            'under_company'       =>  $request->under_company,
+            'under_subcompany'   =>  $request->under_subcompany,
+            'cost'    => $request->cost,
+            'status' => 'active'
         );
-
-        if($request->has('image1')) 
-        {
-            $image = $request->file('image1');
-            $filename = $image->getClientOriginalName();
-            $image->move(public_path('uploads/logo'), $filename);
-            $insertArr['logo'] = $filename;
-        } 
+ 
         if(!empty($request->id)):
-            Residency::where('id', $request->id)->update($insertArr);
+            $doc_data = TransportationModel::where('id', $request->id)->update($insertArr);
+            $doc_id = $request->id;
         else:
-            Residency::insert($insertArr);
+            $doc_data = TransportationModel::create($insertArr);
+            $doc_id = $doc_data->id;
+        endif;
+
+        if(!empty($request->doc_file)):
+            if(isset($request->doc_file))
+            {
+                foreach($request->doc_file as $dockey => $doc)
+                {
+                    if($doc) 
+                    {
+                        $document = $doc;
+                        $filename = $document->getClientOriginalName();
+                        $document->move(public_path('uploads/transportation'), $filename);
+                        $docs_file_data = new TranspoFiles();
+                        $docs_file_data->transpo_id = $doc_id;
+                        $docs_file_data->transpo_file = $filename;
+                        $docs_file_data->save();
+                    }
+                }
+            }
         endif;
         return redirect()->back()->with('success','Data saved successfully!');
         
@@ -102,44 +86,23 @@ class Transportation extends Controller
     
     public function delete(Request $request)
     {
-        CompanyDocuments::where('company_id', $request->residency_id)->delete();
-        Residency::where('id', $request->residency_id)->delete();
-        return redirect('/company-settings')->with('success','Data deleted successfully!');
+        TranspoFiles::where('transpo_id', $request->transp_id)->delete();
+        TransportationModel::where('id', $request->transp_id)->delete();
+        return redirect()->back()->with('success','Data deleted successfully!');
 
     }
 
-    public function isSubresidencyExists(Request $request)
-    { 
-        $status = 'active';
-        $where = ['status'=>$status];
-        if(isset($request['id']))
-        {
-            $where['name'] = $request['subresidency_name'];
-            $count = Subresidency::where($where)->where('id', '!=', $request['id'])->where('residency', $request['residency'])->get();
-        }
-        else
-        {
-            $where['name'] = $request['subresidency'];
-            $count = Subresidency::where($where)->where('residency', $request['residency'])->get();
-        }
-        
-        if(count($count) > 0)
-        {
-            echo "false";
-        }
-        else
-        {
-            echo "true";
-        }
-    }
-
-    public function getcompanyDetailsById(Request $request)
+    public function gettranspoDetailsById(Request $request)
     {
-        $residency = Residency::where('id',$request->id)->first();
+        $trans_data = TransportationModel::where('id',$request->id)->first();
+        $trans_files = TranspoFiles::where('transpo_id',$request->id)->get();
+        $company_list = Residency::where('status','active')->get();
         $pass_array=array(
-			'residency' => $residency,
+			'trans_data' => $trans_data,
+            'trans_files'=>$trans_files,
+            'company_list' => $company_list
         );
-        $html =  view('settings.company_modal', $pass_array )->render();
+        $html =  view('transportation.transportation_modal', $pass_array )->render();
 		$arr = [
 			'success' => 'true',
 			'html' => $html
@@ -148,13 +111,25 @@ class Transportation extends Controller
 
     }
 
+    public function delete_transp_document(Request $request)
+    {
+        TranspoFiles::where('id', $request->id)->delete();
+        $arr = [
+			'success' => 'true',
+			'id' => $request->id
+		];
+		return response()->json($arr);
+    }
+
     public function detail(Request $request,$id)
     {
-        $title='Company Detail';
-        $company_detail = Residency::where('id',$id)->first();
-        $documents = CompanyDocuments::where('company_id',$id)->get();
-        $documents_file = CompanyDocuments::where('company_id',$id)->get();
-        return view('settings.company_detail',compact('company_detail','title','documents'));
+        $title='Transportation Detail';
+        $trans_detail = TransportationModel::where('id',$id)->first();
+        if(!empty($trans_detail)):
+            return view('transportation.detail',compact('trans_detail','title'));
+        else:
+            return redirect(route('transportation_list'));
+        endif;
 
     }
     

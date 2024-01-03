@@ -257,7 +257,11 @@ Route::get('/company-settings/detail/{id}', [App\Http\Controllers\SettingsContro
 //Transportation
 
 Route::match(array('GET','POST'),'/transportation', [App\Http\Controllers\Transportation::class, 'transportation_list'])->name('transportation_list');
-
+Route::post('/transportation/store', [App\Http\Controllers\Transportation::class, 'store'])->name('transportation.store');
+Route::post('/gettranspoDetailsById',[App\Http\Controllers\Transportation::class, 'gettranspoDetailsById'] )->name('gettranspoDetailsById');
+Route::post('/delete_transp_document',[App\Http\Controllers\Transportation::class, 'delete_transp_document'] )->name('delete_transp_document');
+Route::post('/transportation-delete',[App\Http\Controllers\Transportation::class, 'delete'])->name('transportation.delete');
+Route::get('/transportation/detail/{id}', [App\Http\Controllers\Transportation::class, 'detail'])->name('transportation.detail');
 //Document
 Route::post('/documents/store', [App\Http\Controllers\DocumentController::class, 'store'])->name('document.store');
 Route::post('/getdocumentDetailsById', [App\Http\Controllers\DocumentController::class, 'getdocumentDetailsById'])->name('getdocumentDetailsById');

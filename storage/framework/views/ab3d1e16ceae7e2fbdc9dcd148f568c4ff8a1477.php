@@ -3160,7 +3160,7 @@ if ($currentMonth >= 4) {
             var user_id = $(this).attr('data-userid');
             var type = $(this).attr('data-type');
             $.ajax({
-            url: '/getanLeaveDetailsById/',
+            url: "<?php echo e(route('getanLeaveDetailsById')); ?>",
             type: "POST",
             dataType: "json",
             data: {"_token": "<?php echo e(csrf_token()); ?>", id:id,user_id:user_id,type:type},

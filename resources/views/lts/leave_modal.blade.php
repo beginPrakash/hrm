@@ -140,7 +140,7 @@
                                                     <input class="form-check-input an_checkbox" name="an_checkbox" type="checkbox" role="switch" id="flexSwitchCheckChecked" {{(isset($leaveData) && $leaveData->claimed_annual_days <= 0) ? '' : 'checked'}}>
                                                 </div>
                                             </td>
-                                            <td><input type="number" onkeypress="return digitKeyOnly(event,this)" value="{{$leaveData->claimed_annual_days ?? 0}}" name="annual_leave_days" class="annual_leave_days"  max="{{$leaveData->claimed_annual_days ?? 0}}" min="0" {{($leaveData->claimed_annual_days <= 0) ? 'disabled' : ''}}></td>
+                                            <td><input type="number" onkeypress="return digitKeyOnly(event,this)" value="{{$leaveData->claimed_annual_days ?? 0}}" name="annual_leave_days" class="annual_leave_days"  max="{{$leaveData->claimed_annual_days ?? 0}}" min="0" readonly></td>
                                         @else
                                             <td>
                                                 <div class="form-check form-switch">
@@ -169,16 +169,18 @@
                                                     </div>
                                                 </td>
                                                 <td><input type="number" onkeypress="return digitKeyOnlyPH(event,this)" name="public_holidays" class="public_holidays"  value="{{$leaveData->claimed_public_days ?? 0}}" max="{{$userdetails[0]->public_holidays_balance}}" min="0" {{($leaveData->claimed_public_days <= 0) ? 'disabled' : ''}}></td>
-                                            @else
+                                                <td class="public_remaining_leave">{{$leaveData->claimed_public_days_rem ?? 0}} Days</td>
+                                                @else
                                                 <td>
                                                     <div class="form-check form-switch">
                                                         <input class="form-check-input ph_checkbox" name="ph_checkbox" type="checkbox" role="switch" id="flexSwitchCheckChecked">
                                                     </div>
                                                 </td>
-                                                <td><input type="number" onkeypress="return digitKeyOnlyPH(event,this)" name="public_holidays" class="public_holidays"  value="{{$userdetails[0]->public_holidays_balance}}" max="{{$userdetails[0]->public_holidays_balance}}" min="0" disabled></td>
+                                                <td><input type="number" onkeypress="return digitKeyOnlyPH(event,this)" name="public_holidays" class="public_holidays"  value="0" max="{{$userdetails[0]->public_holidays_balance}}" min="0" disabled></td>
+                                                <td class="public_remaining_leave">{{$userdetails[0]->public_holidays_balance ?? 0}} Days</td>
                                             @endif
                                             
-                                            <td class="public_remaining_leave">{{$leaveData->claimed_public_days_rem ?? 0}} Days</td>
+                                            
                                         </tr>
                                     @endif
                                 </tbody>

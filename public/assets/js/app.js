@@ -162,6 +162,19 @@ $(document).ready(function() {
 		});
 	}
 
+	if($('.datewithtime').length > 0) {
+		$('.datewithtime').datetimepicker({
+			format: 'DD-MM-YYYY HH:mm',
+			sideBySide: true,
+			icons: {
+				up: "fa fa-angle-up",
+				down: "fa fa-angle-down",
+				next: 'fa fa-angle-right',
+				previous: 'fa fa-angle-left'
+			}
+		});
+	}
+
 	if($('.timepicker').length > 0) {
 		$('.timepicker').datetimepicker({
 			format: "hh:mm:ss",

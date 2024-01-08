@@ -738,8 +738,8 @@ class AttendanceController extends Controller
         $userDetails = Employee::where("user_id", $request->attnUserId)->where('status','active')->first();
         $userId = $userDetails->emp_generated_id;//by employee id
         $departmentId = $userDetails->department;
-        $end_time = date('H:i', strtotime(str_replace(' pm','',$request->end_time)));
-        $start_time = date('H:i', strtotime(str_replace(' pm','',$request->start_time)));
+        $end_time = date('Y-m-d H:i', strtotime(str_replace(' pm','',$request->end_time)));
+        $start_time = date('Y-m-d H:i', strtotime(str_replace(' pm','',$request->start_time)));
         $att_date = date('Y-m-d', strtotime($request->attnDate));
         AttendanceDetails::where('user_id',$request->attnUserId)->where('employee_id',$userId)->where('attendance_on',$att_date)->delete();
 
@@ -750,7 +750,7 @@ class AttendanceController extends Controller
             "user_id"       =>  $request->attnUserId,
             "employee_id"   =>  $userId,
             "department"    =>  $departmentId,
-            "attendance_on" =>  date('Y-m-d', strtotime($request->attnDate)),
+            "attendance_on" =>  date('Y-m-d', strtotime($start_time)),
             "attendance_time"=> $start_time,
             "punch_state"   =>  'clockin',
             "day_type"     =>  'work',
@@ -766,7 +766,7 @@ class AttendanceController extends Controller
             "user_id"       =>  $request->attnUserId,
             "employee_id"   =>  $userId,
             "department"    =>  $departmentId,
-            "attendance_on" =>  date('Y-m-d', strtotime($request->attnDate)),
+            "attendance_on" =>  date('Y-m-d', strtotime($end_time)),
             "attendance_time"=> $end_time,
             "punch_state"   =>  'clockout',
             "day_type"     =>  'work',

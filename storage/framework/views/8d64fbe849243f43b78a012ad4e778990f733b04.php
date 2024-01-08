@@ -23,7 +23,7 @@ $maxDays=date('t', strtotime($start_date));
                     <?php echo $__env->make('includes/breadcrumbs', ['title' => $title], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                     
                     <!-- Search Filter -->
-                    <form action="/attendance" method="post">
+                    <form action="/h" method="post">
                         <div class="row filter-row">
                             <?php echo csrf_field(); ?>
                             <div class="col-sm-6 col-md-3">  
@@ -141,8 +141,8 @@ $maxDays=date('t', strtotime($start_date));
                                                 { 
                                                     $date = $year."-".$currentMonthNum."-".$i;
 
-                                                    $emloyeeAttendance = App\Models\AttendanceDetails::where('user_id', $employee->user_id)->where('employee_id', $employee->emp_generated_id)->whereDate('attendance_on', $date)->first();
-
+                                                    $emloyeeAttendance = App\Models\AttendanceDetails::where('user_id', $employee->user_id)->where('employee_id', $employee->emp_generated_id)->whereDate('attendance_on', $date)->where('punch_state','clockin')->first();
+                                                    
                                                     // get shift details
                                                     $shiftDetails = App\Models\Scheduling::where('employee',$employee->user_id)->where('shift_on', date('Y-m-d',strtotime($date)))->where('status','active')->get()->first();
 
@@ -174,15 +174,19 @@ $maxDays=date('t', strtotime($start_date));
 
                                                                 $firstclockin = App\Models\AttendanceDetails::where('user_id', $employee->user_id)->where('employee_id', $employee->emp_generated_id)->where('punch_state', 'clockin')->whereDate('attendance_on', $date)->first();
                                                                 $lastclockout = App\Models\AttendanceDetails::where('user_id', $employee->user_id)->where('employee_id', $employee->emp_generated_id)->where('punch_state', 'clockout')->whereDate('attendance_on', $date)->limit(1)->orderBy('id', 'desc')->first();
-                                                                
+                                                                if(empty($lastclockout)):
+                                                                    $plus_date = strtotime('+1 day', strtotime($date));
+                                                                    $plus_date_form = date('Y-m-d',$plus_date);
+                                                                    $lastclockout = App\Models\AttendanceDetails::where('user_id', $employee->user_id)->where('employee_id', $employee->emp_generated_id)->where('punch_state', 'clockout')->whereDate('attendance_on', $plus_date_form)->limit(1)->orderBy('id', 'desc')->first();
+                                                                endif;
                                                                 $shcolor = '';
                                                                 $shicon = '';
                                                                 $flag = 0;
 
-                                                                $minStartTime_24 = (isset($shiftDetails->min_start_time))?date('H:i', strtotime($shiftDetails->min_start_time)):'0';
-                                                                $maxStartTime_24 = (isset($shiftDetails->max_start_time))?date('H:i', strtotime($shiftDetails->max_start_time)):'0';
-                                                                $minEndTime_24 = (isset($shiftDetails->min_end_time))?date('H:i', strtotime($shiftDetails->min_end_time)):'0';
-                                                                $maxEndTime_24 = (isset($shiftDetails->max_end_time))?date('H:i', strtotime($shiftDetails->max_end_time)):'0';
+                                                                $minStartTime_24 = (isset($shiftDetails->min_start_time))?date('Y-m-d H:i', strtotime($shiftDetails->min_start_time)):'0';
+                                                                $maxStartTime_24 = (isset($shiftDetails->max_start_time))?date('Y-m-d H:i', strtotime($shiftDetails->max_start_time)):'0';
+                                                                $minEndTime_24 = (isset($shiftDetails->min_end_time))?date('Y-m-d H:i', strtotime($shiftDetails->min_end_time)):'0';
+                                                                $maxEndTime_24 = (isset($shiftDetails->max_end_time))?date('Y-m-d H:i', strtotime($shiftDetails->max_end_time)):'0';
                                                                 if((isset($firstclockin->attendance_time) && checkDateTimeInBetween($firstclockin->attendance_time, $minStartTime_24, $maxStartTime_24)==1) && (isset($lastclockout->attendance_time) && checkDateTimeInBetween($lastclockout->attendance_time, $minEndTime_24, $maxEndTime_24)==1))
                                                                 {
                                                                     $shcolor = 'text-success';

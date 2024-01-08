@@ -124,6 +124,7 @@ class ShiftingController extends Controller
             'tag'               =>  $request->tag,
             'note'              =>  $request->note,
             'is_cod'            =>  '0',
+            'is_twoday_shift'   => $request->is_twoday_shift ?? '0',
             'created_at'        =>  date('Y-m-d h:i:s')
         );
         // echo '<pre>';print_r($insertArray);exit;
@@ -149,6 +150,7 @@ class ShiftingController extends Controller
                 'tag'               =>  $request->tag,
                 'note'              =>  $request->note,
                 'is_cod'            =>  '1',
+                'is_twoday_shift'   => $request->is_twoday_shift ?? '0',
                 'parent_shift' => $shiftid->id,
                 'created_at'        =>  date('Y-m-d h:i:s')
             );
@@ -177,6 +179,7 @@ class ShiftingController extends Controller
             'indefinite'        =>  $request->indefinite,
             'tag'               =>  $request->tag,
             'note'              =>  $request->note,
+            'is_twoday_shift'   => $request->is_twoday_shift ?? '0',
             'created_at'        =>  date('Y-m-d h:i:s')
         );
 

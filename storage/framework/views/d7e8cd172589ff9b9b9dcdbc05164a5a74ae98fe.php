@@ -285,48 +285,48 @@
                                     <div class="col-md-4">
                                         <div class="form-group" >
                                             <label>Min Start Time <span class="text-danger">*</span></label>
-                                            <div class="input-group timex timepickerx">
-                                                <input type="time" class="form-control addsched" id="min_start_time" name="min_start_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control datewithtime" id="min_start_time" name="min_start_time">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>Start Time <span class="text-danger">*</span></label>
-                                            <div class="input-group timex timepickerx">
-                                                <input type="time" class="form-control addsched" name="start_time" id="start_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control datewithtime" name="start_time" id="start_time">
                                             </div>                                  
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>Max Start Time <span class="text-danger">*</span></label>
-                                            <div class="input-group timex timepickerx">
-                                                <input type="time" class="form-control addsched" name="max_start_time" id="max_start_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control datewithtime" name="max_start_time" id="max_start_time">
                                             </div>                                          
                                         </div>
                                     </div>      
                                     <div class="col-md-4">
                                         <div class="form-group" >
                                             <label>Min End Time <span class="text-danger">*</span></label>
-                                            <div class="input-group timex timepickerx">
-                                                <input type="time" class="form-control addsched" name="min_end_time" id="min_end_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control datewithtime" name="min_end_time" id="min_end_time">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>End Time <span class="text-danger">*</span></label>
-                                            <div class="input-group timex timepickerx">
-                                                <input type="time" class="form-control addsched" name="end_time" id="end_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control datewithtime" name="end_time" id="end_time">
                                             </div>                                  
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>Max End Time <span class="text-danger">*</span></label>
-                                            <div class="input-group timex timepickerx">
-                                                <input type="time" class="form-control addsched" name="max_end_time" id="max_end_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control datewithtime" name="max_end_time" id="max_end_time">
                                             </div>                                          
                                         </div>
                                     </div>  
@@ -428,48 +428,48 @@
                                     <div class="col-md-4">
                                         <div class="form-group" >
                                             <label>Min Start Time <span class="text-danger">*</span></label>
-                                            <div class="input-group timex timepickerx">
-                                                <input type="time" class="form-control editsched edit_min_s_time" id="min_start_time" name="min_start_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control editsched edit_min_s_time datewithtime" id="min_start_time" name="min_start_time">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>Start Time <span class="text-danger">*</span></label>
-                                            <div class="input-group timex timepickerx">
-                                                <input type="time" class="form-control editsched edit_s_time" name="start_time" id="start_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control editsched edit_s_time datewithtime" name="start_time" id="start_time">
                                             </div>                                  
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>Max Start Time <span class="text-danger">*</span></label>
-                                            <div class="input-group timex timepickerx">
-                                                <input type="time" class="form-control editsched edit_max_s_time" name="max_start_time" id="max_start_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control editsched edit_max_s_time datewithtime" name="max_start_time" id="max_start_time">
                                             </div>                                          
                                         </div>
                                     </div>      
                                     <div class="col-md-4">
                                         <div class="form-group" >
                                             <label>Min End Time <span class="text-danger">*</span></label>
-                                            <div class="input-group timex timepickerx">
-                                                <input type="time" class="form-control editsched edit_min_e_time" name="min_end_time" id="min_end_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control editsched edit_min_e_time datewithtime" name="min_end_time" id="min_end_time">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>End Time <span class="text-danger">*</span></label>
-                                            <div class="input-group timex timepickerx">
-                                                <input type="time" class="form-control editsched edit_e_time" name="end_time" id="end_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control editsched edit_e_time datewithtime" name="end_time" id="end_time">
                                             </div>                                  
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>Max End Time <span class="text-danger">*</span></label>
-                                            <div class="input-group timex timepickerx">
-                                                <input type="time" class="form-control editsched edit_max_e_time" name="max_end_time" id="max_end_time"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control editsched edit_max_e_time datewithtime" name="max_end_time" id="max_end_time">
                                             </div>                                          
                                         </div>
                                     </div>  
@@ -599,7 +599,7 @@
             $('#employee_addschedule_name').removeClass('hideit');
             $('#employee_addschedule_id').removeClass('hideit');
             $.each(JSON.parse(decodedData), function(key,value){
-                // console.log(key+'-'+value);
+                 //console.log(key+'-'+value);
                 if(key=='first_name')
                 {
                     $('#employee_addschedule_name').val(value);
@@ -672,12 +672,12 @@
                    
                     $('#edit_shift_addschedule').val(shdetails.shift).select2();
                     $('#schedule_id').val(shdetails.id);
-                    $('.edit_s_time').val(shdetails.start_time);
-                    $('.edit_min_s_time').val(shdetails.min_start_time);
-                    $('.edit_max_s_time').val(shdetails.max_start_time);
-                    $('.edit_e_time').val(shdetails.end_time);
-                    $('.edit_min_e_time').val(shdetails.min_end_time);
-                    $('.edit_max_e_time').val(shdetails.max_end_time);
+                    $('.edit_s_time').val(changeDateFormatTime(shdetails.start_time));
+                    $('.edit_min_s_time').val(changeDateFormatTime(shdetails.min_start_time));
+                    $('.edit_max_s_time').val(changeDateFormatTime(shdetails.max_start_time));
+                    $('.edit_e_time').val(changeDateFormatTime(shdetails.end_time));
+                    $('.edit_min_e_time').val(changeDateFormatTime(shdetails.min_end_time));
+                    $('.edit_max_e_time').val(changeDateFormatTime(shdetails.max_end_time));
                     $('.edit_break_time').val(shdetails.break_time);
                     
                     // $.each(JSON.parse(value), function(k,v)
@@ -703,6 +703,12 @@
     $(document).ready(function() {
         $('.shift_addschedule').on('change', function() {
             var shiftId = $(this).val();
+            var sch_id = $('#schedule_id').val();
+            if(sch_id != ''){
+                var shiftdate = $('#edit_shift_date').val();
+            }else{
+                var shiftdate = $('#shift_date').val();
+            }
             if(parseInt(shiftId) <= 3 || (parseInt(shiftId) >= 7 && parseInt(shiftId) <= 9))
             { 
                 $('#timedivadd,#timedivedit').css('display', 'none');
@@ -717,14 +723,26 @@
                    {
                         var termarray = ['min_start_time', 'start_time', 'max_start_time', 'min_end_time', 'end_time', 'max_end_time'];
                         $.each(response, function(key,value){
-                            // console.log(value);
                             $.each(value, function(k,v){
                                 // console.log(k+'-'+v);
+                                final_date = shiftdate;   
                                 if(jQuery.inArray(k, termarray) !== -1)
                                 {
                                     var convertedTime = convert12HourTo24Hour(v);
-                                    // var sp = value.split(':');
-                                    $('#add_schedule_form [name="'+k+'"]').val(convertedTime);//sp[0]+':'+sp[1]);
+                                    if(value.is_twoday_shift=='1'){
+                                        var new_date = moment(shiftdate, "DD-MM-YYYY").add(1, 'd');
+                                        final_date = moment(new_date._d).format('DD-MM-YYYY');
+                                    }else{
+                                        final_date = shiftdate;
+                                    }
+
+                                    if(k=='min_start_time' || k=='start_time' || k=='max_start_time'){
+                                        $('#add_schedule_form [name="'+k+'"]').val(shiftdate+' '+convertedTime);//sp[0]+':'+sp[1]);
+                                    }
+                                    else{
+                                        //console.log(final_date);
+                                        $('#add_schedule_form [name="'+k+'"]').val(final_date+' '+convertedTime);//sp[0]+':'+sp[1]);
+                                    }
                                 }
                                 else
                                 {
@@ -766,4 +784,14 @@
         var formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0];
         return formattedDate;
     }
+
+    function changeDateFormatTime(dateval)
+    {
+        var timeparts = dateval.split(' ');
+        var dateParts = timeparts[0].split('-');
+        var formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0]+' '+timeparts[1];
+        return formattedDate;
+    }
+
+
 </script><?php /**PATH C:\wamp64_new\www\hrm\resources\views/lts/scheduling.blade.php ENDPATH**/ ?>

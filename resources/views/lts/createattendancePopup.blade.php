@@ -15,11 +15,11 @@
                     <input type="hidden" name="attnDate" id="attnDate" value="<?php echo $attnDate; ?>">
                     
                     Punch Timings <br>
-                    <div class="input-group timex timepickerx">
-                        Start Time : <input type="text" class="form-control att_timepicker" name="start_time" id="start_time" autocomplete="off"><span class="input-group-text"><i class="fa fa-clock-o"></i></span><br>
+                    <div class="cal-icon">
+                        Start Time : <input type="text" class="form-control att_timepicker" name="start_time" id="start_time" autocomplete="off"><br>
                     </div>
-                    <div class="input-group timex timepickerx">
-                        End Time : <input type="text" class="form-control att_timepicker" name="end_time" id="end_time" autocomplete="off"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                    <div class="cal-icon">
+                        End Time : <input type="text" class="form-control att_timepicker" name="end_time" id="end_time" autocomplete="off">
                     </div>
                         <br>
                     <button class="btn btn-info pull-right mb-3 text-white">Update</button>
@@ -33,8 +33,8 @@
 <script type="text/javascript">
     var dateNow = new Date();
     $(".att_timepicker").datetimepicker({
-        format: 'HH:mm a',
-        defaultDate:moment(dateNow).hours(0).minutes(0)
+        format: 'DD-MM-YYYY HH:mm a',
+        //defaultDate:moment(dateNow).hours(0).minutes(0)
     });
     
      $(document).ready(function() {

@@ -164,12 +164,12 @@
                                             <label class="form-check-label" name="recurring_shift" for="customCheck1">Recurring Shift</label>
                                         </div>
                                     </div>
-                                    <!-- <div class="col-sm-12">
+                                    <div class="col-sm-12">
                                         <div class="custom-control form-check">
-                                            <input type="checkbox" class="form-check-input" id="is_cod" name="is_cod" value="1">
-                                            <label class="form-check-label" name="is_cod" for="is_cod">Is COD?</label>
+                                            <input type="checkbox" class="form-check-input" id="is_twoday_shift" name="is_twoday_shift" value="1">
+                                            <label class="form-check-label" name="is_twoday_shift" for="is_twoday_shift">Is Two Day Shift?</label>
                                         </div>
-                                    </div> -->
+                                    </div>
                                     <div class="col-sm-12">
                                         <div class="form-group">
                                             <label class="col-form-label">Repeat Every</label>
@@ -320,12 +320,12 @@
                                             <label class="form-check-label" for="customCheck3">Recurring Shift</label>
                                             </div>
                                     </div>
-                                    <!-- <div class="col-sm-12 cod_div">
+                                    <div class="col-sm-12 cod_div">
                                         <div class="custom-control form-check">
-                                            <input type="checkbox" class="form-check-input" id="is_cod_edit" name="is_cod" value="1">
-                                            <label class="form-check-label" name="is_cod" for="is_cod">Is COD?</label>
+                                            <input type="checkbox" class="form-check-input" id="is_twoday_shift_edit" name="is_twoday_shift" value="1">
+                                            <label class="form-check-label" name="is_twoday_shift" for="is_twoday_shift">Is Two Day Shift?</label>
                                         </div>
-                                    </div> -->
+                                    </div>
                                     <div class="col-sm-12">
                                         <div class="form-group">
                                             <label class="col-form-label">Repeat Every</label>
@@ -550,11 +550,11 @@
                 },
                 start_time:{
                     required : true,
-                    greaterThan: "#add_min_start_time"
+                    //greaterThan: "#add_min_start_time"
                 },
                 max_start_time:{
                     required : true,
-                    greaterThan: "#add_start_time"
+                    //greaterThan: "#add_start_time"
                 },
                 min_end_time:{
                     required : true,
@@ -562,11 +562,11 @@
                 },
                 end_time:{
                     required : true,
-                    greaterThan: "#add_min_end_time"
+                    //greaterThan: "#add_min_end_time"
                 },
                 max_end_time:{
                     required : true,
-                    greaterThan: "#add_end_time"
+                    //greaterThan: "#add_end_time"
                 },
                 end_on:{
                     required : true
@@ -644,11 +644,11 @@
                 },
                 start_time:{
                     required : true,
-                    greaterThan: "#edit_min_start_time"
+                    //greaterThan: "#edit_min_start_time"
                 },
                 max_start_time:{
                     required : true,
-                    greaterThan: "#edit_start_time"
+                    //greaterThan: "#edit_start_time"
                 },
                 min_end_time:{
                     required : true,
@@ -656,11 +656,11 @@
                 },
                 end_time:{
                     required : true,
-                    greaterThan: "#edit_min_end_time"
+                    //greaterThan: "#edit_min_end_time"
                 },
                 max_end_time:{
                     required : true,
-                    greaterThan: "#edit_end_time"
+                    //greaterThan: "#edit_end_time"
                 },
                 end_on:{
                     required : true
@@ -733,7 +733,7 @@
 
 <script>
     $(document).on('click','.editButton',function(){
-        $('#is_cod_edit').removeAttr('checked');
+        $('#is_twoday_shift_edit').removeAttr('checked');
         $('.cod_div').removeClass('d-none');
         var rowData = $(this).data('data');
         var decodedData = atob(rowData);
@@ -751,7 +751,11 @@
                 if(key == 'id' && value<10){
                     $('.cod_div').addClass('d-none');
                 }
-                if(key != 'is_cod'){
+                if(key == 'is_twoday_shift' && value == '1'){
+                    console.log('dfd');
+                    $('#is_twoday_shift_edit').attr('checked',true);
+                }
+                if(key != 'is_twoday_shift'){
                     $('#editForm [name="'+key+'"]').val(value);
                 }
             }

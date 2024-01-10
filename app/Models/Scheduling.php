@@ -20,6 +20,6 @@ class Scheduling extends Model
 
     public function shift_details()
     {
-        return $this->hasOne(Shifting::class, 'id','shift')->select('is_cod');
+        return $this->hasOne(Shifting::class, 'id','shift')->select('is_cod','shift_name');
     }
 }

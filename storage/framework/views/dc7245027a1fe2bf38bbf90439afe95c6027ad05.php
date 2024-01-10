@@ -174,11 +174,13 @@ $username = Session::get('username');
                                                                 }
                                                                 else
                                                                 {
-                                                                    $start = date('h:i a', strtotime($emloyeeScheduleToday->start_time));
-                                                                    $end = date('h:i a', strtotime($emloyeeScheduleToday->end_time));
-                                                                    $gap = getTimeDiff($start, $end);
+                                                                    $date_a = strtotime($emloyeeScheduleToday->start_time);
+                                                                    $date_b = strtotime($emloyeeScheduleToday->end_time);
 
-                                                                    $sched = $start.' - '.$end.'('. $gap.' hrs)';
+                                                                    $diff = round(abs($date_a - $date_b) / 60,2);
+                                                                    $gap = convertToHoursMinutes($diff);
+
+                                                                    $sched = $emloyeeScheduleToday->shift_details->shift_name.'('. $gap.' hrs)';
                                                                 }
                                                                 $sh->shift_details = json_encode($emloyeeScheduleToday);
                                                                     

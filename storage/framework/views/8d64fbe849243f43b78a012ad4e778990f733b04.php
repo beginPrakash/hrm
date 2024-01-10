@@ -173,20 +173,15 @@ $maxDays=date('t', strtotime($start_date));
                                                                 $encoded = base64_encode(json_encode($date.'/'.$employee->user_id));
 
                                                                 $firstclockin = App\Models\AttendanceDetails::where('user_id', $employee->user_id)->where('employee_id', $employee->emp_generated_id)->where('punch_state', 'clockin')->whereDate('attendance_on', $date)->first();
-                                                                $lastclockout = App\Models\AttendanceDetails::where('user_id', $employee->user_id)->where('employee_id', $employee->emp_generated_id)->where('punch_state', 'clockout')->whereDate('attendance_on', $date)->limit(1)->orderBy('id', 'desc')->first();
-                                                                if(empty($lastclockout)):
-                                                                    $plus_date = strtotime('+1 day', strtotime($date));
-                                                                    $plus_date_form = date('Y-m-d',$plus_date);
-                                                                    $lastclockout = App\Models\AttendanceDetails::where('user_id', $employee->user_id)->where('employee_id', $employee->emp_generated_id)->where('punch_state', 'clockout')->whereDate('attendance_on', $plus_date_form)->limit(1)->orderBy('id', 'desc')->first();
-                                                                endif;
+                                                                $lastclockout = App\Models\AttendanceDetails::where('atte_ref_id', $firstclockin->id)->where('punch_state', 'clockout')->first();
                                                                 $shcolor = '';
                                                                 $shicon = '';
                                                                 $flag = 0;
 
-                                                                $minStartTime_24 = (isset($shiftDetails->min_start_time))?date('Y-m-d H:i', strtotime($shiftDetails->min_start_time)):'0';
-                                                                $maxStartTime_24 = (isset($shiftDetails->max_start_time))?date('Y-m-d H:i', strtotime($shiftDetails->max_start_time)):'0';
-                                                                $minEndTime_24 = (isset($shiftDetails->min_end_time))?date('Y-m-d H:i', strtotime($shiftDetails->min_end_time)):'0';
-                                                                $maxEndTime_24 = (isset($shiftDetails->max_end_time))?date('Y-m-d H:i', strtotime($shiftDetails->max_end_time)):'0';
+                                                                $minStartTime_24 = (isset($shiftDetails->min_start_time))?date('H:i', strtotime($shiftDetails->min_start_time)):'0';
+                                                                $maxStartTime_24 = (isset($shiftDetails->max_start_time))?date('H:i', strtotime($shiftDetails->max_start_time)):'0';
+                                                                $minEndTime_24 = (isset($shiftDetails->min_end_time))?date('H:i', strtotime($shiftDetails->min_end_time)):'0';
+                                                                $maxEndTime_24 = (isset($shiftDetails->max_end_time))?date('H:i', strtotime($shiftDetails->max_end_time)):'0';
                                                                 if((isset($firstclockin->attendance_time) && checkDateTimeInBetween($firstclockin->attendance_time, $minStartTime_24, $maxStartTime_24)==1) && (isset($lastclockout->attendance_time) && checkDateTimeInBetween($lastclockout->attendance_time, $minEndTime_24, $maxEndTime_24)==1))
                                                                 {
                                                                     $shcolor = 'text-success';
@@ -413,10 +408,12 @@ $maxDays=date('t', strtotime($start_date));
        var approve_remark = $('#approve_remark').val();
        var start_time = $('#start_time').val();
        var end_time = $('#end_time').val();
+       var schd_start_date = $('#schd_start_date').val();
+       var schd_end_date = $('#schd_end_date').val();
        $.ajax({
            type: "POST",
            url: "<?php echo e(url('approveOt/')); ?>",
-           data: {attnUserId:attnUserId, attnDate:attnDate, ottime:ottime, approve_status:approve_status, approve_remark:approve_remark, start_time:start_time, end_time:end_time, "_token": "<?php echo e(csrf_token()); ?>"},
+           data: {attnUserId:attnUserId, attnDate:attnDate, ottime:ottime, approve_status:approve_status, approve_remark:approve_remark, start_time:start_time, end_time:end_time,schd_start_date:schd_start_date,schd_end_date:schd_end_date, "_token": "<?php echo e(csrf_token()); ?>"},
            success: function( msg ) {
                alert( 'Over Time approved successfully.' );
                location.reload();

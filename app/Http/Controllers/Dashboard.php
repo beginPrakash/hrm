@@ -17,6 +17,7 @@ class Dashboard extends Controller
 {
     public function index()
     {
+        $lastclockout = [];
         $current_date = Carbon::today();
         $after_date = Carbon::today()->addDay(7);
         $user_id  = Session::get('user_id');
@@ -46,10 +47,17 @@ class Dashboard extends Controller
         $totpayable = ($totsalary + $additions + $total_overtime_salary + $totIndemnity + $annualleavedetails['leaveAmount'] + $public_holidays_amount) - $deductions;
         //for attendance details
         $attnDate = date('Y-m-d');
-        $firstclockin = AttendanceDetails::where('user_id', $user_id)->where('punch_state', 'clockin')->whereDate('attendance_on', $attnDate 
-        )->first();
-        $lastclockout = AttendanceDetails::where('user_id', $user_id)->where('punch_state', 'clockout')->whereDate('attendance_on', $attnDate 
-        )->limit(1)->orderBy('id', 'desc')->first();
+        $get_last_row = AttendanceDetails::where('user_id', $user_id)->orderBy('id','desc')->value('punch_state');
+        if($get_last_row == 'clockout'):
+            $firstclockin = AttendanceDetails::where('user_id', $user_id)->where('punch_state', 'clockin')->whereDate('attendance_on', $attnDate 
+                            )->first();
+        else:
+            $firstclockin = AttendanceDetails::where('user_id', $user_id)->orderBy('id','desc')->first();
+        endif;
+
+        if(!empty($firstclockin)):
+            $lastclockout = AttendanceDetails::where('atte_ref_id', $firstclockin->atte_ref_id)->where('punch_state', 'clockout')->first();
+        endif;
         $holidayWork = AttendanceDetails::select('a.user_id', 'a.attendance_on','h.holiday_day', 'h.holiday_date','h.title', 'sh.shift')
                         ->from('attendance_details as a')
                         ->join('holidays as h', 'a.attendance_on', '=', 'h.holiday_date')

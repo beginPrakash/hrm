@@ -145,7 +145,7 @@ class ShiftingController extends Controller
                 'recurring_shift'   =>  $request->recurring_shift,
                 'repeat_every'      =>  $request->repeat_every,
                 'week_day'          =>  (isset($request->week_day) && !empty($request->week_day)) ? implode(',',$request->week_day) : '',
-                'end_on'            =>  date('Y-m-d', strtotime(str_replace('/','-',$request->end_on))),
+                'end_on'            =>  (isset($request->end_on) && !empty($request->end_on)) ? date('Y-m-d', strtotime(str_replace('/','-',$request->end_on))):NULL,
                 'indefinite'        =>  $request->indefinite,
                 'tag'               =>  $request->tag,
                 'note'              =>  $request->note,
@@ -161,6 +161,7 @@ class ShiftingController extends Controller
 
     public function update(Request $request)
     { 
+        //dd($request->all());
         $company_id  = Session::get('company_id');//echo $company_id;exit;
         $updateArray = array(
             'company_id'        =>  $company_id,
@@ -175,7 +176,7 @@ class ShiftingController extends Controller
             'recurring_shift'   =>  $request->recurring_shift,
             'repeat_every'      =>  $request->repeat_every,
             'week_day'          =>  (isset($request->week_day) && !empty($request->week_day)) ? implode(',',$request->week_day) : '',
-            'end_on'            =>  date('Y-m-d', strtotime(str_replace('/','-',$request->end_on))),
+            'end_on'            =>  (isset($request->end_on) && !empty($request->end_on)) ? date('Y-m-d', strtotime(str_replace('/','-',$request->end_on))):NULL,
             'indefinite'        =>  $request->indefinite,
             'tag'               =>  $request->tag,
             'note'              =>  $request->note,

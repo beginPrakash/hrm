@@ -263,6 +263,11 @@ class AttendanceController extends Controller
                                 $insertData['day_type'] = 'work';
                                 $insertData["attendance_time"] = $importData[9];
                                 $insertData["punch_state"] = 'clockin';
+                                $at_date = date('Y-m-d', strtotime(str_replace('/','-',$importData[5])));
+                                $check_in_exist  = AttendanceDetails::where('user_id',$userId)->where('employee_id',$importData[0])->where('attendance_on',$at_date)->where('punch_state','clockin')->first();
+                                if(!empty($check_in_exist)):
+                                    AttendanceDetails::where('atte_ref_id',$check_in_exist->atte_ref_id)->delete();
+                                endif;
                             }
                             if(AttendanceDetails::where($insertData)->count() == 0)
                             {
@@ -270,6 +275,12 @@ class AttendanceController extends Controller
                                 $insertData["created_at"] = $this->current_datetime;
                                 // echo '<pre>';print_r($insertData);//exit;
                                 $in_data = AttendanceDetails::updateOrCreate($insertData);
+                                $in_id = $in_data->id ?? '';
+                                $find_last_att = AttendanceDetails::find($in_id);
+                                if(!empty($find_last_att)):
+                                    $find_last_att->atte_ref_id = $in_id;
+                                    $find_last_att->save();
+                                endif;
                             }                
                         }
                         else
@@ -279,11 +290,22 @@ class AttendanceController extends Controller
                                 $insertData['day_type'] = 'work';
                                 $insertData["attendance_time"] =    0;
                                 $insertData["punch_state"]  =   'clockin';
+                                $at_date = date('Y-m-d', strtotime(str_replace('/','-',$importData[5])));
+                                $check_in_exist  = AttendanceDetails::where('user_id',$userId)->where('employee_id',$importData[0])->where('attendance_on',$at_date)->where('punch_state','clockin')->first();
+                                if(!empty($check_in_exist)):
+                                    AttendanceDetails::where('atte_ref_id',$check_in_exist->atte_ref_id)->delete();
+                                endif;
                                 if(AttendanceDetails::where($insertData)->count() == 0)
                                 {
                                     $insertData['attendance_id'] = $attnId;
                                     $insertData["created_at"] = $this->current_datetime;
                                     $in_data = AttendanceDetails::updateOrCreate($insertData);
+                                    $in_id = $in_data->id ?? '';
+                                    $find_last_att = AttendanceDetails::find($in_id);
+                                    if(!empty($find_last_att)):
+                                        $find_last_att->atte_ref_id = $in_id;
+                                        $find_last_att->save();
+                                    endif;
                                 }
                             }
                         }           
@@ -301,6 +323,15 @@ class AttendanceController extends Controller
                                 $insertData['day_type'] = 'work';
                                 $insertData["attendance_time"] =    $importData[10];
                                 $insertData["punch_state"]  =   'clockout';
+                                $insertData["atte_ref_id"]  =   $in_id ?? '';
+                                $at_date = date('Y-m-d', strtotime(str_replace('/','-',$importData[5])));
+                                $check_out_exist  = AttendanceDetails::where('user_id',$userId)->where('employee_id',$importData[0])->where('attendance_on',$at_date)->where('punch_state','clockout')->first();
+                                if(!empty($check_out_exist)):
+                                    $check_in_exi = AttendanceDetails::where('id',$check_out_exist->atte_ref_id)->first();
+                                    if(empty($check_in_exi)):
+                                        AttendanceDetails::where('atte_ref_id',$check_out_exist->atte_ref_id)->delete();
+                                    endif;
+                                endif;
                             // }
                             if(AttendanceDetails::where($insertData)->count() == 0)
                             {
@@ -316,6 +347,15 @@ class AttendanceController extends Controller
                                 $insertData['day_type'] = 'work';
                                 $insertData["attendance_time"] =    0;
                                 $insertData["punch_state"]  =   'clockout';
+                                $insertData["atte_ref_id"]  =   $in_id ?? '';
+                                $check_out_exist  = AttendanceDetails::where('user_id',$userId)->where('employee_id',$importData[0])->where('attendance_on',$at_date)->where('punch_state','clockout')->first();
+                               
+                                if(!empty($check_out_exist)):
+                                    $check_in_exi = AttendanceDetails::where('id',$check_out_exist->atte_ref_id)->first();
+                                    if(empty($check_in_exi)):
+                                        AttendanceDetails::where('atte_ref_id',$check_out_exist->atte_ref_id)->delete();
+                                    endif;
+                                endif;
                                 if(AttendanceDetails::where($insertData)->count() == 0)
                                 {
                                     $insertData['attendance_id'] = $attnId;
@@ -465,7 +505,10 @@ class AttendanceController extends Controller
         $popup_type = $request->popup_type ?? '';
         $attnDate = str_replace('"','',preg_replace('/\\\\/', '', $request->attnDate));
         // $emloyeeAttendance = AttendanceDetails::where(array('user_id' => $userId, 'attendance_on' => $attnDate))->orderBy('attendance_time')->get()->toArray();
-        $emloyeeAttendance = AttendanceDetails::where(array('user_id' => $userId, 'attendance_on' => $attnDate,'employee_id'=>$emp_detail->emp_generated_id))->get()->toArray();
+        $checkin_att = AttendanceDetails::where(array('user_id' => $userId, 'attendance_on' => $attnDate,'employee_id'=>$emp_detail->emp_generated_id,'punch_state'=>'clockin'))->first();
+        if(!empty($checkin_att)):
+            $emloyeeAttendance = AttendanceDetails::where('atte_ref_id',$checkin_att->id)->get()->toArray();
+        endif;
         $emloyeeSchedule = Scheduling::where(array('employee' => $userId, 'shift_on' => date('Y-m-d', strtotime($attnDate)), 'status' => 'active'))->get()->toArray();
         // echo '<pre>';print_r($emloyeeAttendance);exit;
         if($popup_type == 'create_attn'):
@@ -503,8 +546,10 @@ class AttendanceController extends Controller
         $breakTime = 0; $totalBreakTime = 0;
         $lastTime = 0;
 
-        $emloyeeAttendance = AttendanceDetails::where(array('user_id' => $userid, 'attendance_on' => $attendanceon))->get()->toArray();
-
+        $checkin_att = AttendanceDetails::where(array('user_id' => $userid, 'attendance_on' => $attendanceon,'punch_state'=>'clockin'))->first();
+        if(!empty($checkin_att)):
+            $emloyeeAttendance = AttendanceDetails::where('atte_ref_id',$checkin_att->id)->get()->toArray();
+        endif;
         $punchStates = array_column($emloyeeAttendance, 'punch_state');
         $count = count($emloyeeAttendance);
         $lastIndex = $count-1;
@@ -570,7 +615,7 @@ class AttendanceController extends Controller
                     // echo '$totalWorkTime- '.$totalWorkTime;
 
                 }
-                $startTime = $ea['attendance_time'];
+                $startTime = $ea['attendance_on'].' '.$ea['attendance_time'];
 
                 if($key==$lastIndex)
                 { 
@@ -594,8 +639,8 @@ class AttendanceController extends Controller
             if($ea['punch_state']=='clockout')
             { 
                 
-                $time1 = ($startTime!=='0')?strtotime($startTime):strtotime($ea['attendance_time']);
-                $time2 = ($ea['attendance_time']!=='0')?strtotime($ea['attendance_time']):$time1;
+                $time1 = ($startTime!=='0')?strtotime($startTime):strtotime($ea['attendance_on'].' '.$ea['attendance_time']);
+                $time2 = ($ea['attendance_time']!=='0')?strtotime($ea['attendance_on'].' '.$ea['attendance_time']):$time1;
                 $totalWorkTime = $totalWorkTime + round(abs($time2 - $time1) / 3600,2);
                 
                 // echo $startTime.'-'.$time1;
@@ -672,13 +717,14 @@ class AttendanceController extends Controller
         $schedule = Scheduling::where($newSchedule)->first();
 // echo '<pre>';print_r($schedule);exit;
         $newSchedule['company_id'] =  $company_id;
-        $newSchedule['min_start_time']  =  _convert_time_to_12hour_format(str_replace(' pm','',$request->start_time));
-        $newSchedule['start_time']  =  _convert_time_to_12hour_format(str_replace(' pm','',$request->start_time));
-        $newSchedule['max_start_time']  =  _convert_time_to_12hour_format(str_replace(' pm','',$request->start_time));
-        $newSchedule['min_end_time']  =  _convert_time_to_12hour_format(str_replace(' pm','',$request->end_time));
-        $newSchedule['end_time']  =  _convert_time_to_12hour_format(str_replace(' pm','',$request->end_time));
-        $newSchedule['max_end_time']  =  _convert_time_to_12hour_format(str_replace(' pm','',$request->end_time));
+        $newSchedule['min_start_time']  =  _convert_time_to_12hour_dateformat($request->schd_start_date.' '.$request->start_time);
+        $newSchedule['start_time']  =  _convert_time_to_12hour_dateformat($request->schd_start_date.' '.$request->start_time);
+        $newSchedule['max_start_time']  =  _convert_time_to_12hour_dateformat($request->schd_start_date.' '.$request->start_time);
+        $newSchedule['min_end_time']  =  _convert_time_to_12hour_dateformat($request->schd_end_date.' '.$request->end_time);
+        $newSchedule['end_time']  =  _convert_time_to_12hour_dateformat($request->schd_end_date.' '.$request->end_time);
+        $newSchedule['max_end_time']  =  _convert_time_to_12hour_dateformat($request->schd_end_date.' '.$request->end_time);
         // $newSchedule['over_time'] = $request->ottime;
+
         // echo '<pre>';print_r($_POST);echo '<pre>';print_r($newSchedule);exit;
         $shiftid = Scheduling::where('id', $schedule->id)->update($newSchedule);
 
@@ -699,12 +745,12 @@ class AttendanceController extends Controller
             $updateArray['attendance_time'] = date('H:i', strtotime(str_replace(' pm','',$request->start_time)));
             $where['punch_state'] = 'clockin';
             AttendanceDetails::where($where)->update($updateArray);
+            $atte_ref_id = AttendanceDetails::where($where)->value('atte_ref_id');
         }
         if(isset($request->end_time))
         {
             $updateArray['attendance_time'] = date('H:i', strtotime(str_replace(' pm','',$request->end_time)));
-            $where['punch_state'] = 'clockout';
-            AttendanceDetails::where($where)->update($updateArray);
+            AttendanceDetails::where(['atte_ref_id'=>$atte_ref_id ?? '','punch_state'=>'clockout'])->update($updateArray);
         }
         $end_time = date('H:i', strtotime(str_replace(' pm','',$request->end_time)));
         $start_time = date('H:i', strtotime(str_replace(' pm','',$request->start_time)));
@@ -734,23 +780,25 @@ class AttendanceController extends Controller
     }
 
     public function create_attendance_by_date(Request $request){
-        //dd($request->all());
         $userDetails = Employee::where("user_id", $request->attnUserId)->where('status','active')->first();
         $userId = $userDetails->emp_generated_id;//by employee id
         $departmentId = $userDetails->department;
-        $end_time = date('Y-m-d H:i', strtotime(str_replace(' pm','',$request->end_time)));
-        $start_time = date('Y-m-d H:i', strtotime(str_replace(' pm','',$request->start_time)));
+        $end_time = date('H:i', strtotime(str_replace(' pm','',$request->end_time)));
+        $start_time = date('H:i', strtotime(str_replace(' pm','',$request->start_time)));
         $att_date = date('Y-m-d', strtotime($request->attnDate));
-        AttendanceDetails::where('user_id',$request->attnUserId)->where('employee_id',$userId)->where('attendance_on',$att_date)->delete();
 
         if(isset($request->start_time))
         {
+            $check_in_exist  = AttendanceDetails::where('user_id',$request->attnUserId)->where('employee_id',$userId)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
+            if(!empty($check_in_exist)):
+                AttendanceDetails::where('atte_ref_id',$check_in_exist->atte_ref_id)->delete();
+            endif;
             $attnId = 1;
             $insertData = array(
             "user_id"       =>  $request->attnUserId,
             "employee_id"   =>  $userId,
             "department"    =>  $departmentId,
-            "attendance_on" =>  date('Y-m-d', strtotime($start_time)),
+            "attendance_on" =>  $request->schd_start_date ?? $request->attnDate,
             "attendance_time"=> $start_time,
             "punch_state"   =>  'clockin',
             "day_type"     =>  'work',
@@ -759,18 +807,32 @@ class AttendanceController extends Controller
             "status"        =>  'active');
             $in_data = AttendanceDetails::create($insertData);
             $in_id = $in_data->id ?? '';
+            $att_data = AttendanceDetails::find($in_id);
+            $att_data->atte_ref_id = $in_id;
+            $att_data->save();
             }
         if(isset($request->end_time))
         {
+            $check_out_exist  = AttendanceDetails::where('user_id',$request->attnUserId)->where('employee_id',$userId)->where('attendance_on',$att_date)->where('punch_state','clockout')->first();
+            if(!empty($check_out_exist)):
+                $check_in_exi = AttendanceDetails::where('id',$check_out_exist->atte_ref_id)->first();
+                if(empty($check_in_exi)):
+                    AttendanceDetails::where('atte_ref_id',$check_out_exist->atte_ref_id)->delete();
+                endif;
+            endif;
+            if(!empty($check_in_exist)):
+                AttendanceDetails::where('atte_ref_id',$check_in_exist->atte_ref_id)->delete();
+            endif;
             $insertData = array(
             "user_id"       =>  $request->attnUserId,
             "employee_id"   =>  $userId,
             "department"    =>  $departmentId,
-            "attendance_on" =>  date('Y-m-d', strtotime($end_time)),
+            "attendance_on" =>  $request->schd_end_date ?? $request->attnDate,
             "attendance_time"=> $end_time,
             "punch_state"   =>  'clockout',
             "day_type"     =>  'work',
             "data_source"   =>  'Device',
+            "atte_ref_id"   =>  $in_id,
             "created_at"    =>  $this->current_datetime,
             "status"        =>  'active');
 
@@ -803,12 +865,16 @@ class AttendanceController extends Controller
         $user_id  = Session::get('user_id');
         //find employee generated id
         $cdate = date('Y-m-d');
-        $ctime = date('h:i');
+        $ctime = date('H:i');
         $userDetails = Employee::where("user_id", $user_id)->where('status','active')->first();
         $employee_id = $userDetails->emp_generated_id;//by employee id
         $departmentId = $userDetails->department;
         //$ctime = date('H:i', strtotime(str_replace(' pm','',$request->start_time)));
         if($type == 'in'):
+            $check_in_exist  = AttendanceDetails::where('user_id',$user_id)->where('employee_id',$employee_id)->where('attendance_on',$cdate)->where('punch_state','clockin')->first();
+            if(!empty($check_in_exist)):
+                AttendanceDetails::where('atte_ref_id',$check_in_exist->atte_ref_id)->delete();
+            endif;
             $insertData = array(
             "user_id"       =>  $user_id,
             "employee_id"   =>  $employee_id,
@@ -822,7 +888,22 @@ class AttendanceController extends Controller
             "status"        =>  'active');
 
             $in_data = AttendanceDetails::create($insertData);
+            $in_id = $in_data->id ?? '';
+            $att_data = AttendanceDetails::find($in_id);
+            $att_data->atte_ref_id = $in_id;
+            $att_data->save();
         elseif($type == 'out'):
+            $check_out_exist  = AttendanceDetails::where('user_id',$user_id)->where('employee_id',$employee_id)->where('attendance_on',$cdate)->where('punch_state','clockout')->first();
+            if(!empty($check_out_exist)):
+                $check_in_exi = AttendanceDetails::where('id',$check_out_exist->atte_ref_id)->first();
+                if(empty($check_in_exi)):
+                    AttendanceDetails::where('atte_ref_id',$check_out_exist->atte_ref_id)->delete();
+                endif;
+            endif;
+            if(!empty($check_in_exist)):
+                AttendanceDetails::where('atte_ref_id',$check_in_exist->atte_ref_id)->delete();
+            endif;
+            $last_att = AttendanceDetails::where('user_id', $user_id)->where('punch_state', 'clockin')->orderBy('id','desc')->first();
             $insertData = array(
             "user_id"       =>  $user_id,
             "employee_id"   =>  $employee_id,
@@ -832,6 +913,7 @@ class AttendanceController extends Controller
             "punch_state"   =>  'clockout',
             "day_type"     =>  'work',
             "data_source"   =>  'Device',
+            'atte_ref_id'=>$last_att->id ?? '',
             "created_at"    =>  $this->current_datetime,
             "status"        =>  'active');
 
@@ -839,14 +921,12 @@ class AttendanceController extends Controller
         endif;
         //get schedule data
         $att_date = date('Y-m-d', strtotime($cdate));
-        $start_time = AttendanceDetails::where('user_id', $user_id)->where('punch_state', 'clockin')->whereDate('attendance_on', $att_date 
-        )->first();
-        $end_time = AttendanceDetails::where('user_id', $user_id)->where('punch_state', 'clockout')->whereDate('attendance_on', $att_date 
-        )->limit(1)->orderBy('id', 'desc')->first();
+        $start_time = AttendanceDetails::where('user_id', $user_id)->where('punch_state', 'clockin')->orderBy('id','desc')->first();
+        $end_time = AttendanceDetails::where('atte_ref_id', $start_time->atte_ref_id ?? '')->where('punch_state', 'clockout')->first();
         if(!empty($start_time) && !empty($end_time)):
             $shiftDetails = Scheduling::where('employee', $user_id)->where('shift_on', $att_date)->where('status', 'active')->first();
             if(!empty($shiftDetails)):
-                $flag = _check_green_icon_attendance($cdate,$user_id);
+                $flag = _check_green_icon_attendance($last_att->attendance_on,$user_id);
                 if($flag === 0):
                     $save_data = save_schedule_overtime_hours($user_id,$att_date,$start_time->attendance_time,$end_time->attendance_time);
                 elseif($flag == 2):

@@ -365,7 +365,7 @@
                                     </div>
                                     <div class="col-sm-12">
                                         <div class="custom-control form-check">
-                                            <input type="checkbox" class="form-check-input" id="customCheck4" name="indefinite">
+                                            <input type="checkbox" class="form-check-input" id="customCheck4" name="indefinite" value="1">
                                             <label class="form-check-label" for="customCheck4">Indefinite</label>
                                             </div>
                                     </div>                              
@@ -569,7 +569,9 @@
                     //greaterThan: "#add_end_time"
                 },
                 end_on:{
-                    required : true
+                    required: function () {
+                        return $('#customCheck2').prop('checked') == false;  
+                    },
                 },
                 break_time:{
                     required : true
@@ -663,7 +665,9 @@
                     //greaterThan: "#edit_end_time"
                 },
                 end_on:{
-                    required : true
+                    required: function () {
+                        return $('#customCheck4').prop('checked') == false;  
+                    },
                 },
                 break_time:{
                     required : true
@@ -734,6 +738,7 @@
 <script>
     $(document).on('click','.editButton',function(){
         $('#is_twoday_shift_edit').removeAttr('checked');
+        $('#customCheck4').removeAttr('checked');
         $('.cod_div').removeClass('d-none');
         var rowData = $(this).data('data');
         var decodedData = atob(rowData);
@@ -752,10 +757,13 @@
                     $('.cod_div').addClass('d-none');
                 }
                 if(key == 'is_twoday_shift' && value == '1'){
-                    console.log('dfd');
                     $('#is_twoday_shift_edit').attr('checked',true);
                 }
-                if(key != 'is_twoday_shift'){
+               // console.log(key+'--'+value);
+                if(key == 'indefinite' && value == '1'){
+                    $('#customCheck4').attr('checked',true);
+                }
+                if(key != 'is_twoday_shift' && key != 'indefinite'){
                     $('#editForm [name="'+key+'"]').val(value);
                 }
             }

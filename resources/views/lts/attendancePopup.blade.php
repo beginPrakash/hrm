@@ -165,7 +165,7 @@ if(isset($emloyeeAttendance))
                     }
                     // echo $finalOt.'-'.$emloyeeAttendance[0]['ottime'].'-';
                     //if(($emloyeeAttendance[0]['ottime']=='' && $finalOt > 0) || (!in_array('clockin', $punchStates) || !in_array('clockout', $punchStates))){
-                    if(isset($emloyeeAttendance) && $emloyeeAttendance[0]['ot_approve_status']!=='0' && strtotime($workingHours.'.0') !== strtotime($attendanceHours['totalWorkTimeHours']['timevalue'])) { ?>
+                    if(isset($emloyeeAttendance) && $emloyeeAttendance[0]['schedule_hours'] <= 0) { ?>
     <div class="col-md-12">
         <div class="card">
             <div class="card-body">
@@ -183,10 +183,12 @@ if(isset($emloyeeAttendance))
                         <br><br>
                     Punch Timings <br>
                     <div class="input-group timex timepickerx">
-                        Start Time : <input type="time" class="form-control addsched" name="start_time" id="start_time" value="<?php $date = date("H:i", strtotime($scheduleStart)); echo $date; ?>"><span class="input-group-text"><i class="fa fa-clock-o"></i></span><br>
+                        <input type="hidden" name="schd_start_date" id="schd_start_date" value="@if(!empty($start)) {{date('Y-m-d',strtotime($start))}} @endif">
+                        Start Time ({{date('d F, Y',strtotime($start))}}): <input type="time" class="form-control addsched" name="start_time" id="start_time" value="<?php $date = date("H:i", strtotime($scheduleStart)); echo $date; ?>"><span class="input-group-text"><i class="fa fa-clock-o"></i></span><br>
                     </div>
                     <div class="input-group timex timepickerx">
-                        End Time : <input type="time" class="form-control addsched" name="end_time" id="end_time" value="<?php $date = date("H:i", strtotime($scheduleEnd)); echo $date; ?>"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                        <input type="hidden" name="schd_end_date" id="schd_end_date" value="@if(!empty($last)) {{date('Y-m-d',strtotime($last))}} @endif">
+                        End Time ({{date('d F, Y',strtotime($last))}}): <input type="time" class="form-control addsched" name="end_time" id="end_time" value="<?php $date = date("H:i", strtotime($scheduleEnd)); echo $date; ?>"><span class="input-group-text"><i class="fa fa-clock-o"></i></span>
                     </div>
                         <br>
                     Worked Hours : <span><?php echo (isset($attendanceHours['totalWorkTimeHours']))?$attendanceHours['totalWorkTimeHours']['timetext']:'0hrs'; ?></span><br>

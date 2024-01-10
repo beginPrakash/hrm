@@ -11,7 +11,7 @@ class AttendanceDetails extends Model
 
  	protected $table = 'attendance_details';
     protected $fillable = [
-		'attendance_id', 'user_id', 'employee_id', 'department', 'attendance_on', 'attendance_time', 'day_type', 'punch_state', 'work_code', 'data_source', 'status'
+		'attendance_id', 'user_id', 'employee_id', 'department', 'attendance_on', 'attendance_time', 'day_type', 'punch_state', 'work_code', 'data_source', 'status','atte_ref_id'
 	];
     
 }

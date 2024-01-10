@@ -257,10 +257,12 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
     }
 
     function get_total_hours($start_time,$end_time){
-        $start  = new \Carbon\Carbon($start_time);
-        $end    = new \Carbon\Carbon($end_time);
-        $time = $start->diff($end)->format('%H.%I');
-        return $time;
+        $datetime1 = strtotime($start_time);
+        $datetime2 = strtotime($end_time);
+        $interval  = abs($datetime2 - $datetime1);
+        $minutes   = round($interval / 60);
+        $hours = $minutes/60;
+        return $hours;
     }
 
     function get_time_slots_equal_val($start_time,$end_time)
@@ -286,25 +288,17 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $firstclockin = AttendanceDetails::where('user_id', $attnUserId)->where('punch_state', 'clockin')->whereDate('attendance_on', $attnDate 
         )->first();
        
-        $lastclockout = AttendanceDetails::where('user_id', $attnUserId)->where('punch_state', 'clockout')->whereDate('attendance_on', $attnDate 
-        )->limit(1)->orderBy('id', 'desc')->first();
-        if(empty($lastclockout)):
-            $plus_date = strtotime('+1 day', strtotime($attnDate));
-            $plus_date_form = date('Y-m-d',$plus_date);
-            $lastclockout = AttendanceDetails::where('user_id', $attnUserId)->where('punch_state', 'clockout')->whereDate('attendance_on', $plus_date_form 
-            )->limit(1)->orderBy('id', 'desc')->first();
-        endif;
-
+        $lastclockout = AttendanceDetails::where('atte_ref_id', $firstclockin->id ?? '')->where('punch_state', 'clockout')->first();
         // get shift details
         $shiftDetails = Scheduling::where('employee',$attnUserId)->where('shift_on', date('Y-m-d',strtotime($attnDate)))->where('status','active')->first();
         $shcolor = '';
         $shicon = '';
         $flag = 0;
 
-        $minStartTime_24 = (isset($shiftDetails->min_start_time))?date('Y-m-d H:i', strtotime($shiftDetails->min_start_time)):'0';
-        $maxStartTime_24 = (isset($shiftDetails->max_start_time))?date('Y-m-d H:i', strtotime($shiftDetails->max_start_time)):'0';
-        $minEndTime_24 = (isset($shiftDetails->min_end_time))?date('Y-m-d H:i', strtotime($shiftDetails->min_end_time)):'0';
-        $maxEndTime_24 = (isset($shiftDetails->max_end_time))?date('Y-m-d H:i', strtotime($shiftDetails->max_end_time)):'0';
+        $minStartTime_24 = (isset($shiftDetails->min_start_time))?date('H:i', strtotime($shiftDetails->min_start_time)):'0';
+        $maxStartTime_24 = (isset($shiftDetails->max_start_time))?date('H:i', strtotime($shiftDetails->max_start_time)):'0';
+        $minEndTime_24 = (isset($shiftDetails->min_end_time))?date('H:i', strtotime($shiftDetails->min_end_time)):'0';
+        $maxEndTime_24 = (isset($shiftDetails->max_end_time))?date('H:i', strtotime($shiftDetails->max_end_time)):'0';
         if(!empty($shiftDetails) && (in_array($shiftDetails->shift, array(3))))
         {
             $flag = 2;
@@ -341,8 +335,12 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
     }
 
     function save_schedule_overtime_hours($user_id,$att_date,$start_time,$end_time){
-        $start_time = _convert_time_to_12hour_dateformat($start_time);
-        $end_time = _convert_time_to_12hour_dateformat($end_time);
+        $firstclockin = AttendanceDetails::where('user_id', $user_id)->where('punch_state', 'clockin')->whereDate('attendance_on', $att_date 
+        )->first();
+        $lastclockout = AttendanceDetails::where('atte_ref_id', $firstclockin->id)->where('punch_state', 'clockout')->value('attendance_on');
+        $start_time = _convert_time_to_12hour_dateformat($att_date.' '.$start_time);
+        $end_time = _convert_time_to_12hour_dateformat($lastclockout.' '.$end_time);
+       // dd($start_time);
         $shiftDetails = Scheduling::where('employee', $user_id)->where('shift_on', $att_date)->where('status', 'active')->first();
         $is_cod = (isset($shiftDetails->shift_details) && !empty($shiftDetails->shift_details)) ? $shiftDetails->shift_details->is_cod : 0;
         $break_time_in_minute = $shiftDetails->break_time ?? 0;
@@ -372,7 +370,6 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
                     //$final_diff = $final_diff - 1;
                 endif;
             endif;
-           
             if($is_cod== '1'):
                 //dd($total_attendanace_hours);
                 //save schedule hours and overtime data in attanedance detail yable
@@ -578,6 +575,14 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
                 return $emp_data;
             endif;
         endif;
+    }
+
+    function convertToHoursMinutes($time)
+    {
+        $hours = floor($time / 60);
+        $minutes = ($time % 60);
+        $second = '00';
+        return sprintf('%02d:%02d:%02d', $hours, $minutes,$second);
     }
 
     

@@ -23,7 +23,7 @@ $maxDays=date('t', strtotime($start_date));
                     @include('includes/breadcrumbs', ['title' => $title])
                     
                     <!-- Search Filter -->
-                    <form action="/h" method="post">
+                    <form action="/attendance" method="post">
                         <div class="row filter-row">
                             @csrf
                             <div class="col-sm-6 col-md-3">  

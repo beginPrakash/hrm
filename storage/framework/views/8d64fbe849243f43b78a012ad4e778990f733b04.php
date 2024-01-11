@@ -23,7 +23,7 @@ $maxDays=date('t', strtotime($start_date));
                     <?php echo $__env->make('includes/breadcrumbs', ['title' => $title], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                     
                     <!-- Search Filter -->
-                    <form action="/h" method="post">
+                    <form action="/attendance" method="post">
                         <div class="row filter-row">
                             <?php echo csrf_field(); ?>
                             <div class="col-sm-6 col-md-3">  

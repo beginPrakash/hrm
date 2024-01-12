@@ -12,6 +12,8 @@ use App\Models\Employee;
 use App\Models\Indemnity;
 use App\Models\EmployeeIndemnity;
 use App\Models\AttendanceDetails;
+use App\Models\Departments;
+use App\Models\Shifting;
 
 class Dashboard extends Controller
 {
@@ -69,8 +71,11 @@ class Dashboard extends Controller
                         ->where('a.day_type', 'work')
                         ->groupBy('a.user_id', 'a.attendance_on','h.holiday_day', 'h.holiday_date','h.title', 'sh.shift')
                         ->get();
+        $depwhere = array('status' => 'active');
+        $department   = Departments::where($depwhere)->get();
+        $shifts       = Shifting::where('status', 'active')->get();
         
-        return view('dashboard',compact('sched_data','user_id','balance_annual_leave_total','annual_leave_list','balance_sick_leave_total','sick_leave_list','totpayable','firstclockin','lastclockout','holidayWork','user','indemnityDetails'));
+        return view('dashboard',compact('sched_data','user_id','balance_annual_leave_total','annual_leave_list','balance_sick_leave_total','sick_leave_list','totpayable','firstclockin','lastclockout','holidayWork','user','indemnityDetails','department','shifts'));
     }  
 
     public function calculateIndemnity($user_id)

@@ -178,8 +178,8 @@ $username = Session::get('username');
                                                                     $date_b = strtotime($emloyeeScheduleToday->end_time);
 
                                                                     $diff = round(abs($date_a - $date_b) / 60,2);
-                                                                    $gap = convertToHoursMinutes($diff);
-
+                                                                    $break_time = get_break_time_for_shift($emloyeeScheduleToday->shift);
+                                                                    $gap = convertToHoursMinutes($diff,$break_time);
                                                                     $sched = $emloyeeScheduleToday->shift_details->shift_name.'('. $gap.' hrs)';
                                                                 }
                                                                 $sh->shift_details = json_encode($emloyeeScheduleToday);
@@ -188,7 +188,7 @@ $username = Session::get('username');
                                                             ?>
                                     <div class="user-add-shedule-list">
                                         <h2>
-                                            <a href="javascript:void(0);" style="border:2px dashed #1eb53a">
+                                            <a href="javascript:void(0);" class="editSchedule" data-bs-toggle="modal" data-bs-target="#edit_schedule" data-data="<?php echo $encodedData; ?>" style="border:2px dashed #1eb53a">
                                                 <span class="username-info m-b-10">
                                                     <?php echo $sched; ?>
                                                 </span>
@@ -438,6 +438,146 @@ $username = Session::get('username');
         </div>
     </div>
 
+    <!-- Edit Schedule Modal -->
+    <div id="edit_schedule" class="modal custom-modal fade" role="dialog">
+                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">View Schedule</h5>
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="add_schedule_form" action="/scheduleUpdate" method="post">
+                                <?php echo csrf_field(); ?>
+                                <input type="hidden" name="schedule_id" id="schedule_id" value="">
+                                <input type="hidden" name="edit_start_from_date" id="edit_start_from_date" value="">
+                                <div class="row">
+                                    <div class="col-sm-6" id="edit_dep_drop">
+                                        <div class="form-group">
+                                            <label class="col-form-label">Department <span class="text-danger">*</span></label>
+                                            <select class="select editsched" name="department_addschedule" id="department_addschedule" disableddisabled>
+                                                <option value="">Select Department</option>
+                                                <?php foreach ($department as $dept) {?>
+                                                    <option value="<?php echo $dept->id?>"><?php echo $dept->name?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="col-form-label">Employee Name</label>
+                                            <input type="text" name="employee_addschedule_name" id="edit_employee_addschedule_name" value="" class="form-control hideit editsched">
+                                            
+                                            <select class="select employee_drop editsched" name="employee_addschedule" id="edit_employee_addschedule">
+                                                <option value="">Select Employee</option>
+                                            </select>
+                                            <input type="hidden" name="employee_addschedule_id" id="edit_employee_addschedule_id" value="" class="hideit">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="col-form-label">Date</label>
+                                            <div class="cal-icon">
+                                                <input class="form-control datetimepicker editsched" type="text" name="shift_date" id="edit_shift_date" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="col-form-label">Shifts</label>
+                                            <select class="select shift_addschedule editsched" name="shift_addschedule" id="edit_shift_addschedule" disabled>
+                                                <option value="">Select Shift</option>
+                                                <?php foreach ($shifts as $shf) {?>
+                                                    <option value="<?php echo $shf->id?>"><?php echo $shf->shift_name?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="timedivedit">
+                                    <div class="col-md-4">
+                                        <div class="form-group" >
+                                            <label>Min Start Time</label>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control editsched edit_min_s_time datewithtime" id="min_start_time" name="min_start_time" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Start Time</label>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control editsched edit_s_time datewithtime" name="start_time" id="start_time" disabled>
+                                            </div>                                  
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Max Start Time</label>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control editsched edit_max_s_time datewithtime" name="max_start_time" id="max_start_time" disabled>
+                                            </div>                                          
+                                        </div>
+                                    </div>      
+                                    <div class="col-md-4">
+                                        <div class="form-group" >
+                                            <label>Min End Time</label>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control editsched edit_min_e_time datewithtime" name="min_end_time" id="min_end_time" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>End Time</label>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control editsched edit_e_time datewithtime" name="end_time" id="end_time" disabled>
+                                            </div>                                  
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Max End Time </label>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control editsched edit_max_e_time datewithtime" name="max_end_time" id="max_end_time" disabled>
+                                            </div>                                          
+                                        </div>
+                                    </div>  
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Break Time (In Minutes) </label>
+                                            <input type="text" class="form-control editsched edit_break_time" name="break_time" id="break_time" disabled>                                            
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label class="col-form-label">Accept Extra Hours </label>
+                                            <div class="form-check form-switch">
+                                                <input type="checkbox" class="form-check-input" id="customSwitch1" checked="" name="extra_hours" value="1" disabled>
+                                                <label class="form-check-label" for="customSwitch1"></label>
+                                              </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label class="col-form-label">Publish </label>
+                                            <div class="form-check form-switch">
+                                                <input type="checkbox" class="form-check-input" id="customSwitch2" checked="" name="publish" value="1" disabled>
+                                                <label class="form-check-label" for="customSwitch2"></label>
+                                              </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Edit Schedule Modal -->
+
 </div>
 <?php echo $__env->make('includes/footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>;
 <script type="text/javascript">
@@ -446,4 +586,76 @@ $username = Session::get('username');
     $(document).on('click', '.sick_history_btn', function () {
         $('#sick_data').toggle();
     });
+
+    $(document).on('click','.editSchedule',function(){
+        var rowData = $(this).data('data');
+        // if(rowData!='')
+        // {
+            $('.editsched').val('');
+            var decodedData = atob(rowData);
+
+            $('#edit_start_from_date').val($('#from_date').val());
+            $('#edit_dep_drop').hide(); 
+            $('#edit_employee_addschedule').next(".select2-container").hide();
+            $('#edit_employee_addschedule').hide();
+            $('#edit_employee_addschedule_name').removeClass('hideit');
+            $('#edit_employee_addschedule_id').removeClass('hideit');
+            $.each(JSON.parse(decodedData), function(key,value){
+                //console.log(key+'-'+value);
+                if(key=='first_name')
+                {
+                    $('#edit_employee_addschedule_name').val(value);
+                    $('#edit_employee_addschedule_name').attr('readonly', true);
+                }
+                if(key=='user_id')
+                {
+                    $('#edit_employee_addschedule_id').val(value);
+                }
+                if(key=='shift_on_date')
+                {
+                    $('#edit_shift_date').val(changeDateFormat(value));
+                }
+                if(key=='shift_details')
+                { 
+                    var shdetails = JSON.parse(value);
+
+                    // alert(parseInt(shdetails.shift));
+                    if(parseInt(shdetails.shift) <= 2 && parseInt(shdetails.shift) >= 7 && parseInt(shdetails.shift) <= 9)
+                    { 
+                        $('#timedivedit').css('display', 'none');
+                    }
+                    else
+                    {
+                        $('#timedivedit').css('display', 'flex');
+                    }
+
+                   
+                    $('#edit_shift_addschedule').val(shdetails.shift).select2();
+                    $('#schedule_id').val(shdetails.id);
+                    $('.edit_s_time').val(changeDateFormatTime(shdetails.start_time));
+                    $('.edit_min_s_time').val(changeDateFormatTime(shdetails.min_start_time));
+                    $('.edit_max_s_time').val(changeDateFormatTime(shdetails.max_start_time));
+                    $('.edit_e_time').val(changeDateFormatTime(shdetails.end_time));
+                    $('.edit_min_e_time').val(changeDateFormatTime(shdetails.min_end_time));
+                    $('.edit_max_e_time').val(changeDateFormatTime(shdetails.max_end_time));
+                    $('.edit_break_time').val(shdetails.break_time);
+
+                }
+            });
+    })
+
+    function changeDateFormat(dateval)
+    {
+        var dateParts = dateval.split('-');
+        var formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0];
+        return formattedDate;
+    }
+
+    function changeDateFormatTime(dateval)
+    {
+        var timeparts = dateval.split(' ');
+        var dateParts = timeparts[0].split('-');
+        var formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0]+' '+timeparts[1];
+        return formattedDate;
+    }
 </script><?php /**PATH C:\wamp64_new\www\hrm\resources\views/dashboard.blade.php ENDPATH**/ ?>

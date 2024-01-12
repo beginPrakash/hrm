@@ -158,7 +158,8 @@
                                                                     $date_b = strtotime($emloyeeScheduleToday->end_time);
 
                                                                     $diff = round(abs($date_a - $date_b) / 60,2);
-                                                                    $gap = convertToHoursMinutes($diff);
+                                                                    $break_time = get_break_time_for_shift($emloyeeScheduleToday->shift);
+                                                                    $gap = convertToHoursMinutes($diff,$break_time);
 
                                                                     $sched = $emloyeeScheduleToday->shift_details->shift_name.'('. $gap.' hrs)';
                                                                 }

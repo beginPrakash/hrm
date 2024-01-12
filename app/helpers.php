@@ -577,12 +577,26 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         endif;
     }
 
-    function convertToHoursMinutes($time)
+    function convertToHoursMinutes($time,$break_time)
     {
         $hours = floor($time / 60);
         $minutes = ($time % 60);
         $second = '00';
+        $hours = $hours-$break_time;
         return sprintf('%02d:%02d:%02d', $hours, $minutes,$second);
+    }
+
+    function get_break_time_for_shift($shift){
+        $shiftDetails = Shifting::where('id', $shift)->first();
+        $break_time_in_minute = $shiftDetails->break_time ?? 0;
+        $break_time = 0;
+        if(!empty($break_time_in_minute)):
+            $hours = floor($break_time_in_minute / 60);
+            $min = $break_time_in_minute - ($hours * 60);
+            $break_time = $hours.".".$min;
+        endif;
+        return $break_time;
+        
     }
 
     

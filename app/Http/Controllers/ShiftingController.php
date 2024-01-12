@@ -119,7 +119,7 @@ class ShiftingController extends Controller
             'recurring_shift'   =>  $request->recurring_shift,
             'repeat_every'      =>  $request->repeat_every,
             'week_day'          =>  (isset($request->week_day) && !empty($request->week_day)) ? implode(',',$request->week_day) : '',
-            'end_on'            =>  date('Y-m-d', strtotime(str_replace('/','-',$request->end_on))),
+            'end_on'            =>  (isset($request->end_on) && !empty($request->end_on)) ? date('Y-m-d', strtotime(str_replace('/','-',$request->end_on))):NULL,
             'indefinite'        =>  $request->indefinite,
             'tag'               =>  $request->tag,
             'note'              =>  $request->note,
@@ -134,7 +134,7 @@ class ShiftingController extends Controller
             $insertArray = array(
                 'suid'              =>  'SH'.(100+$lastid+1),
                 'company_id'        =>  $company_id,
-                'shift_name'        =>  $request->shift_name,
+                'shift_name'        =>  'COD-'.$request->shift_name,
                 'min_start_time'    =>  date('h:i:s a', strtotime($request->min_start_time)),
                 'start_time'        =>  date('h:i:s a', strtotime($request->start_time)),
                 'max_start_time'    =>  date('h:i:s a', strtotime($request->max_start_time)),
@@ -161,11 +161,10 @@ class ShiftingController extends Controller
 
     public function update(Request $request)
     { 
-        //dd($request->all());
+        
         $company_id  = Session::get('company_id');//echo $company_id;exit;
         $updateArray = array(
             'company_id'        =>  $company_id,
-            'shift_name'        =>  $request->shift_name,
             'min_start_time'    =>  date('h:i:s a', strtotime($request->min_start_time)),
             'start_time'        =>  date('h:i:s a', strtotime($request->start_time)),
             'max_start_time'    =>  date('h:i:s a', strtotime($request->max_start_time)),
@@ -184,7 +183,21 @@ class ShiftingController extends Controller
             'created_at'        =>  date('Y-m-d h:i:s')
         );
 
-        Shifting::where('id', $_POST['id'])->orWhere('parent_shift', $_POST['id'])->update($updateArray);
+        $check_shift = Shifting::where('id', $_POST['id'])->orWhere('parent_shift', $_POST['id'])->get();
+        if(!empty($check_shift)):
+            $shift_name = $request->shift_name;
+            $updateArray = array(
+                'shift_name'        =>  $shift_name ?? $request->shift_name,
+            );
+            Shifting::where('id', $check_shift[0]->id)->update($updateArray);
+
+            $shift_name = 'COD-'.$request->shift_name;
+            $updateArray = array(
+                'shift_name'        =>  $shift_name ?? $request->shift_name,
+            );
+            Shifting::where('parent_shift', $check_shift[0]->id)->update($updateArray);
+        endif;
+        
         return redirect('/shifting')->with('success','Shift updated successfully!');
     }
 

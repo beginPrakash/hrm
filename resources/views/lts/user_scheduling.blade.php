@@ -21,6 +21,7 @@
                             </div>
                             <div class="col-auto float-end ms-auto">
                                 <a href="#" class="btn add-btn m-r-5" data-bs-toggle="modal" data-bs-target="#import_schedule"> Import Schedule</a>
+                                <a href="#" class="btn add-btn m-r-5 addSchedule" data-data="" data-bs-toggle="modal" data-bs-target="#add_schedule"> Assign Shifts</a>
                             </div>
                         </div>
                     </div>
@@ -164,7 +165,7 @@
                                                                     $sched = $emloyeeScheduleToday->shift_details->shift_name.'('. $gap.' hrs)';
                                                                 }
                                                                 $sh->shift_details = json_encode($emloyeeScheduleToday);
-                                                                    
+                                                                $sh->is_twoday_shift = $emloyeeScheduleToday->shift_details->is_twoday_shift;   
                                                                 $encodedData = base64_encode(json_encode($sh));
                                                             ?>
                                                                 <div class="user-add-shedule-list">
@@ -196,7 +197,7 @@
                                                                 {
                                                             ?>
                                                                 <div class="user-add-shedule-list">
-                                                                    <a href="#">
+                                                                <a href="#"  data-bs-toggle="modal" data-bs-target="#add_schedule" class="addSchedule" data-data="<?php echo $encodedData; ?>">
                                                                     <span><i class="fa fa-plus"></i></span>
                                                                     </a>
                                                                 </div>
@@ -225,6 +226,7 @@
             <!-- /Page Wrapper -->
             
             <!-- Add Schedule Modal -->
+            <input type="hidden" id="is_twoday_shift" value="0">
             <div id="add_schedule" class="modal custom-modal fade" role="dialog">
                 <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                     <div class="modal-content">
@@ -235,7 +237,7 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form id="add_schedule_form" action="/scheduleInsert" method="post">
+                            <form id="add_schedule_form" action="/user_scheduleInsert" method="post" class="add_sch_form">
                                 @csrf
                                 <input type="hidden" name="add_start_from_date" id="add_start_from_date" value="">
                                 <div class="row">
@@ -377,7 +379,7 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form id="add_schedule_form" action="/user_scheduleUpdate" method="post">
+                            <form id="add_schedule_form" action="/user_scheduleUpdate" method="post" class="edit_sch_form">
                                 @csrf
                                 <input type="hidden" name="schedule_id" id="schedule_id" value="">
                                 <input type="hidden" name="edit_start_from_date" id="edit_start_from_date" value="">
@@ -549,8 +551,230 @@
 </html>
 @include('includes/footer')
 
-<script>    
+<script>  
+// var days = daysdifference('03/19/2021', '03/31/2024');
+// console.log(days);
+function daysdifference(firstDate, secondDate){  
+    var startDay = new Date(firstDate);  
+    var endDay = new Date(secondDate);  
+  
+// Determine the time difference between two dates     
+    var millisBetween = startDay.getTime() - endDay.getTime();  
+  
+// Determine the number of days between two dates  
+    var days = millisBetween / (1000 * 3600 * 24);  
+  
+// Show the final number of days between dates     
+    return Math.round(Math.abs(days));  
+} 
+
+var $valid = false;
+var errorMsg = '';
+var dynamicErrorMsg = function () { return errorMsg; }
+jQuery.validator.addMethod("datecchange", function(value, element){
+    var el_name = element.name;
+    var sch_id = $('#schedule_id').val();
+    var is_twoday_shift = $('#is_twoday_shift').val();
+    if(sch_id != ''){
+        var shift_date = $('#edit_shift_date').val();
+    }else{
+        var shift_date = $('#shift_date').val();
+    }
+    var changed_date = value;
+   
+    changed_date = changeDateFormatTimeForVal(changed_date);
+    
+    shift_date = changeDateFormatTimeForVal(shift_date);
+    var diff_days = daysdifference(shift_date,changed_date);
+
+    if(is_twoday_shift == '1'){
+        if(el_name == 'end_time' || el_name == 'min_end_time' || el_name == 'max_end_time'){
+            if(diff_days > 1){
+                errorMsg = "Maximum 24 hours date allowed";
+                return false;
+            }else{
+                return true;
+            }
+        }else if(el_name == 'start_time' || el_name == 'min_start_time' || el_name == 'max_start_time'){
+            if(diff_days > 0){
+                errorMsg = "Single date allowed";
+                return false;
+            }else{
+                return true;
+            }
+        }else{
+            return true;
+        }
+    }else{
+        if(diff_days > 0){
+            errorMsg = "Single date allowed";
+            return false;
+        }else{
+            return true;
+        }
+    }
+    console.log(dynamicErrorMsg);
+},dynamicErrorMsg);
+
     $(document).ready(function() {
+
+        $(".add_sch_form").validate({
+            rules: {
+                shift_date: {
+                    required : true
+                },
+                shift_addschedule:{
+                    required : true
+                },
+                min_start_time:{
+                    required : true
+                },
+                start_time:{
+                    required : true,
+                    datecchange: true
+                },
+                max_start_time:{
+                    required : true,
+                    datecchange: true
+                },
+                min_end_time:{
+                    required : true,
+                    datecchange: true
+                },
+                end_time:{
+                    required : true,
+                    datecchange: true
+                },
+                max_end_time:{
+                    required : true,
+                    datecchange: true
+                },
+            },
+            messages: {
+                shift_date: {
+                    required : 'Shift Date is required'
+                },
+                shift_addschedule:{
+                    required : 'Shift is required'
+                },
+                min_start_time:{
+                    required : 'Min Start Time is required'
+                },
+                start_time:{
+                    required : 'Start Time is required',
+                    greaterThan: 'Must be greater than Min Start time'
+                },
+                max_start_time:{
+                    required : 'Max Start Time is required',
+                    greaterThan: 'Must be greater than Start time'
+                },
+                min_end_time:{
+                    required : 'Min End Time is required',
+                    // greaterThan: 'Must be greater than Max Start time'
+                },
+                end_time:{
+                    required : 'End Time is required',
+                    greaterThan: 'Must be greater than Min End time'
+                },
+                max_end_time:{
+                    required : 'Max End Time is required',
+                    greaterThan: 'Must be greater than End time'
+                },
+                end_on:{
+                    required : 'End On  is required'
+                },
+                break_time:{
+                    required : 'Break time is required'
+                }
+            },
+            errorPlacement: function (error, element) {
+                if (element.prop("type") == "text" || element.prop("type") == "textarea") {
+                    error.insertAfter(element);
+                } else {
+                    error.insertAfter(element.parent());
+                }
+            },
+       });
+
+       $(".edit_sch_form").validate({
+            rules: {
+                shift_date: {
+                    required : true
+                },
+                shift_addschedule:{
+                    required : true
+                },
+                min_start_time:{
+                    required : true
+                },
+                start_time:{
+                    required : true,
+                    datecchange: true
+                },
+                max_start_time:{
+                    required : true,
+                    datecchange: true
+                },
+                min_end_time:{
+                    required : true,
+                    datecchange: true
+                },
+                end_time:{
+                    required : true,
+                    datecchange: true
+                },
+                max_end_time:{
+                    required : true,
+                    datecchange: true
+                },
+            },
+            messages: {
+                shift_date: {
+                    required : 'Shift Date is required'
+                },
+                shift_addschedule:{
+                    required : 'Shift is required'
+                },
+                min_start_time:{
+                    required : 'Min Start Time is required'
+                },
+                start_time:{
+                    required : 'Start Time is required',
+                    greaterThan: 'Must be greater than Min Start time'
+                },
+                max_start_time:{
+                    required : 'Max Start Time is required',
+                    greaterThan: 'Must be greater than Start time'
+                },
+                min_end_time:{
+                    required : 'Min End Time is required',
+                    // greaterThan: 'Must be greater than Max Start time'
+                },
+                end_time:{
+                    required : 'End Time is required',
+                    greaterThan: 'Must be greater than Min End time'
+                },
+                max_end_time:{
+                    required : 'Max End Time is required',
+                    greaterThan: 'Must be greater than End time'
+                },
+                end_on:{
+                    required : 'End On  is required'
+                },
+                break_time:{
+                    required : 'Break time is required'
+                }
+            },
+            errorPlacement: function (error, element) {
+                if (element.prop("type") == "text" || element.prop("type") == "textarea") {
+                    error.insertAfter(element);
+                } else {
+                    error.insertAfter(element.parent());
+                }
+            },
+       });
+
+
         $('#department_addschedule').on('change', function() {
             var departmentID = $(this).val();
            if(departmentID) {
@@ -679,6 +903,11 @@
                     $('.edit_min_e_time').val(changeDateFormatTime(shdetails.min_end_time));
                     $('.edit_max_e_time').val(changeDateFormatTime(shdetails.max_end_time));
                     $('.edit_break_time').val(shdetails.break_time);
+
+                    // var shiftdetai = JSON.parse(shdetails.shift_details);
+
+
+                    $('#is_twoday_shift').val(shdetails.shift_details.is_twoday_shift);
                     
                     // $.each(JSON.parse(value), function(k,v)
                     // {
@@ -699,7 +928,7 @@
     })
 </script>
 
-<script>    
+<script>   
     $(document).ready(function() {
         $('.shift_addschedule').on('change', function() {
             var shiftId = $(this).val();
@@ -723,8 +952,10 @@
                    {
                         var termarray = ['min_start_time', 'start_time', 'max_start_time', 'min_end_time', 'end_time', 'max_end_time'];
                         $.each(response, function(key,value){
+                            $('#is_twoday_shift').val(value.is_twoday_shift);
                             // console.log(value);
                             $.each(value, function(k,v){
+                                final_date = shiftdate; 
                                 // console.log(k+'-'+v);
                                 if(jQuery.inArray(k, termarray) !== -1)
                                 {
@@ -789,6 +1020,14 @@
         var timeparts = dateval.split(' ');
         var dateParts = timeparts[0].split('-');
         var formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0]+' '+timeparts[1];
+        return formattedDate;
+    }
+
+    function changeDateFormatTimeForVal(dateval)
+    {
+        var timeparts = dateval.split(' ');
+        var dateParts = timeparts[0].split('-');
+        var formattedDate = dateParts[1] + '/' + dateParts[0] + '/' + dateParts[2];
         return formattedDate;
     }
 </script>

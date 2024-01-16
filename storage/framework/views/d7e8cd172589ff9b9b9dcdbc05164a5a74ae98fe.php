@@ -587,8 +587,8 @@ jQuery.validator.addMethod("datecchange", function(value, element){
     var changed_date = value;
    
     changed_date = changeDateFormatTimeForVal(changed_date);
-    
-    shift_date = moment(shift_date).format('DD/MM/YYYY');
+
+    shift_date = changeDateFormatTimeForVal(shift_date);
     var diff_days = daysdifference(shift_date,changed_date);
 
     if(is_twoday_shift == '1'){
@@ -621,6 +621,10 @@ jQuery.validator.addMethod("datecchange", function(value, element){
 },dynamicErrorMsg);
     $(document).ready(function() {
 
+        $('#shift_date').change(function(){
+     //Change code!
+     console.log('ggg');
+});
         $(".add_sch_form").validate({
             rules: {
                 shift_date: {
@@ -908,7 +912,7 @@ jQuery.validator.addMethod("datecchange", function(value, element){
                   // var shiftdetai = JSON.parse(shdetails.shift_details);
 
 
-                        $('#is_twoday_shift').val(shdetails.shift_details.is_twoday_shift);
+                    $('#is_twoday_shift').val(shdetails.shift_details.is_twoday_shift);
 
                     
                     // $.each(JSON.parse(value), function(k,v)

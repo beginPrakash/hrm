@@ -84,6 +84,7 @@ class UserScheduling extends Controller
 
     public function store(Request $request)
     {
+        $login_user_id = Session::get('user_id');
         $company_id  = Session::get('company_id');
         // echo '<pre>';print_r($_POST);//exit;
         if(isset($request->employee_addschedule_id))
@@ -112,8 +113,9 @@ class UserScheduling extends Controller
                 'break_time'        =>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6 || $request->shift_addschedule > 9 || $request->shift_addschedule > 9)?$request->break_time:NULL,
                 'extra_hours'   	=>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6 || $request->shift_addschedule > 9 || $request->shift_addschedule > 9)?$request->extra_hours:0,
                 'publish'      		=>  ($request->shift_addschedule >2 && $request->shift_addschedule < 6 || $request->shift_addschedule > 9 || $request->shift_addschedule > 9)?$request->publish:0,
-                'created_at'        =>  date('Y-m-d h:i:s'),
-                'status'			=>	'active'
+                'created_at'        =>   date('Y-m-d h:i:s'),
+                'status'			=>	'active',
+                'added_by'          =>   $login_user_id
             );//echo '<pre>';print_r($insertArray);
             $schedule_date = date('Y-m-d', strtotime(str_replace('/','-',$request->shift_date)));
             $is_schedule_exists = Scheduling::where('employee',$emp)->where('shift_on',$schedule_date)->delete();
@@ -137,7 +139,7 @@ class UserScheduling extends Controller
             endif;
         }
         // exit;
-        return redirect('/scheduling')->with('success', 'Schedule created successfully!')->with('sdate' , $request->add_start_from_date);
+        return redirect('/user_scheduling')->with('success', 'Schedule created successfully!')->with('sdate' , $request->add_start_from_date);
     }
 
     public function update(Request $request)

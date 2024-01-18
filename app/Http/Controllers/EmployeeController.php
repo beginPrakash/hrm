@@ -460,20 +460,20 @@ class EmployeeController extends Controller
             $emparray['profile'] = $filename;
         } 
         Employee::where("id", $request->id)->update($emparray); 
-
+//dd($request->all());
         $dataArray = array(
             'address'         =>  $request->local_address,
             'state'           =>  $request->state,
             'country'         =>  $request->country,
             'pin_code'        =>  $request->pin_code,
             'c_id'            =>  $request->c_id,
-            'expi_c_id'       =>  $request->expi_c_id,
+            'expi_c_id'       =>  date('Y-m-d', strtotime($request->expi_c_id)),
             'b_id'            =>  $request->b_id,
-            'expi_b_id'       =>  $request->expi_b_id,
-            'birthday'        =>  $request->birthday,
+            'expi_b_id'       =>  date('Y-m-d', strtotime($request->expi_b_id)),
+            'birthday'        =>  date('Y-m-d', strtotime($request->birthday)),
             'gender'          =>  $request->gender,
             'license'         =>  $request->license,
-            'license_exp'     =>  $request->license_exp
+            'license_exp'     =>  date('Y-m-d', strtotime($request->license_exp)),
         );
         $employee_information = EmployeeDetails::where("emp_id", $request->id)->first();
         if ($employee_information  ===  null) {

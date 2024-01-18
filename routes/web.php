@@ -60,6 +60,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('/user_scheduleUpdate', [App\Http\Controllers\UserScheduling::class, 'update']);
 	Route::post('/user_scheduleInsert', [App\Http\Controllers\UserScheduling::class, 'store']);
 	Route::post('/user_scheduleImport', [App\Http\Controllers\UserScheduling::class, 'import']);
+	Route::get('/user_employeeByDepartment/{id}', [App\Http\Controllers\UserScheduling::class, 'user_employeeByDepartment'])->name('user_employeeByDepartment');
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');

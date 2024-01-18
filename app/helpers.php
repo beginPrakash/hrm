@@ -303,7 +303,7 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         {
             $flag = 2;
         }else{
-            if((isset($firstclockin->attendance_time) && checkDateTimeInBetween($firstclockin->attendance_time, $minStartTime_24, $maxStartTime_24)==1) && (isset($lastclockout->attendance_time) && checkDateTimeInBetween($lastclockout->attendance_time, $minEndTime_24, $maxEndTime_24)==1))
+           if((isset($firstclockin->attendance_time) && checkDateTimeInBetween($firstclockin->attendance_time, $minStartTime_24, $maxStartTime_24)==1) && (isset($lastclockout->attendance_time) && checkDateTimeInBetween($lastclockout->attendance_time, $minEndTime_24, $maxEndTime_24)==1))
             {
                 $shcolor = 'text-success';
                 $shicon = 'fa-check';
@@ -331,16 +331,18 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
                 $flag = 1;
             }
         }
+
         return $flag;
     }
 
     function save_schedule_overtime_hours($user_id,$att_date,$start_time,$end_time){
+    //    / dd($end_time);
         $firstclockin = AttendanceDetails::where('user_id', $user_id)->where('punch_state', 'clockin')->whereDate('attendance_on', $att_date 
         )->first();
         $lastclockout = AttendanceDetails::where('atte_ref_id', $firstclockin->id)->where('punch_state', 'clockout')->value('attendance_on');
         $start_time = _convert_time_to_12hour_dateformat($att_date.' '.$start_time);
         $end_time = _convert_time_to_12hour_dateformat($lastclockout.' '.$end_time);
-       // dd($start_time);
+        //dd($end_time);
         $shiftDetails = Scheduling::where('employee', $user_id)->where('shift_on', $att_date)->where('status', 'active')->first();
         $is_cod = (isset($shiftDetails->shift_details) && !empty($shiftDetails->shift_details)) ? $shiftDetails->shift_details->is_cod : 0;
         $break_time_in_minute = $shiftDetails->break_time ?? 0;
@@ -359,6 +361,7 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
             $schedule_end_time = _convert_time_to_12hour_dateformat($shiftDetails->end_time);
             $total_schedule_hours = get_total_hours($schedule_start_time,$schedule_end_time);
             $total_attendanace_hours = get_total_hours($start_time,$end_time);
+
             $final_diff = 0;
             $total_attendanace_hours = floatval($total_attendanace_hours);
             $commonWorkingHours = (int)$commonWorkingHours;

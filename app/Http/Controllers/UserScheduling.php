@@ -44,11 +44,11 @@ class UserScheduling extends Controller
                 $where['user_id'] = $_POST['employee'];
                 $search['emp'] = $_POST['employee'];
             }
-            // if(isset($_POST['department']) && $_POST['department']!='')
-            // {
-            //     $depwhere['id'] = $_POST['department'];
-            //     $search['department'] = $_POST['department'];
-            // }
+            if(isset($_POST['department']) && $_POST['department']!='')
+            {
+                $where['department'] = $_POST['department'];
+                $search['department'] = $_POST['department'];
+            }
             if(isset($_POST['from_date']) && $_POST['from_date']!='')
             {
                 // $where['scheduling.shift_on'] = ">= ".date('Y-m-d', strtotime($_POST['from_date']));
@@ -199,9 +199,14 @@ class UserScheduling extends Controller
         return redirect('/user_scheduling')->with('success', 'Schedule updated successfully!')->with('sdate' , $request->add_start_from_date);
     }
 
-    public function employeeByDepartment(Request $request)
+    public function user_employeeByDepartment(Request $request)
     {
-        $employees = Employee::where("department", $request->id)->where('status','active')->get();
+        $login_user_id = Session::get('user_id');
+        $login_user_detail = _is_user_role_owner($login_user_id);
+        $user_branch  = $login_user_detail->branch ?? '';
+      
+        $user_designation  = $login_user_detail->designation ?? '';
+    	$employees   = Employee::where('branch',$user_branch)->where('department',$request->id)->where('designation','!=',$user_designation)->where('status','active')->where('user_id','!=',$login_user_id)->get();
         return response()->json($employees);
     }
 

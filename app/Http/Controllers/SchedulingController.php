@@ -39,16 +39,17 @@ class SchedulingController extends Controller
         $depwhere = array('status' => 'active');
         if(isset($_POST['search']))
         {
+        //    / dd($_POST);
             if(isset($_POST['employee']) && $_POST['employee']!='')
             {
                 $where['user_id'] = $_POST['employee'];
                 $search['emp'] = $_POST['employee'];
             }
-            // if(isset($_POST['department']) && $_POST['department']!='')
-            // {
-            //     $depwhere['id'] = $_POST['department'];
-            //     $search['department'] = $_POST['department'];
-            // }
+            if(isset($_POST['department']) && $_POST['department']!='')
+            {
+                $where['department'] = $_POST['department'];
+                $search['department'] = $_POST['department'];
+            }
             if(isset($_POST['from_date']) && $_POST['from_date']!='')
             {
                 // $where['scheduling.shift_on'] = ">= ".date('Y-m-d', strtotime($_POST['from_date']));

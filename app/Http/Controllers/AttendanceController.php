@@ -227,12 +227,17 @@ class AttendanceController extends Controller
                         // "work_code"     =>  'NULL',
                         "data_source"   =>  'Device',
                         "status"        =>  'active');
+                        
 
                     //check leave scheduling exist or not
                     $is_scheduling_leave = Scheduling::where('shift_on',$insertData['attendance_on'])->where('employee',$userId)->first();
-                    $s_date = date('Y-m-d',strtotime($is_scheduling_leave->start_time)) ?? date('Y-m-d', strtotime(str_replace('/','-',$importData[5])));
-                    $e_date = date('Y-m-d',strtotime($is_scheduling_leave->end_time)) ?? date('Y-m-d', strtotime(str_replace('/','-',$importData[5])));
-
+                    if(!empty($is_scheduling_leave)):
+                        $s_date = date('Y-m-d',strtotime($is_scheduling_leave->start_time)) ?? date('Y-m-d', strtotime(str_replace('/','-',$importData[5])));
+                        $e_date = date('Y-m-d',strtotime($is_scheduling_leave->end_time)) ?? date('Y-m-d', strtotime(str_replace('/','-',$importData[5])));
+                    else:
+                        $s_date = date('Y-m-d', strtotime(str_replace('/','-',$importData[5])));
+                        $e_date = date('Y-m-d', strtotime(str_replace('/','-',$importData[5])));
+                    endif;
                     //if(empty(!$is_scheduling_leave)):
                         if($importData[9] === '' && $importData[10] === '')
                         {
@@ -388,9 +393,11 @@ class AttendanceController extends Controller
                                     $save_data->save();
                                 else:
                                     $save_data = AttendanceDetails::where('user_id',$insertData['user_id'])->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
-                                    $save_data->schedule_hours = NULL;
-                                    $save_data->overtime_hours = NULL;
-                                    $save_data->save();
+                                    if(!empty($save_data)):
+                                        $save_data->schedule_hours = NULL;
+                                        $save_data->overtime_hours = NULL;
+                                        $save_data->save();
+                                    endif;
                                 endif;  
                             endif;
                         endif;
@@ -750,6 +757,9 @@ class AttendanceController extends Controller
 
         if(isset($request->start_time))
         {
+            
+            //$start_time = DateTime::createFromFormat('h:i A', $request->start_time)->format('H:i');
+           // dd($request->start_time);
             $updateArray['attendance_time'] = date('H:i', strtotime(str_replace(' pm','',$request->start_time)));
             $where['punch_state'] = 'clockin';
             AttendanceDetails::where($where)->update($updateArray);
@@ -757,7 +767,8 @@ class AttendanceController extends Controller
         }
         if(isset($request->end_time))
         {
-            $updateArray['attendance_time'] = date('H:i', strtotime(str_replace(' pm','',$request->end_time)));
+            $end_time = date('H:i', strtotime(str_replace(' pm','',$request->end_time)));
+            $updateArray['attendance_time'] = $end_time;
             AttendanceDetails::where(['atte_ref_id'=>$atte_ref_id ?? '','punch_state'=>'clockout'])->update($updateArray);
         }
         $end_time = date('H:i', strtotime(str_replace(' pm','',$request->end_time)));
@@ -777,8 +788,8 @@ class AttendanceController extends Controller
             else:
                 $save_data = AttendanceDetails::where('user_id',$request->attnUserId)->where('attendance_on',$request->attnDate)->where('punch_state','clockin')->first();
                 if(!empty($save_data)):
-                $save_data->schedule_hours = NULL;
-                $save_data->overtime_hours = NULL;
+                $save_data->schedule_hours = 0;
+                $save_data->overtime_hours = 0;
                 $save_data->save();
                 endif;
             endif;  
@@ -791,8 +802,13 @@ class AttendanceController extends Controller
         $userDetails = Employee::where("user_id", $request->attnUserId)->where('status','active')->first();
         $userId = $userDetails->emp_generated_id;//by employee id
         $departmentId = $userDetails->department;
-        $end_time = date('H:i', strtotime(str_replace(' pm','',$request->end_time)));
-        $start_time = date('H:i', strtotime(str_replace(' pm','',$request->start_time)));
+        //$start_time = DateTime::createFromFormat('h:i A', $request->start_time)->format('H:i');
+        $a_endtime = str_replace(' pm','',$request->end_time);
+        $end_time = str_replace(' am','',$a_endtime);
+        $a_starttime = str_replace(' pm','',$request->start_time);
+        $start_time = str_replace(' am','',$a_starttime);
+        $end_time = date('H:i', strtotime($end_time));
+        $start_time = date('H:i', strtotime($start_time));
         $att_date = date('Y-m-d', strtotime($request->attnDate));
 
         if(isset($request->start_time))
@@ -861,9 +877,11 @@ class AttendanceController extends Controller
                 $save_data->save();
             else:
                 $save_data = AttendanceDetails::find($in_id);
-                $save_data->schedule_hours = NULL;
-                $save_data->overtime_hours = NULL;
-                $save_data->save();
+                if(!empty($save_data)):
+                    $save_data->schedule_hours = NULL;
+                    $save_data->overtime_hours = NULL;
+                    $save_data->save();
+                endif;
             endif;  
         endif;
         return redirect()->back()->with('success','Attendance created successfully');
@@ -944,9 +962,11 @@ class AttendanceController extends Controller
                     $save_data->save();
                 else:
                     $save_data = AttendanceDetails::find($start_time->id);
-                    $save_data->schedule_hours = NULL;
-                    $save_data->overtime_hours = NULL;
-                    $save_data->save();
+                    if(!empty($save_data)):
+                        $save_data->schedule_hours = NULL;
+                        $save_data->overtime_hours = NULL;
+                        $save_data->save();
+                    endif;
                 endif;  
             endif;
         endif;

@@ -39,11 +39,17 @@ function randomPassword() {
 
 function checkDateTimeInBetween($checkdatetime, $mindatetime, $maxdatetime)
 {
+    $checkdatetime = date('g:i', strtotime($checkdatetime));
+    $mindatetime = date('g:i', strtotime($mindatetime));
+    $maxdatetime = date('g:i', strtotime($maxdatetime));
+   // dd($mindatetime);
     $checkdatetime = strtotime($checkdatetime);
+   // dd($checkdatetime);  //--- 1705429800   --- 1705515300  -- 1705430700 
     $mindatetime = strtotime($mindatetime);
+    
     $maxdatetime = strtotime($maxdatetime);
-// echo $checkdatetime.'-';
-    if($checkdatetime >= $mindatetime && $checkdatetime <= $maxdatetime) {
+
+    if(($checkdatetime >= $mindatetime) && ($checkdatetime <= $maxdatetime)) {
        return 1;
        // echo "is between";
     } else {

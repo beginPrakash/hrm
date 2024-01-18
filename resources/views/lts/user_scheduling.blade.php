@@ -49,7 +49,7 @@
                                     <select class="select" name="department">
                                         <option value="">Select</option>
                                         <?php foreach ($department as $dept) {?>
-                                            <option value="<?php echo $dept->id; ?>" <?php echo (isset($depwhere['id']) && $depwhere['id']==$dept->id)?'selected':''; ?>><?php echo $dept->name?></option>
+                                            <option value="<?php echo $dept->id; ?>" <?php echo (isset($search['department']) && $search['department']==$dept->id)?'selected':''; ?>><?php echo $dept->name?></option>
                                         <?php } ?>
                                     </select>
                                     <label class="focus-label">Department</label>
@@ -779,7 +779,7 @@ jQuery.validator.addMethod("datecchange", function(value, element){
             var departmentID = $(this).val();
            if(departmentID) {
                $.ajax({
-                   url: '/employeeByDepartment/'+departmentID,
+                   url: '/user_employeeByDepartment/'+departmentID,
                    type: "GET",
                    dataType: "json",
                    // data: {id, departmentID},

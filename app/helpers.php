@@ -431,26 +431,20 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $joiningDateTime = new DateTime($joiningDate);
 
         $currentDateTime = new DateTime($currentDate);
+
+        $interval = $currentDateTime->diff($joiningDateTime);
+        $total_days = $interval->days ?? 0;
+        $total_leave = ($total_days/30)*2.5;
+        return $total_leave;
        
-        $curl_url = 'https://test.hrmado.com/annual_leave_calculator.php?date='.$joiningDate.'&cdate='.$currentDate.'';
-
-        // create & initialize a curl session
-        $curl = curl_init();
-
-        // set our url with curl_setopt()
-        curl_setopt($curl, CURLOPT_URL, $curl_url);
-
-        // return the transfer as a string, also with setopt()
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        // curl_exec() executes the started curl session
-        // $output contains the output string
-        $output = curl_exec($curl);
-
-        // close curl resource to free up system resources
-        // (deletes the variable made by curl_init)
-        curl_close($curl);
-        return $output;
+        // $curl_url = 'https://test.hrmado.com/annual_leave_calculator.php?date='.$joiningDate.'&cdate='.$currentDate.'';
+        // $curl = curl_init();
+        // curl_setopt($curl, CURLOPT_URL, $curl_url);
+        // curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        // curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        // $output = curl_exec($curl);
+        // curl_close($curl);
+        // return $output;
 
     }
 

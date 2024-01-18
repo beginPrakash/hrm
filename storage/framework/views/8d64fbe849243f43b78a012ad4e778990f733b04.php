@@ -28,7 +28,7 @@ $maxDays=date('t', strtotime($start_date));
                             <?php echo csrf_field(); ?>
                             <div class="col-sm-6 col-md-3">  
                                 <div class="form-group form-focus">
-                                    <select class="select floating" name="employee">
+                                    <select class="selectwith_search floating" name="employee">
                                         <option value="">-</option>
                                     <?php
                                     if(isset($allEmployees))
@@ -318,6 +318,11 @@ $maxDays=date('t', strtotime($start_date));
 <?php echo $__env->make('includes/footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
 <script type="text/javascript">
+
+    $('.selectwith_search').select2({
+		minimumResultsForSearch: 1,
+		width: '100%'
+	});
     $(document).ready(function() {
         $("#addAttendance").validate({
             rules: {

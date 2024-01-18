@@ -47,7 +47,7 @@
                         </div>
                         <div class="col-sm-6 col-md-3"> 
                             <div class="form-group form-focus select-focus">
-                                <select class="select floating" name="designation"> 
+                                <select class="selectwith_search floating" name="designation"> 
                                     <option value="">Select Job title</option>
                                     <?php
                                     foreach ($designations as $designation) {?>
@@ -340,6 +340,11 @@
 
 @include('includes/footer')
 <script type="text/javascript">
+
+    $('.selectwith_search').select2({
+		minimumResultsForSearch: 1,
+		width: '100%'
+	});
     $(document).ready(function() {
         $("#addemployee").validate({
             rules: {

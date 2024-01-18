@@ -66,14 +66,14 @@ class UserScheduling extends Controller
         $enddate = date('Y-m-d', strtotime('+6 days', strtotime($startDate)));
         $overtimeDetails = Overtime::get()->first();
         $phDetails = Holidays::whereBetween('holiday_date', [$startDate, $enddate])->get()->pluck('holiday_date')->toArray();
-    	$department   = Departments::where($depwhere)->get();
+    	$department   = Departments::where($depwhere)->orderBy('name','asc')->get();
         $shifts       = Shifting::where('status', 'active')->get();
         $login_user_id = Session::get('user_id');
         $login_user_detail = _is_user_role_owner($login_user_id);
         $user_branch  = $login_user_detail->branch ?? '';
         $user_designation  = $login_user_detail->designation ?? '';
     	$scheduling   = Employee::with('schedules')->where($where)->where('branch',$user_branch)->where('designation','!=',$user_designation)->where('user_id','!=',$login_user_id)->get();
-    	$allEmployees = Employee::with(["employee_designation", 'employee_department'])->where('status','active')->where($empwhere)->where('branch',$user_branch)->where('designation','!=',$user_designation)->where('user_id','!=',$login_user_id)->get();
+    	$allEmployees = Employee::with(["employee_designation", 'employee_department'])->where('status','active')->where($empwhere)->where('branch',$user_branch)->where('designation','!=',$user_designation)->where('user_id','!=',$login_user_id)->orderBy('first_name','asc')->get();
         // echo '<pre>';print_r($scheduling);exit;
         if(!empty($login_user_detail)):
     	    return view('lts.user_scheduling', compact('title', 'allEmployees', 'department', 'shifts', 'scheduling', 'search', 'overtimeDetails', 'phDetails', 'startDate'));
@@ -206,7 +206,7 @@ class UserScheduling extends Controller
         $user_branch  = $login_user_detail->branch ?? '';
       
         $user_designation  = $login_user_detail->designation ?? '';
-    	$employees   = Employee::where('branch',$user_branch)->where('department',$request->id)->where('designation','!=',$user_designation)->where('status','active')->where('user_id','!=',$login_user_id)->get();
+    	$employees   = Employee::where('branch',$user_branch)->where('department',$request->id)->where('designation','!=',$user_designation)->where('status','active')->where('user_id','!=',$login_user_id)->orderBy('name','asc')->get();
         return response()->json($employees);
     }
 

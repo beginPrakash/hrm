@@ -34,7 +34,7 @@
                         <div class="row filter-row">
                             <div class="col-sm-6 col-md-3">  
                                 <div class="form-group form-focus">
-                                    <select class="select" name="employee">
+                                    <select class="selectwith_search" name="employee">
                                         <option value="">Select</option>
                                         <?php foreach ($allEmployees as $emps) {?>
                                             <option value="<?php echo $emps->user_id; ?>" <?php echo (isset($search['emp']) && $search['emp']==$emps->user_id)?'selected':''; ?>><?php echo $emps->first_name.' '.$emps->last_name; ?></option>
@@ -46,7 +46,7 @@
                             
                             <div class="col-sm-6 col-md-3"> 
                                 <div class="form-group form-focus select-focus">
-                                    <select class="select" name="department">
+                                    <select class="selectwith_search" name="department">
                                         <option value="">Select</option>
                                         <?php foreach ($department as $dept) {?>
                                             <option value="<?php echo $dept->id; ?>" <?php echo (isset($search['department']) && $search['department']==$dept->id)?'selected':''; ?>><?php echo $dept->name?></option>
@@ -552,6 +552,11 @@
 <?php echo $__env->make('includes/footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
 <script>  
+
+    $('.selectwith_search').select2({
+		minimumResultsForSearch: 1,
+		width: '100%'
+	});
 // var days = daysdifference('03/19/2021', '03/31/2024');
 // console.log(days);
 function daysdifference(firstDate, secondDate){  

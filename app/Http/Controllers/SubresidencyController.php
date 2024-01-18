@@ -30,7 +30,8 @@ class SubresidencyController extends Controller
                 })
                 ->addColumn('residency', function ($row)
                 { 
-                    return ucfirst($row->Residency->name)?? '';
+                    $name = (isset($row->Residency) && !empty($row->Residency)) ? $row->Residency->name : '';
+                    return ucfirst($name)?? '';
                 })
                 ->addColumn('action', function ($subresidency)
                 {

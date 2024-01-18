@@ -67,11 +67,11 @@ class SchedulingController extends Controller
         $enddate = date('Y-m-d', strtotime('+6 days', strtotime($startDate)));
         $overtimeDetails = Overtime::get()->first();
         $phDetails = Holidays::whereBetween('holiday_date', [$startDate, $enddate])->get()->pluck('holiday_date')->toArray();
-    	$department   = Departments::where($depwhere)->get();
+    	$department   = Departments::where($depwhere)->orderBy('name','asc')->get();
         $shifts       = Shifting::where('status', 'active')->get();
         // $scheduling   = Scheduling::with('employees')->where($where)->get();
     	$scheduling   = Employee::with('schedules')->where($where)->get();
-    	$allEmployees = Employee::with(["employee_designation", 'employee_department'])->where('status','active')->where($empwhere)->get();
+    	$allEmployees = Employee::with(["employee_designation", 'employee_department'])->where('status','active')->where($empwhere)->orderBy('first_name','asc')->get();
         // echo '<pre>';print_r($scheduling);exit;
     	return view('lts.scheduling', compact('title', 'allEmployees', 'department', 'shifts', 'scheduling', 'search', 'overtimeDetails', 'phDetails', 'startDate'));
     }
@@ -197,7 +197,7 @@ class SchedulingController extends Controller
 
     public function employeeByDepartment(Request $request)
     {
-        $employees = Employee::where("department", $request->id)->where('status','active')->get();
+        $employees = Employee::where("department", $request->id)->where('status','active')->orderBy('name','asc')->get();
         return response()->json($employees);
     }
 

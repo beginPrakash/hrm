@@ -187,7 +187,7 @@
         $('#add_leave').html('');
         var id= $(this).attr('data-id');
         $.ajax({
-           url: '/getLeaveDetailsById/',
+           url: "{{route('getadminLeaveDetailsById')}}",
            type: "POST",
            dataType: "json",
            data: {"_token": "{{ csrf_token() }}", id:id},

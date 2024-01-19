@@ -232,7 +232,7 @@ Route::post('/holidayDelete', [App\Http\Controllers\HolidaysController::class, '
 Route::match(array('GET','POST'),'/admin_leaves',[App\Http\Controllers\AdminLeaveController::class, 'index'])->name('admin_leaves');
 Route::post('/store',[App\Http\Controllers\AdminLeaveController::class, 'store'] )->name('admin_leaves.store');
 //Route::post('/getLeaveDetails',[App\Http\Controllers\AdminLeaveController::class, 'getLeaveDetails'] );
-Route::post('/getLeaveDetailsById',[App\Http\Controllers\AdminLeaveController::class, 'getLeaveDetailsById'] );
+Route::post('/getLeaveDetailsById',[App\Http\Controllers\AdminLeaveController::class, 'getLeaveDetailsById'] )->name('getadminLeaveDetailsById');
 
 // Leave Settings
 Route::get('/leave-settings', [App\Http\Controllers\LeaveTypeController::class, 'index'])->name('leave-settings');

@@ -152,7 +152,7 @@
                                     <td><?php echo e((isset($emp->employee_company) && !empty($emp->employee_company)) ? $emp->employee_company->name : ''); ?></td>
                                     <td><?php echo e((isset($emp->employee_details) && !empty($emp->employee_details)) ? $emp->employee_details->license : ''); ?></td>
                                     <td><?php echo e((isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->basic_salary : 0); ?></td>
-                                    <td><?php echo e($salary_calc ?? 0); ?></td>
+                                    <td><?php echo e(number_format($salary_calc,2) ?? 0); ?></td>
                                     <td><?php echo e((isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->travel_allowance : 0); ?></td>
                                     <td><?php echo e((isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->house_allowance : 0); ?></td>
                                     <td><?php echo e((isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->position_allowance : 0); ?></td>
@@ -160,7 +160,7 @@
                                     <td><?php echo e((isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->food_allowance : 0); ?></td>
                                     <td><?php echo e((isset($emp->employee_salary) && !empty($emp->employee_salary)) ? $emp->employee_salary->other_allowance : 0); ?></td>
                                     <td><?php echo e($deduction); ?></td>
-                                    <td><?php echo e(($salary_calc + $total_allowence) - $deduction); ?></td>
+                                    <td><?php echo e(number_format((($salary_calc + $total_allowence) - $deduction),2)); ?></td>
                                     <td><?php echo e((isset($emp->employee_accounts) && !empty($emp->employee_accounts)) ? 'Bank' : 'Cash'); ?></td>
                                 </tr>
                                 <?php

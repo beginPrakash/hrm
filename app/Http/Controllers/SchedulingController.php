@@ -197,7 +197,7 @@ class SchedulingController extends Controller
 
     public function employeeByDepartment(Request $request)
     {
-        $employees = Employee::where("department", $request->id)->where('status','active')->orderBy('name','asc')->get();
+        $employees = Employee::where("department", $request->id)->where('status','active')->orderBy('first_name','asc')->get();
         return response()->json($employees);
     }
 

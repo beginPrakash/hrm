@@ -206,7 +206,7 @@ class UserScheduling extends Controller
         $user_branch  = $login_user_detail->branch ?? '';
       
         $user_designation  = $login_user_detail->designation ?? '';
-    	$employees   = Employee::where('branch',$user_branch)->where('department',$request->id)->where('designation','!=',$user_designation)->where('status','active')->where('user_id','!=',$login_user_id)->orderBy('name','asc')->get();
+    	$employees   = Employee::where('branch',$user_branch)->where('department',$request->id)->where('designation','!=',$user_designation)->where('status','active')->where('user_id','!=',$login_user_id)->orderBy('first_name','asc')->get();
         return response()->json($employees);
     }
 

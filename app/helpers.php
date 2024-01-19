@@ -44,7 +44,7 @@ function calculateSalaryByFilter($user_id,$empid,$mid,$year,$type='')
         $total_schedule_hours = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('employee_id',$empid)->sum('schedule_hours');
         $total_working_days = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('punch_state','clockin')->where('employee_id',$empid)->count();
         $total_off_days = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('day_type','off')->where('employee_id',$empid)->count();
-        if($total_off_days >= 5):
+        if($total_off_days >= 6):
             $total_schedule_hours = $total_schedule_hours + $commonWorkingHours;
         endif;
         $find_fs_days = Scheduling::whereBetween('shift_on', [$startDateOrg, $endDateOrg])->where('employee',$user_id)->whereIn('shift',[3,8,2])->count();

@@ -43,12 +43,22 @@ function calculateSalaryByFilter($user_id,$empid,$mid,$year,$type='')
         //dd($emp_id);
         $total_schedule_hours = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('employee_id',$empid)->sum('schedule_hours');
         $total_working_days = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('punch_state','clockin')->where('employee_id',$empid)->count();
+        $total_error_days = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('punch_state','clockin')->where('employee_id',$empid)->whereNull('schedule_hours')->whereNull('overtime_hours')->count();
+        $total_cod_days = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('punch_state','clockin')->where('employee_id',$empid)->where('schedule_hours','0.00')->whereNotNull('overtime_hours')->count();
+        $total_absent_days = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('day_type','absent')->where('employee_id',$empid)->count();
         $total_off_days = AttendanceDetails::whereBetween('attendance_on', [$startDateOrg, $endDateOrg])->where('day_type','off')->where('employee_id',$empid)->count();
+        $total_non_working_days = $commonWorkingDays - $total_working_days;
+        $cal_off_days = 0;
         if($total_off_days >= 6):
             $total_schedule_hours = $total_schedule_hours + $commonWorkingHours;
+            $cal_off_days = $cal_off_days + 1;
         endif;
+
+        $total_deduction_days = $total_error_days + $total_cod_days + $total_absent_days;
+        
         $find_fs_days = Scheduling::whereBetween('shift_on', [$startDateOrg, $endDateOrg])->where('employee',$user_id)->whereIn('shift',[3,8,2])->count();
         $find_fs_hours = $find_fs_days * 8;
+        $total_count_days = ($total_absent_days + $find_fs_days + $cal_off_days) - $total_deduction_days;
         //find employee salary details
         $employee = Employee::where('user_id',$user_id)->where('emp_generated_id',$empid)->first();
         //calculate salary now
@@ -56,9 +66,11 @@ function calculateSalaryByFilter($user_id,$empid,$mid,$year,$type='')
             $currentMonthSalary = (isset($employee->employee_salary))?$employee->employee_salary->basic_salary:0;
             $daySalary = ($currentMonthSalary>0)?($currentMonthSalary/$commonWorkingDays):0;
             $hourlySalary = ($daySalary>0)?($daySalary/$commonWorkingHours):0;
-            $total_calculate_salary = ($total_schedule_hours + $find_fs_hours) * $hourlySalary;
+            //$total_calculate_salary = ($total_schedule_hours + $find_fs_hours) * $hourlySalary;
+            $total_calculate_salary = (($commonWorkingDays - $total_non_working_days) + $total_count_days) * $daySalary;
             
         endif;
+
         $res_arr = [];
         if($type=='report_pdf'):
             $res_arr['total_schedule_hours'] = $total_schedule_hours;

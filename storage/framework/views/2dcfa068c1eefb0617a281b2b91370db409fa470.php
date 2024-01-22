@@ -147,7 +147,7 @@
                                                     <input class="form-check-input an_checkbox" name="an_checkbox" type="checkbox" role="switch" id="flexSwitchCheckChecked">
                                                 </div>
                                             </td>
-                                            <td><input type="number" onkeypress="return digitKeyOnly(event,this)" name="annual_leave_days" class="annual_leave_days"  max="0" min="0" disabled></td>
+                                            <td><input type="number" onkeypress="return digitKeyOnly(event,this)" name="annual_leave_days" class="annual_leave_days"  max="0" min="0" readonly></td>
                                         <?php endif; ?>
                                         <td class="annual_remaining_leave">
                                             <?php if(isset($leaveData) && !empty($leaveData)): ?>

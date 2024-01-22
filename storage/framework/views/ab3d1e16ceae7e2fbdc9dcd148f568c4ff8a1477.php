@@ -902,17 +902,20 @@ if ($currentMonth >= 4) {
                                                     </li>
                                                     <li>
                                                         <div class="title">Used Leave Days</div>
-                                                        <div class="text"><?php echo e($annualleavedetails['used'] ?? 0); ?></div>
+                                                        <div class="text"><?php echo e($user->used_leave ?? 0); ?></div>
                                                     </li>
                                                     <li>
                                                         <div class="title">Balance Days</div>
-                                                        <div class="text"><?php echo e((isset($user->opening_leave_days) && !empty($user->opening_leave_days)) ? $user->opening_leave_days : 0); ?></div>
+                                                        <?php $cal_leave = (isset($annualleavedetails) && $annualleavedetails['totalLeaveDays']>0 )?$annualleavedetails['totalLeaveDays']:0; 
+                                                            $used_leave = $user->used_leave ?? 0;
+                                                            $bal_leave = $cal_leave - $used_leave;?>
+                                                        <div class="text"><?php echo e($bal_leave ?? 0); ?></div>
                                                     </li>
                                                     <li>
                                                         <div class="title">Balance Amount</div>
                                                         <div class="text"> 
                                                             <?php $e_sal = (isset($user->employee_salary) && !empty($user->employee_salary)) ? $user->employee_salary->basic_salary : 0; ?>
-                                                            <?php echo e(number_format(_calculate_salary_by_days($e_sal,$user->opening_leave_days ?? 0),2)); ?> KWD
+                                                            <?php echo e(number_format(_calculate_salary_by_days($e_sal,$bal_leave ?? 0),2)); ?> KWD
                                                         </div>
                                                     </li>
 

@@ -247,10 +247,15 @@ $username = Session::get('username');
                         <span class="dash-widget-icon"><i class="fa fa-tree" aria-hidden="true"></i></span>
                         <div class="dash-widget-info pl-2" style="text-align: left;">
                             <h4>
-                            @php $e_sal = (isset($sched_data[0]->employee_salary) && !empty($sched_data[0]->employee_salary)) ? $sched_data[0]->employee_salary->basic_salary : 0; @endphp
-                                 {{number_format(_calculate_salary_by_days($e_sal,$sched_data[0]->opening_leave_days ?? 0),2)}} KWD
+                            @php 
+                                $e_sal = (isset($sched_data[0]->employee_salary) && !empty($sched_data[0]->employee_salary)) ? $sched_data[0]->employee_salary->basic_salary : 0;
+                                $cal_leave = (isset($balance_annual_leave_total) && $balance_annual_leave_total['totalLeaveDays']>0 )?$balance_annual_leave_total['totalLeaveDays']:0; 
+                                $used_leave = $sched_data[0]->used_leave ?? 0;
+                                $bal_leave = $cal_leave - $used_leave;
+                            @endphp     
+                            {{number_format(_calculate_salary_by_days($e_sal,$bal_leave ?? 0),2)}} KWD
                             </h4>
-                            <h4>{{$sched_data[0]->opening_leave_days ?? 0}} DAYS</h4>
+                            <h4>{{$bal_leave ?? 0}} DAYS</h4>
                             <span>Annual leave</span>
                         </div>
                     </div>

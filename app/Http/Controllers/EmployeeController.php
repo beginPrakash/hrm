@@ -818,6 +818,11 @@ class EmployeeController extends Controller
                 $fname = (isset($importData[1]))?$importData[1]:'';
                 $mname = (isset($importData[2]))?$importData[2]:'';
                 $lname = (isset($importData[3]))?$importData[3]:'';
+                $joi_date = (isset($importData[12]))?changeDateSlash($importData[12]):'';
+                $c_date = date('Y-m-d');
+                $calcualted_total_leave = calculateLeave($joi_date,$c_date);
+                $balance_days = (isset($importData[43]))?(int)$importData[43]:0;
+                $used_leave = $calcualted_total_leave - $balance_days;
                 $employeeArray = array(
                     'company_id'    =>  $company_id,
                     'first_name'    =>  $fname.' '.$mname,
@@ -829,6 +834,7 @@ class EmployeeController extends Controller
                     'local_address' =>  (isset($importData[28]))?$importData[28]:'',
                     'phone'         =>  (isset($importData[10]))?$importData[10]:'',
                     'opening_leave_days'    =>  (isset($importData[43]))?$importData[43]:'',
+                    'used_leave'  => (int)$used_leave ?? 0,
                     'opening_leave_amount'  =>  (isset($importData[44]))?$importData[44]:'',
                     'public_holidays_balance'  =>  (isset($importData[45]))?(int)$importData[45]:0,
                     'public_holidays_amount'  =>  (isset($importData[46]))?(float)$importData[46]:0,
@@ -1155,11 +1161,13 @@ class EmployeeController extends Controller
                 //deduct leave from employee account
                 $employee = Employee::where('user_id',$leave_data->user_id)->where('status','active')->first();
                 $opening_leave_days = $employee->opening_leave_days ?? 0;
+                $used_leave_days = $employee->used_leave ?? 0;
                 $public_balance = $employee->public_holidays_balance ?? 0;
                 $leave_data->basic_salary = (isset($employee->employee_salary))?$employee->employee_salary->basic_salary:0;
                 $leave_data->save();
                 if(($opening_leave_days >= $annual_leave_days) || ($public_balance >= $public_holidays)):
                     $employee->opening_leave_days = $opening_leave_days - $annual_leave_days;
+                    $employee->used_leave = $used_leave_days + $annual_leave_days;
                     $employee->public_holidays_balance = $public_balance - $public_holidays;
                     $employee->save();
 

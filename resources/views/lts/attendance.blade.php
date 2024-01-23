@@ -125,6 +125,8 @@ $maxDays=date('t', strtotime($start_date));
                                                 if($employee->profile != Null)
                                                 {
                                                     $image = 'uploads/profile/'.$employee->profile;
+                                                }else{
+                                                    $image = 'assets/img/profiles/avatar.png';
                                                 }
                                             ?>
                                             <tr>

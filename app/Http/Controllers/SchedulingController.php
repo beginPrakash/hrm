@@ -184,6 +184,11 @@ class SchedulingController extends Controller
             //         $save_data->save();
             //     endif;
             else:
+                $is_user_absent = AttendanceDetails::where('attendance_on',$att_date)->where('user_id',$shiftDetails->employee)->where('punch_state','none')->first();
+                if(!empty($is_user_absent)):
+                    $is_user_absent->day_type = 'off';
+                    $is_user_absent->save();
+                endif;
                 $save_data = AttendanceDetails::where('user_id',$shiftDetails->employee)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
                 if(!empty($save_data)):
                     $save_data->schedule_hours = NULL;

@@ -241,7 +241,7 @@ class AttendanceController extends Controller
                     //if(empty(!$is_scheduling_leave)):
                         if($importData[9] === '' && $importData[10] === '')
                         {
-                            $is_user_absent = Scheduling::where('shift_on',$insertData['attendance_on'])->where('employee',$userId)->whereNotIn('shift',['2,3,7,8,9,1'])->whereNotNull('start_time')->first();
+                            $is_user_absent = Scheduling::where('shift_on',$insertData['attendance_on'])->where('employee',$userId)->whereNotIn('shift',['1,2,3,7,8,9'])->whereNotNull('start_time')->first();
                             if(!empty($is_user_absent)):
                                 $insertData['day_type'] = 'absent';
                             else:

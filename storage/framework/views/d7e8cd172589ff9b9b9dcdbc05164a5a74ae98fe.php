@@ -108,6 +108,8 @@
                                                 if($sh->profile != Null)
                                                 {
                                                     $image = 'uploads/profile/'.$sh->profile;
+                                                }else{
+                                                    $image = 'assets/img/profiles/avatar.png';
                                                 }
                                                 ?>
                                                     <tr>

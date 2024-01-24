@@ -1160,8 +1160,11 @@ class EmployeeController extends Controller
             if(!empty($leave_data)):
                 //deduct leave from employee account
                 $employee = Employee::where('user_id',$leave_data->user_id)->where('status','active')->first();
-                $opening_leave_days = $employee->opening_leave_days ?? 0;
+                $leave_details = getAnnualLeaveDetails($leave_data->user_id);
+                
+                $cal_leave = (isset($leave_details) && $leave_details['totalLeaveDays']>0 )?$leave_details['totalLeaveDays']:0; 
                 $used_leave_days = $employee->used_leave ?? 0;
+                $opening_leave_days = $cal_leave - $used_leave_days;
                 $public_balance = $employee->public_holidays_balance ?? 0;
                 $leave_data->basic_salary = (isset($employee->employee_salary))?$employee->employee_salary->basic_salary:0;
                 $leave_data->save();
@@ -1180,6 +1183,7 @@ class EmployeeController extends Controller
                     $leave_data->claimed_public_days_rem = $public_balance - $public_holidays;
                     $leave_data->is_post_transaction = 1;
                     $leave_data->save();
+
                     return redirect()->back()->with('success','Data saved successfully.');
                 else:
                     return redirect()->back()->with('error','Leave Balance not available.');

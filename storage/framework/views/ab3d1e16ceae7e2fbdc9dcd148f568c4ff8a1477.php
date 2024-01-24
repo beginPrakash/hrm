@@ -941,7 +941,7 @@ if ($currentMonth >= 4) {
                                                             <?php if($cur_year == $leave_year): ?>
                                                                 <tr>
                                                                     <td><?php echo e(date('d M y', strtotime($el->leave_from))); ?> - <?php echo e(date('d M y', strtotime($el->leave_to))); ?></td>
-                                                                    <td><?php echo e(($el->claimed_annual_days_rem ?? 0) + $el->claimed_annual_days); ?> Days</td>
+                                                                    <td><?php echo e(($el->claimed_annual_days_rem ?? 0)); ?> Days</td>
                                                                     <td><?php echo e($el->leave_days ?? 0); ?> Days</td>
                                                                     <td><?php echo e($el->claimed_annual_days ?? 0); ?> Days</td>
                                                                     <td><?php echo e(number_format((_calculate_salary_by_days($el->basic_salary,$el->claimed_annual_days ?? 0)) + (_calculate_salary_by_days($el->basic_salary,$el->claimed_annual_days_rem ?? 0)),2)); ?> KWD</td>

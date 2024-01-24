@@ -107,6 +107,9 @@
                                                 {
                                                     $image = 'uploads/profile/'.$sh->profile;
                                                 }
+                                                else{
+                                                    $image = 'assets/img/profiles/avatar.png';
+                                                }
                                                 ?>
                                                     <tr>
                                                         <td>

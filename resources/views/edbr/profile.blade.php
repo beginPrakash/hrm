@@ -968,7 +968,7 @@ if ($currentMonth >= 4) {
                                                             @if($cur_year == $leave_year)
                                                                 <tr>
                                                                     <td>{{date('d M y', strtotime($el->leave_from))}} - {{date('d M y', strtotime($el->leave_to))}}</td>
-                                                                    <td>{{($el->claimed_annual_days_rem ?? 0) + $el->claimed_annual_days}} Days</td>
+                                                                    <td>{{($el->claimed_annual_days_rem ?? 0)}} Days</td>
                                                                     <td>{{$el->leave_days ?? 0}} Days</td>
                                                                     <td>{{$el->claimed_annual_days ?? 0}} Days</td>
                                                                     <td>{{number_format((_calculate_salary_by_days($el->basic_salary,$el->claimed_annual_days ?? 0)) + (_calculate_salary_by_days($el->basic_salary,$el->claimed_annual_days_rem ?? 0)),2)}} KWD</td>

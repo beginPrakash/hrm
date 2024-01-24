@@ -130,9 +130,15 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                        <?php 
+                                            $cal_leave = (isset($leave_details) && $leave_details['totalLeaveDays']>0 )?$leave_details['totalLeaveDays']:0; 
+                                            $used_leave = $userdetails[0]->used_leave ?? 0;
+                                            $bal_leave = $cal_leave - $used_leave;
+                                            $bal_leave = (int)$bal_leave;
+                                        ?>
                                     <tr>
                                         <td>Annual Leave</td>
-                                        <td><input type="hidden" value="<?php echo e($userdetails[0]->opening_leave_days ?? 0); ?>" class="an_avail"><?php echo e($userdetails[0]->opening_leave_days ?? 0); ?> Days</td>
+                                        <td><input type="hidden" value="<?php echo e($bal_leave ?? 0); ?>" class="an_avail"><?php echo e($bal_leave ?? 0); ?> Days</td>
                                         
                                         <?php if(isset($leaveData) && !empty($leaveData)): ?>
                                             <td>
@@ -153,7 +159,7 @@
                                             <?php if(isset($leaveData) && !empty($leaveData)): ?>
                                                 <?php echo e($leaveData->claimed_annual_days_rem ?? 0); ?> Days
                                             <?php else: ?>
-                                                <?php echo e($userdetails[0]->opening_leave_days ?? 0); ?> Days
+                                                <?php echo e($bal_leave ?? 0); ?> Days
                                             <?php endif; ?>
                                         </td>
                                     </tr>

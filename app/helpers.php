@@ -473,7 +473,7 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $joining_date = (isset($employee->joining_date)) ? $employee->joining_date : $todaydate;
         $totalLeaveDays = calculateLeave($joining_date, $todaydate);
        
-        $totalLeaveDays = intval($totalLeaveDays);
+        $totalLeaveDays = number_format($totalLeaveDays,2);
         $balance = (!empty($employee) && (isset($employee->opening_leave_days)))?$employee->opening_leave_days:0;
         $balance = floatval($balance);
         $used = ($balance > 0 && $totalLeaveDays > 0)?$totalLeaveDays - $balance:0;

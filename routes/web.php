@@ -162,6 +162,7 @@ Route::get('getByCompany/{id}',[App\Http\Controllers\EmployeeController::class, 
 Route::post('/employeeOpeningLeaveUpdate/{id}', [EmployeeController::class, 'employeeOpeningLeaveUpdate']);
 Route::post('/employeeLeaveAmountUpdate/{id}', [EmployeeController::class, 'employeeLeaveAmountUpdate']);
 Route::post('/employeeImport', [EmployeeController::class, 'import'])->name('employeeImport');
+Route::post('/updateemployeeleave', [EmployeeController::class, 'updateemployeeleave'])->name('updateemployeeleave');
 Route::post('/employeephUpdate/{id}', [EmployeeController::class, 'employeephUpdate']);
 
 

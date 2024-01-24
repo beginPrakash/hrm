@@ -1,2 +1,4 @@
-emp id,First Name,Middle Name,Last Name,Birth Date,Gender,Country *,State *,Address *,Pin Code *,Phone Number,Email,Date of joining,Civil Id *,Expiry date of Civil ID,Baladiya Id *,Expiry of Baladiya ID,License,license Exp.,Company *,Sub Company *,Branch *,Department *,Designation *,Passport No,Passport Expiry,Religion,Blood Group,local address,Marital status,Basic Salary,Travel Allowance,Food Allowance,House Allowance,Position Allowance,Phone Allowance,Other Allowance,Loan Amount *,Date *,Number of installments *,Total Amount paid *,Installment pending *,Amount pending *,Leave  Balance Days,Leave Balance Amount,Ph balance,Ph amount,Bank Name,Branch,Branch Code (IBAN),Acoount Number,Emergency Contact Primary Name,Relationship,Phone ,Phone  2,Emergency Contact Secondary Name,Relationship,Phone ,Phone  2
-90001,Prakash,Parghi,,09-11-1995,Male,Indian,Indian,,7,+965 9677 5731,prakash@noon.company,19-06-2022,2.95E+11,16-08-2024,2.95E+11,16-08-2024,,,Noon Universal General Trading Co,Noon Universal General Trading Co,Head office,Information Technology,IT Head,V1202856,27-01-2032,islam,a,saidakadal,married,625,0,25,50,0,0,0,0,,,0,0,0,46,1114,9,216,Kuwait Finance House,,,KW62KFHO0000000000041290022899,moied,brother,5454115,,moied,brother,5454115,
+emp id,Leave  Balance Days
+50025,46
+50026,50
+50027,50

@@ -1188,4 +1188,99 @@ class EmployeeController extends Controller
             endif;
         endif;
     }
+
+
+    public function updateemployeeleave(Request $request)
+    { 
+        //validate file
+        $validate = $this->validateCSV($request->file('employee_file'));
+        if($validate['status'] == 1)
+        {
+            //call excel/csv function
+            $import = $this->importEmpCSV($request->file('employee_file'));
+            if($import['error'] == 1):
+                return redirect()->back()->with("error", 'Something went wrong.');
+            else:
+                return redirect()->back()->with("success", 'Employees leave balance updated successfully.');
+            endif;
+        }
+        else
+        {
+            return redirect()->back()->with("error", $validate['message']);
+        }
+    }
+
+    private function importEmpCSV($file)
+    {
+        // File Details 
+        $filename = $file->getClientOriginalName();
+        
+        // File upload location
+        $location = 'uploads/employees';
+        // Upload file
+        $file->move(public_path($location),$filename);
+
+        // Import CSV to Database
+        $filepath = public_path($location."/".$filename);
+
+        // Reading file
+        $file = fopen($filepath,"r");
+
+        $importData_arr = array();
+        $i = 0;
+
+        while (($filedata = fgetcsv($file, 1000, ",")) !== FALSE) 
+        {
+            $num = count($filedata );
+
+            // Skip first row
+            if($i == 0)
+            {
+                $i++;
+                continue; 
+            }
+
+            for ($c=0; $c < $num; $c++)
+            {
+                $importData_arr[$i][] = $filedata [$c];
+            }
+            $i++;
+        }
+        fclose($file);
+
+        $company_id  = Session::get('company_id');
+        $error = 0;
+        // Insert to MySQL database
+        foreach($importData_arr as $importData)
+        {
+
+            if(!empty($importData[0]) && !empty($importData[1])):
+                $emp = '';
+                if($importData[0] !='')
+                {
+                    //check employee id exists
+                    $emp = Employee::where('emp_generated_id', $importData[0])->first();
+                }
+                if(!empty($emp)):
+                    $joi_date = $emp->joining_date;
+                    $c_date = date('Y-m-d');
+                    $calcualted_total_leave = calculateLeave($joi_date,$c_date);
+                    $balance_days = (isset($importData[2]))?(int)$importData[2]:0;
+                    $used_leave = $calcualted_total_leave - $balance_days;
+                    $emp->opening_leave_days = $balance_days;
+                    $emp->opening_leave_amount = (isset($importData[3]))?(int)$importData[3]:0;
+                    $emp->used_leave = (int)$used_leave ?? 0;
+                    $emp->save();
+                endif;
+
+            else:
+                $error = 1;
+            endif;
+              
+        }
+        $return['message'] = 'Import Successful.';
+        $return['status'] = 1;
+        $return['error'] = $error;
+        return $return;
+    }
 }

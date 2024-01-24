@@ -24,6 +24,9 @@
                         <div class="col-auto float-end ms-auto">
                             <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#import_shift"><i class="fa fa-plus"></i> Import <?php echo ucfirst($title); ?></a>
                         </div>
+                        <div class="col-auto float-end ms-auto">
+                            <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#update_emp_leave"><i class="fa fa-plus"></i> Update Employee Leave Balance</a>
+                        </div>
                         <?php } ?>
                     </div>
                 </div>
@@ -308,6 +311,36 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <form action="/employeeImport" method="post" enctype="multipart/form-data">
+                                            <?php echo csrf_field(); ?>
+                                            <div class="form-group">
+                                                <label>Import File <span class="text-danger">*</span></label>
+                                                <input class="form-control" value="" readonly type="file" name="employee_file">
+                                            </div>
+                                            <div class="submit-section">
+                                                <button class="btn btn-primary submit-btn">Submit</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Import Employee Modal -->
+
+            <!-- Import Employee Modal -->
+            <div class="modal custom-modal fade" id="update_emp_leave" role="dialog">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="form-header">
+                                <h3>Import Employee Leave Balance</h3>
+                            </div>
+                            <div class="modal-btn import-action">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <form action="/updateemployeeleave" method="post" enctype="multipart/form-data">
                                             <?php echo csrf_field(); ?>
                                             <div class="form-group">
                                                 <label>Import File <span class="text-danger">*</span></label>

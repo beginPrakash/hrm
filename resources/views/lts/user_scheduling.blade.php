@@ -114,8 +114,8 @@
                                                     <tr>
                                                         <td>
                                                             <h2 class="table-avatar">
-                                                                <a href="profile.php" class="avatar"><img alt="" src="<?php echo $image; ?>"></a>
-                                                                <a href="profile.php"><?php echo $sh->first_name; ?> <?php echo (isset($sh->last_name))?$sh->last_name:''; ?> <span><em>
+                                                                <a href="{{'/employeeProfileUpdate?id='.$sh->id ?? ''}}" class="avatar"><img alt="" src="<?php echo $image; ?>"></a>
+                                                                <a href="{{'/employeeProfileUpdate?id='.$sh->id ?? ''}}"><?php echo $sh->first_name; ?> <?php echo (isset($sh->last_name))?$sh->last_name:''; ?> <span><em>
                                                                     : 
                                                                     <?php echo ($sh->designation==3 && isset($sh->employee_department->name))?$sh->employee_department->name.' ':''; ?><?php echo (isset($sh->employee_designation->name))?$sh->employee_designation->name:''; ?></em></span></a>
                                                             </h2>

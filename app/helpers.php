@@ -274,9 +274,14 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $datetime1 = strtotime($start_time);
         $datetime2 = strtotime($end_time);
         $interval  = abs($datetime2 - $datetime1);
-        $minutes   = round($interval / 60);
-        $hours = $minutes/60;
-        return $hours;
+        $seconds = $interval;
+        $hours = floor($seconds / 3600);
+        $seconds -= $hours * 3600;
+        $minutes = floor($seconds / 60);
+
+
+        $data = $hours.'.'.$minutes;
+        return (float)$data;
     }
 
     function get_time_slots_equal_val($start_time,$end_time)

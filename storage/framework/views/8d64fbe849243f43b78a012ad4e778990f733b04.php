@@ -132,8 +132,8 @@ $maxDays=date('t', strtotime($start_date));
                                             <tr>
                                                 <td>
                                                     <h2 class="table-avatar">
-                                                        <a class="avatar avatar-xs" href="profile.php"><img alt="" src="<?php echo $image; ?>"></a>
-                                                        <a href="profile.php"><?php echo $employee->first_name.' '.$employee->last_name;?></a>
+                                                        <a class="avatar avatar-xs" href="<?php echo e('/employeeProfileUpdate?id='.$employee->id ?? ''); ?>"><img alt="" src="<?php echo $image; ?>"></a>
+                                                        <a href="<?php echo e('/employeeProfileUpdate?id='.$employee->id ?? ''); ?>"><?php echo $employee->first_name.' '.$employee->last_name;?></a>
                                                     </h2>
                                                 </td>
 

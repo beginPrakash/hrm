@@ -163,6 +163,7 @@ function clockalize($in){
              $s = $totaltime - ($m * 60);
          endif;
          $total_overtime_hours = $h.'.'.$m;
+         $total_overtime_hours = (float)$total_overtime_hours;
          //find employee salary details
          $employee = Employee::where('user_id',$user_id)->where('emp_generated_id',$empid)->first();
          //calculate salary now
@@ -358,6 +359,7 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
     //    / dd($end_time);
         $firstclockin = AttendanceDetails::where('user_id', $user_id)->where('punch_state', 'clockin')->whereDate('attendance_on', $att_date 
         )->first();
+       
         $lastclockout = AttendanceDetails::where('atte_ref_id', $firstclockin->id)->where('punch_state', 'clockout')->value('attendance_on');
         $start_time = _convert_time_to_12hour_dateformat($att_date.' '.$start_time);
         $end_time = _convert_time_to_12hour_dateformat($lastclockout.' '.$end_time);
@@ -387,7 +389,8 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
 
             if($is_cod== '0'):
                 if($total_attendanace_hours > $commonWorkingHours):
-                    $diff = $total_attendanace_hours - ($commonWorkingHours - 1 + $break_time);
+                    $total_shsche_att_hours = get_total_hours($schedule_start_time,$schedule_end_time);
+                    $diff = $total_shsche_att_hours - ($commonWorkingHours - 1 + $break_time);
                     $final_diff =  $diff < 0 ? (-1) * $diff : $diff;
                     //$final_diff = $final_diff - 1;
                 endif;
@@ -396,8 +399,9 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
                 //dd($total_attendanace_hours);
                 //save schedule hours and overtime data in attanedance detail yable
                 $save_data = AttendanceDetails::where('user_id',$user_id)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
+                $total_shsche_att_hours = get_total_hours($schedule_start_time,$schedule_end_time);
                 $save_data->schedule_hours = 0;
-                $save_data->overtime_hours = $total_attendanace_hours-$break_time;
+                $save_data->overtime_hours = $total_shsche_att_hours-$break_time;
                 $save_data->save();
                 return true;
             else:

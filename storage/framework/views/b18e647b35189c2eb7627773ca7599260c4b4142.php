@@ -165,7 +165,7 @@ if(isset($emloyeeAttendance))
                     }
                     // echo $finalOt.'-'.$emloyeeAttendance[0]['ottime'].'-';
                     //if(($emloyeeAttendance[0]['ottime']=='' && $finalOt > 0) || (!in_array('clockin', $punchStates) || !in_array('clockout', $punchStates))){
-                    if(isset($emloyeeAttendance) && $emloyeeAttendance[0]['schedule_hours'] <= 0) { ?>
+                    if(isset($emloyeeAttendance) && $emloyeeAttendance[0]['schedule_hours'] <= 0 && $emloyeeAttendance[0]['overtime_hours'] <= 0) { ?>
     <div class="col-md-12">
         <div class="card">
             <div class="card-body">

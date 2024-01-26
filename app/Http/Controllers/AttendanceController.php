@@ -241,7 +241,7 @@ class AttendanceController extends Controller
                     //if(empty(!$is_scheduling_leave)):
                         if($importData[9] === '' && $importData[10] === '')
                         {
-                            $is_user_absent = Scheduling::where('shift_on',$insertData['attendance_on'])->where('employee',$userId)->whereNotIn('shift',['1,2,3,7,8,9'])->whereNotNull('start_time')->first();
+                            $is_user_absent = Scheduling::where('shift_on',$insertData['attendance_on'])->where('employee',$userId)->whereNotIn('shift',['2,3,7,8,9,1'])->whereNotNull('start_time')->first();
                             if(!empty($is_user_absent)):
                                 $insertData['day_type'] = 'absent';
                             else:
@@ -521,11 +521,11 @@ class AttendanceController extends Controller
     {
         $userId = intval($request->userId);
         //find employee
-        $emp_detail = Employee::where('user_id',$userId)->where('status','active')->first();
+        $emp_detail = Employee::where('user_id',$userId)->first();
         $popup_type = $request->popup_type ?? '';
         $attnDate = str_replace('"','',preg_replace('/\\\\/', '', $request->attnDate));
         // $emloyeeAttendance = AttendanceDetails::where(array('user_id' => $userId, 'attendance_on' => $attnDate))->orderBy('attendance_time')->get()->toArray();
-        $checkin_att = AttendanceDetails::where(array('user_id' => $userId, 'attendance_on' => $attnDate,'employee_id'=>$emp_detail->emp_generated_id,'punch_state'=>'clockin'))->first();
+        $checkin_att = AttendanceDetails::where(array('user_id' => $userId, 'attendance_on' => $attnDate,'employee_id'=>$emp_detail->emp_generated_id ?? '','punch_state'=>'clockin'))->first();
         if(!empty($checkin_att)):
             $emloyeeAttendance = AttendanceDetails::where('atte_ref_id',$checkin_att->id)->get()->toArray();
         endif;
@@ -733,27 +733,27 @@ class AttendanceController extends Controller
             'shift_on'      =>  date('Y-m-d', strtotime($request->attnDate)),
             'status'        =>  'active'
         );
-        //if schedule exists deactivate it and create new schedule
-        $schedule = Scheduling::where($newSchedule)->first();
-// echo '<pre>';print_r($schedule);exit;
-        $newSchedule['company_id'] =  $company_id;
-        $newSchedule['min_start_time']  =  _convert_time_to_12hour_dateformat($request->schd_start_date.' '.$request->start_time);
-        $newSchedule['start_time']  =  _convert_time_to_12hour_dateformat($request->schd_start_date.' '.$request->start_time);
-        $newSchedule['max_start_time']  =  _convert_time_to_12hour_dateformat($request->schd_start_date.' '.$request->start_time);
-        $newSchedule['min_end_time']  =  _convert_time_to_12hour_dateformat($request->schd_end_date.' '.$request->end_time);
-        $newSchedule['end_time']  =  _convert_time_to_12hour_dateformat($request->schd_end_date.' '.$request->end_time);
-        $newSchedule['max_end_time']  =  _convert_time_to_12hour_dateformat($request->schd_end_date.' '.$request->end_time);
-        // $newSchedule['over_time'] = $request->ottime;
+//         //if schedule exists deactivate it and create new schedule
+//         $schedule = Scheduling::where($newSchedule)->first();
+// // echo '<pre>';print_r($schedule);exit;
+//         $newSchedule['company_id'] =  $company_id;
+//         $newSchedule['min_start_time']  =  _convert_time_to_12hour_dateformat($request->schd_start_date.' '.$request->start_time);
+//         $newSchedule['start_time']  =  _convert_time_to_12hour_dateformat($request->schd_start_date.' '.$request->start_time);
+//         $newSchedule['max_start_time']  =  _convert_time_to_12hour_dateformat($request->schd_start_date.' '.$request->start_time);
+//         $newSchedule['min_end_time']  =  _convert_time_to_12hour_dateformat($request->schd_end_date.' '.$request->end_time);
+//         $newSchedule['end_time']  =  _convert_time_to_12hour_dateformat($request->schd_end_date.' '.$request->end_time);
+//         $newSchedule['max_end_time']  =  _convert_time_to_12hour_dateformat($request->schd_end_date.' '.$request->end_time);
+//         // $newSchedule['over_time'] = $request->ottime;
 
-        // echo '<pre>';print_r($_POST);echo '<pre>';print_r($newSchedule);exit;
-        $shiftid = Scheduling::where('id', $schedule->id)->update($newSchedule);
+//         // echo '<pre>';print_r($_POST);echo '<pre>';print_r($newSchedule);exit;
+//         $shiftid = Scheduling::where('id', $schedule->id)->update($newSchedule);
 
-        $updateArray    = array(
-            'ottime'                => $request->ottime,
-            'ot_approve_status'     => (isset($request->approve_status))?$request->approve_status:0,
-            'ot_approve_remark'     => $request->approve_remark,
-            'updated_at'            =>  date('Y-m-d h:i:s')
-        );
+//         $updateArray    = array(
+//             'ottime'                => $request->ottime,
+//             'ot_approve_status'     => (isset($request->approve_status))?$request->approve_status:0,
+//             'ot_approve_remark'     => $request->approve_remark,
+//             'updated_at'            =>  date('Y-m-d h:i:s')
+//         );
 
         $where = array(
             'user_id'           =>  $request->attnUserId,
@@ -769,6 +769,7 @@ class AttendanceController extends Controller
             $where['punch_state'] = 'clockin';
             AttendanceDetails::where($where)->update($updateArray);
             $atte_ref_id = AttendanceDetails::where($where)->value('atte_ref_id');
+
         }
         if(isset($request->end_time))
         {

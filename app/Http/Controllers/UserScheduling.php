@@ -127,7 +127,8 @@ class UserScheduling extends Controller
                 $flag = _check_green_icon_attendance($att_date,$shiftDetails->employee);
                 if($flag === 0):
                     $att_details = AttendanceDetails::where('user_id',$shiftDetails->employee)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
-                    $save_data = save_schedule_overtime_hours($shiftDetails->employee,$att_date,$att_details->start_time,$att_details->end_time);
+                    $att_e_details = AttendanceDetails::where('atte_ref_id',$att_details->atte_ref_id ?? 0)->where('punch_state','clockout')->first();
+                    $save_data = save_schedule_overtime_hours($shiftDetails->employee,$att_date,$att_details->attendance_time,$att_e_details->attendance_time);
                 else:
                     $save_data = AttendanceDetails::where('user_id',$shiftDetails->employee)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
                     if(!empty($save_data)):
@@ -413,7 +414,8 @@ class UserScheduling extends Controller
                             $flag = _check_green_icon_attendance($att_date,$shiftDetails->employee);
                             if($flag === 0):
                                 $att_details = AttendanceDetails::where('user_id',$shiftDetails->employee)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
-                                $save_data = save_schedule_overtime_hours($shiftDetails->employee,$att_date,$att_details->start_time,$att_details->end_time);
+                                $att_e_details = AttendanceDetails::where('atte_ref_id',$att_details->atte_ref_id ?? 0)->where('punch_state','clockout')->first();
+                                $save_data = save_schedule_overtime_hours($shiftDetails->employee,$att_date,$att_details->attendance_time,$att_e_details->attendance_time);
                             else:
                                 $save_data = AttendanceDetails::where('user_id',$shiftDetails->employee)->where('attendance_on',$att_date)->where('punch_state','clockin')->first();
                                 if(!empty($save_data)):

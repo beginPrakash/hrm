@@ -422,7 +422,7 @@ $maxDays=date('t', strtotime($start_date));
            url: "{{ url('approveOt/') }}",
            data: {attnUserId:attnUserId, attnDate:attnDate, ottime:ottime, approve_status:approve_status, approve_remark:approve_remark, start_time:start_time, end_time:end_time,schd_start_date:schd_start_date,schd_end_date:schd_end_date, "_token": "{{ csrf_token() }}"},
            success: function( msg ) {
-               alert( 'Over Time approved successfully.' );
+               alert( 'Data approved successfully.' );
                location.reload();
            }
        });

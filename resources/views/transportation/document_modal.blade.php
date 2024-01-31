@@ -1,53 +1,8 @@
 <script type="text/javascript" src="{{ asset('assets/js/app.js') }}"></script>
 <script>
-    var reg_url = "{{route('getRegtype')}}";
-    $('#reg_type').tokenfield({
-        autocomplete :{
-            source: function(request, response)
-            {
-                jQuery.get(reg_url, {
-                    query : request.term
-                }, function(data){
-                    data = JSON.parse(data);
-                    response(data);
-                });
-            },
-
-            delay: 100
-        }
-    });
-
-    $(document).on('click','.close_reg_data',function(){
-        $(this).parent().remove();
-        var doc_id= $(this).attr('data-docid');
-        var reg_id= $(this).attr('data-reg_id');
-        $.ajax({
-        url: "{{route('deleteregtypebydocument')}}",
-        type: "POST",
-        dataType: "json",
-        data: {"_token": "{{ csrf_token() }}", doc_id:doc_id,reg_id:reg_id},
-        success:function(response)
-            {
-                $('#add_document').html(response.html).fadeIn();
-            }
-        });
-    });
-
-    var reghtml = '{{$reg_html ?? ''}}';
-    $('#reg_type').parent('.tokenfield').prepend($('.regtype_data').text());
-
     $("#document_form").validate({
         rules: {
-            reg_name: {
-                required : true
-            },
-            reg_no: {
-                required : true
-            },
-            civil_no: {
-                required : true
-            },
-            issuing_date: {
+            doc_name: {
                 required : true
             },
             expiry_date: {
@@ -62,22 +17,10 @@
             doc_file: {
                 required : true
             },
-            branch_id:{
-                required : true
-            },
         },
         messages: {
-            reg_name: {
-                required : "Please enter registration name"
-            },
-            reg_no: {
-                required : "Please enter registration number"
-            },
-            civil_no: {
-                required : "Please enter civil number"
-            },
-            issuing_date: {
-                required : "Please select issuing date"
+            doc_name: {
+                required : "Please enter document name"
             },
             expiry_date: {
                 required : "Please select expiry date"
@@ -90,9 +33,6 @@
             },
             doc_file: {
                 required : "Please select document"
-            },
-            branch_id:{
-                required : "Please select branch"
             },
         },
         errorPlacement: function (error, element) {
@@ -126,82 +66,38 @@
             </button>
         </div>
         <div class="modal-body">
-        <form action="{{route('document.store')}}" method="POST" enctype="multipart/form-data" id="document_form">
+        <form action="{{route('transdoc.store')}}" method="POST" enctype="multipart/form-data" id="document_form">
             <input type="hidden" name="id" value="{{$doc_data->id ?? ''}}" class="doc_id_hid">
             @if(isset($doc_data) && !empty($doc_data))
-                <input type="hidden" name="company_id" value="{{$doc_data->company_id ?? ''}}">
-                <div class="regtype_data d-none">
-                    {{$reg_html ?? ''}}
-                </div>
+                <input type="hidden" name="transpo_id" value="{{$doc_data->transportation_id ?? ''}}">
             @else
-                <input type="hidden" name="company_id" value="{{$company_detail->id ?? ''}}">
+                <input type="hidden" name="transpo_id" value="{{$trans_detail->id ?? ''}}">
             @endif
             @csrf
             <div class="row">
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <label>Registration Name <span class="text-danger">*</span></label>
-                        <input class="form-control" type="text" name="reg_name" value="{{$doc_data->reg_name ?? ''}}">
+                        <label>Car Document <span class="text-danger">*</span></label>
+                        <input class="form-control" type="file" name="car_document">{{$doc_data->car_document ?? ''}}
                     </div>
                 </div>
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <label>Registration Number <span class="text-danger">*</span></label>
-                        <input class="form-control" type="text" name="reg_no" value="{{$doc_data->reg_no ?? ''}}">
+                        <label>Document Name <span class="text-danger">*</span></label>
+                        <input class="form-control" type="text" name="doc_name" value="{{$doc_data->doc_name ?? ''}}">
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-sm-6">
                     <div class="form-group">
-                        <label>Registration Type</label>
-                        <div class="input-group regtype_main_div">
-                            <input type="text" id="reg_type" name="reg_type" placeholder="" autocomplete="off" class="form-control input-lg" />
-                        </div>
-                        <br />
-                        <span id="country_name"></span>
+                        <label>Document Expiry Date<span class="text-danger">*</span></label>
+                        <input class="form-control" type="date" name="expiry_date" value="{{$doc_data->expiry_date ?? ''}}">
                     </div>
                 </div>
                 
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <label>Civil Number <span class="text-danger">*</span></label>
-                        <input class="form-control" type="text" name="civil_no" value="{{$doc_data->civil_no ?? ''}}">
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <label>Issuing Date<span class="text-danger">*</span></label>
-                        <input class="form-control" type="date" name="issuing_date" value="{{$doc_data->issuing_date ?? ''}}">
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <label>Expiry Date<span class="text-danger">*</span></label>
-                        <input class="form-control" type="date" name="expiry_date" value="{{$doc_data->expiry_date ?? ''}}">
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
                         <label>Alert Days<span class="text-danger">*</span></label>
                         <input class="form-control digitsOnly" type="text" name="alert_days" value="{{$doc_data->alert_days ?? ''}}">
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <label>Remarks</label>
-                        <input class="form-control" type="text" name="remarks" value="{{$doc_data->remarks ?? ''}}">
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <label>Select Branch <span class="text-danger">*</span></label>
-                        <select class="form-control select" name="branch_id">
-                            <option value="">Select Branch</option>
-                            @if(isset($branches) && count($branches) > 0)
-                                @foreach($branches as $key => $val)
-                                    <option value="{{$val->id}}" {{(isset($doc_data) && !empty($doc_data->branch_id) && ($doc_data->branch_id == $val->id)) ? 'selected' : ''}}>{{$val->name}}</option>
-                                @endforeach
-                            @endif
-                        </select>
                     </div>
                 </div>
                 <div class="col-sm-6">
@@ -237,7 +133,7 @@
                                     </small>
                                 </td>
                                 <td>
-                                    <a href="{{asset('uploads/company_documents/'.$val->doc_file)}}" class="text-info" target="_blank"><i class="fa fa-file"></i><?php //echo $edoc->document_file; ?></a>
+                                    <a href="{{asset('uploads/transportation/'.$val->transpo_file)}}" class="text-info" target="_blank"><i class="fa fa-file"></i><?php //echo $edoc->document_file; ?></a>
                                 </td>
                                 <td class="text-end">
                                     <div class="dropdown dropdown-action">

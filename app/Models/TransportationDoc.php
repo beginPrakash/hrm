@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CompanyDocuments extends Model
+class TransportationDoc extends Model
 {
     use HasFactory;
     public $timestamps = true;
-    protected $table = 'company_documents';
+    protected $table = 'transportation_documents';
     protected $fillable = [
-		'company_id','reg_name', 'reg_no','reg_type','branch_id','civil_no','issuing_date','expiry_date','alert_days','remarks','cost'
+		'transportation_id','car_document','doc_name','expiry_date','alert_days','cost'
 	];
 }

@@ -7,6 +7,8 @@ use Session;
 use App\Models\CompanyDocuments;
 use App\Models\Residency;
 use App\Models\CompanyDocFiles;
+use App\Models\Branch;
+use App\Models\RegistrationType;
 
 class SettingsController extends Controller
 {
@@ -153,8 +155,25 @@ class SettingsController extends Controller
         $company_detail = Residency::where('id',$id)->first();
         $documents = CompanyDocuments::where('company_id',$id)->get();
         $documents_file = CompanyDocuments::where('company_id',$id)->get();
-        return view('settings.company_detail',compact('company_detail','title','documents'));
+        $branches    = Branch::where('status','active')->get();
+        return view('settings.company_detail',compact('company_detail','title','documents','branches'));
 
+    }
+
+    public function getRegtype(Request $request){
+        $search = $request->get('query') ?? '';
+        $reg_data = RegistrationType::orderBy('id','asc');
+        if(!empty($search)):
+            $reg_data = $reg_data->where('name','like', '%'.$search.'%');
+        endif;
+        $reg_data = $reg_data->select('name','id')->get();
+        $resArr = [];
+        if(!empty($reg_data) && count($reg_data) > 0):
+            foreach($reg_data as $key => $val):
+                $resArr[] = $val->name;
+            endforeach;
+        endif;
+        return json_encode($resArr);
     }
     
         

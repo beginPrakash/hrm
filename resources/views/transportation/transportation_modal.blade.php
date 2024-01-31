@@ -14,19 +14,10 @@
             license_number: {
                 required : true
             },
-            license_expiry: {
-                required : true
-            },
-            alert_days: {
-                required : true
-            },
             under_company: {
                 required : true
             },
             under_subcompany: {
-                required : true
-            },
-            cost: {
                 required : true
             },
         },
@@ -43,20 +34,11 @@
             license_number: {
                 required : 'Please enter license number',
             },
-            license_expiry: {
-                required : 'Please select license expiry',
-            },
-            alert_days: {
-                required : 'Please enter alert days',
-            },
             under_company: {
                 required : 'Please select company',
             },
             under_subcompany: {
                 required : 'Please select subcompany',
-            },
-            cost: {
-                required : 'Please enter cost',
             },
         },
         errorPlacement: function (error, element) {
@@ -130,6 +112,17 @@
                 </div>
                 <div class="col-sm-6">
                     <div class="form-group">
+                        <label>Logo</label>
+                        <div class="image-upload">
+                            <label for="file-input4">
+                                <img src="<?php echo (isset($trans_data) && $trans_data->logo!=NULL)?'/uploads/logo/'.$trans_data->logo:""; ?>" id="img1"/>
+                            </label>
+                            <input id="file-input1" name="image1" id="logo" type="file" onchange="previewFile(this, 'img1');"/>{{$trans_data->logo ?? ''}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
                         <label>Colour<span class="text-danger">*</span></label>
                         <input class="form-control" type="text" name="colour" value="{{$trans_data->colour ?? ''}}">
                     </div>
@@ -148,18 +141,6 @@
                 </div>
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <label>License Expiry<span class="text-danger">*</span></label>
-                        <input class="form-control" type="date" name="license_expiry" value="{{$trans_data->license_expiry ?? ''}}">
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <label>Alert Days<span class="text-danger">*</span></label>
-                        <input class="form-control" type="number" name="alert_days" value="{{$trans_data->alert_days ?? 0}}">
-                    </div>
-                </div>
-                <div class="col-sm-12">
-                    <div class="form-group">
                         <label>Remarks</label>
                         <textarea class="form-control" name="remarks">{{$trans_data->remarks ?? ''}}</textarea>
                     </div>
@@ -174,18 +155,6 @@
                     <div class="form-group">
                         <label>Tag</label>
                         <input type="text" class="form-control" name="tag" value="{{$trans_data->tag ?? ''}}">
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <label>Baladiya Expiry</label>
-                        <input type="date" class="form-control" name="baladiya_expiry" value="{{$trans_data->baladiya_expiry ?? ''}}">
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <label>Logo Expiry</label>
-                        <input type="date" class="form-control" name="logo_expiry" value="{{$trans_data->logo_expiry ?? ''}}">
                     </div>
                 </div>
                 <div class="col-sm-6">
@@ -214,56 +183,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <label>Cost<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control digitsOnly" name="cost" value="{{$trans_data->cost ?? ''}}">
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <label>Upload File</label>
-                        <div class="image-upload">
-                            <label for="file-input4">
-                                <img src="<?php echo (isset($trans_data) && $trans_data->logo!=NULL)?'../uploads/logo/'.$trans_data->logo:""; ?>" id="img1"/>
-                            </label>
-                            <input id="doc_file_0" name="doc_file[]" type="file" class="doc_file" onchange="Filevalidation(this,0)"/>
-                        </div>
-                    </div>
-                </div>
-                <div id="div_doc_addmore"></div> 
-                @if(isset($trans_files) && count($trans_files) > 0)
-                    <table class="table doc_table">
-                        <tr>
-                            <th>Title</th>
-                            <th>File</th>
-                            <th class="text-end">Action</th>
-                        </tr>
-                        @foreach($trans_files as $key => $val)
-                            <tr class="doc_{{$val->id}}">
-                                <td>
-                                    <small class="block text-ellipsis">
-                                        <span class="text-muted">Uploaded on : {{dateDisplayFormat($val->created_at)}}</span>
-                                    </small>
-                                </td>
-                                <td>
-                                    <a href="{{asset('uploads/transportation/'.$val->transpo_file)}}" class="text-info" target="_blank"><i class="fa fa-file"></i><?php //echo $edoc->document_file; ?></a>
-                                </td>
-                                <td class="text-end">
-                                    <div class="dropdown dropdown-action">
-                                        <a class="dropdown-item deleteDocButton" data-data="{{$val->id}}"><i class="fa fa-trash-o m-r-5 text-danger"></i></a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </table>
-                @endif
             </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <button type="button" class="btn btn-sm btn-success pull-right" id="doc_addmore">Add More</button>
-                </div>
-            </div> 
             <div class="submit-section">
                 <button type="submit" name="update" class="btn btn-primary submit-btn">Submit</button>
             </div>

@@ -1,5 +1,6 @@
 <?php echo $__env->make('includes/header', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 <?php echo $__env->make('includes/sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tokenfield/0.12.0/css/bootstrap-tokenfield.min.css">
 
 <!-- Page Wrapper -->
 <div class="page-wrapper">
@@ -219,6 +220,8 @@
 </html>
 
 <?php echo $__env->make('includes/footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tokenfield/0.12.0/bootstrap-tokenfield.js"></script>
 <script>
     $(document).on('click','.editButton',function(){
         $('#add_company').html('');
@@ -234,12 +237,33 @@
             }
         });
     });
+    var reg_url = "<?php echo e(route('getRegtype')); ?>";
+    $('#reg_type').tokenfield({
+        autocomplete :{
+            source: function(request, response)
+            {
+                jQuery.get(reg_url, {
+                    query : request.term
+                }, function(data){
+                    data = JSON.parse(data);
+                    response(data);
+                });
+            },
+            delay: 100
+        }
+    });
+    
+
+    // $('#search').click(function(){
+    //     $('#country_name').text($('#search_data').val());
+    // });
 
     $('#add_company').on('hidden.bs.modal', function () {
         $("input[type=text], textarea").val("");
         $('#img1').remove();
         $('.company_id_hid').val('');
         $('.leave_m_title').text('Add Company');
+        
     });
 
     var len = 0;
@@ -302,6 +326,9 @@
             doc_file: {
                 required : true
             },
+            branch_id:{
+                required : true
+            },
         },
         messages: {
             reg_name: {
@@ -327,6 +354,9 @@
             },
             doc_file: {
                 required : "Please select document"
+            },
+            branch_id:{
+                required : "Please select branch"
             },
         },
         errorPlacement: function (error, element) {
@@ -365,6 +395,7 @@
         $('.doc_id_hid').val('');
         $('.leave_m_title').text('Add Document');
         $('.doc_table').remove();
+        $('.token').remove();
     });
 
 

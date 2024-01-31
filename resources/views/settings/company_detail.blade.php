@@ -1,5 +1,6 @@
 @include('includes/header')
 @include('includes/sidebar')
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tokenfield/0.12.0/css/bootstrap-tokenfield.min.css">
 
 <!-- Page Wrapper -->
 <div class="page-wrapper">
@@ -218,6 +219,8 @@
 </html>
 
 @include('includes/footer')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tokenfield/0.12.0/bootstrap-tokenfield.js"></script>
 <script>
     $(document).on('click','.editButton',function(){
         $('#add_company').html('');
@@ -233,12 +236,33 @@
             }
         });
     });
+    var reg_url = "{{route('getRegtype')}}";
+    $('#reg_type').tokenfield({
+        autocomplete :{
+            source: function(request, response)
+            {
+                jQuery.get(reg_url, {
+                    query : request.term
+                }, function(data){
+                    data = JSON.parse(data);
+                    response(data);
+                });
+            },
+            delay: 100
+        }
+    });
+    
+
+    // $('#search').click(function(){
+    //     $('#country_name').text($('#search_data').val());
+    // });
 
     $('#add_company').on('hidden.bs.modal', function () {
         $("input[type=text], textarea").val("");
         $('#img1').remove();
         $('.company_id_hid').val('');
         $('.leave_m_title').text('Add Company');
+        
     });
 
     var len = 0;
@@ -301,6 +325,9 @@
             doc_file: {
                 required : true
             },
+            branch_id:{
+                required : true
+            },
         },
         messages: {
             reg_name: {
@@ -327,6 +354,9 @@
             doc_file: {
                 required : "Please select document"
             },
+            branch_id:{
+                required : "Please select branch"
+            },
         },
         errorPlacement: function (error, element) {
             if (element.prop("type") == "text" || element.prop("type") == "textarea") {
@@ -341,6 +371,19 @@
         if(event.which !=8 && isNaN(String.fromCharCode(event.which))){
             event.preventDefault();
         }
+    });
+
+    $(".allowfloatnumber").keypress(function (eve) {
+        if ((eve.which != 46 || $(this).val().indexOf('.') != -1) && (eve.which < 48 || eve.which > 57) || (eve.which == 46 && $(this).caret().start == 0)) {
+            eve.preventDefault();
+        }
+
+    // this part is when left part of number is deleted and leaves a . in the leftmost position. For example, 33.25, then 33 is deleted
+    $('.allowfloatnumber').keyup(function(eve) {
+            if ($(this).val().indexOf('.') == 0) {
+            $(this).val($(this).val().substring(1));
+            }
+        });
     });
 
     $(document).on('click','.edit_doc_btn',function(){
@@ -364,6 +407,7 @@
         $('.doc_id_hid').val('');
         $('.leave_m_title').text('Add Document');
         $('.doc_table').remove();
+        $('.token').remove();
     });
 
 

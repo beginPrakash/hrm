@@ -113,8 +113,9 @@ Route::post('/isSubresidencyExists', [App\Http\Controllers\SubresidencyControlle
 // });
 Route::get('/employeeProfileUpdate',[App\Http\Controllers\EmployeeController::class, 'update']);
 Route::get('/change_manual_punchin_status/{user_id}/{status}',[App\Http\Controllers\EmployeeController::class, 'change_manual_punchin_status']);
+Route::get('/change_passport_status/{user_id}/{status}',[App\Http\Controllers\EmployeeController::class, 'change_passport_status']);
 Route::post('/employeeSearch', [EmployeeController::class, 'search']);
-
+Route::post('/save_cost',[App\Http\Controllers\EmployeeController::class, 'save_cost'])->name('save_cost');
 
 Route::post('/employeeInsert',[EmployeeController::class, 'store']);
 
@@ -256,6 +257,7 @@ Route::post('/getcompanyDetailsById',[App\Http\Controllers\SettingsController::c
 Route::post('/company-delete',[App\Http\Controllers\SettingsController::class, 'delete'])->name('company.delete');
 Route::post('/company-settings/store', [App\Http\Controllers\SettingsController::class, 'store'])->name('company.store');
 Route::get('/company-settings/detail/{id}', [App\Http\Controllers\SettingsController::class, 'detail'])->name('company.detail');
+Route::get('/getRegtype',[App\Http\Controllers\SettingsController::class, 'getRegtype'] )->name('getRegtype');
 
 //Transportation
 
@@ -270,7 +272,13 @@ Route::post('/documents/store', [App\Http\Controllers\DocumentController::class,
 Route::post('/getdocumentDetailsById', [App\Http\Controllers\DocumentController::class, 'getdocumentDetailsById'])->name('getdocumentDetailsById');
 Route::post('/delete_company_document', [App\Http\Controllers\DocumentController::class, 'delete_company_document'])->name('delete_company_document');
 Route::post('/documents/delete', [App\Http\Controllers\DocumentController::class, 'delete'])->name('document.delete');
- 
+Route::post('/deleteregtypebydocument', [App\Http\Controllers\DocumentController::class, 'deleteregtypebydocument'])->name('deleteregtypebydocument');
+
+
+//Transportation Document
+Route::post('/transdocuments/store', [App\Http\Controllers\TransDocument::class, 'store'])->name('transdoc.store');
+Route::post('/gettransdocumentDetailsById', [App\Http\Controllers\TransDocument::class, 'gettransdocumentDetailsById'])->name('gettransdocumentDetailsById');
+Route::post('/transdocuments/delete', [App\Http\Controllers\TransDocument::class, 'delete'])->name('transdoc.delete');
 
 // Payroll Items
 Route::get('/payroll-items', [App\Http\Controllers\PayrollController::class, 'items']);

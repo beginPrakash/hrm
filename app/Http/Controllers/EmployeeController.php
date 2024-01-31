@@ -1110,7 +1110,20 @@ class EmployeeController extends Controller
             $emp_details->is_manual_punchin = 0;
         endif;
         $emp_details->save();
-        $return['message'] = 'Import Successful.';
+        $return['message'] = 'Data saved Successful.';
+        $return['status'] = 1;
+        return $return;
+    }
+
+    public function change_passport_status(Request $request,$user_id,$status){
+        $emp_details = Employee::where('user_id',$user_id)->first();
+        if($emp_details->is_passport == 0):
+            $emp_details->is_passport = 1;
+        else:
+            $emp_details->is_passport = 0;
+        endif;
+        $emp_details->save();
+        $return['message'] = 'Data saved Successful.';
         $return['status'] = 1;
         return $return;
     }
@@ -1286,5 +1299,15 @@ class EmployeeController extends Controller
         $return['status'] = 1;
         $return['error'] = $error;
         return $return;
+    }
+
+    public function save_cost(Request $request){
+        $employee_data = EmployeeDetails::where("emp_id", $request->user_id)->first();
+        if(!empty($employee_data)):
+            $employee_data->civil_cost = $request->civil_cost ?? NULL;
+            $employee_data->baladiya_cost = $request->baladiya_cost ?? NULL;
+            $employee_data->save();
+            return redirect()->back()->with('success','Data saved successfully.');
+        endif;
     }
 }

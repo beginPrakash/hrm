@@ -11,8 +11,8 @@ class Transportation extends Model
     public $timestamps = true;
     protected $table = 'transportation';
     protected $fillable = [
-		'car_name','colour', 'model','license_no','license_expiry','alert_days','remarks','driver','tag',
-        'baladiya_expiry','logo_expiry','under_company','under_subcompany','cost','status'
+		'car_name','colour', 'model','license_no','remarks','driver','tag',
+        'under_company','under_subcompany','logo','status'
 	];
   
   public function com_detail()

@@ -196,8 +196,6 @@
 
 
 
-.table-responsive {}
-
 
 
 .table-responsive::-webkit-scrollbar-track {
@@ -332,7 +330,22 @@
 
 }
 
+.ui-menu {
+    width: 235px !important;
+    background: #fff;
+    z-index: 9999 !important;
+    padding: 10px;
+    box-shadow: 0 0 5px 0 rgba(0,0,0,0.2);
+    border-radius: 10px;
+}
 
+.tokenfield .token .close {
+    position: unset !important;
+    width: auto !important;
+    height: auto !important;
+    background: transparent !important;
+    color: #000 !important;
+}
 
 /* .page-wrapper a {
 

@@ -48,7 +48,7 @@
                 <div class="col-md-4 col-sm-6 col-12 col-lg-4 col-xl-3 m-ht-3">
                     <div class="profile-widget">
                         <div class="profile-img">
-                            <a href="<?php echo e(route('transportation.detail',$val->id)); ?>"><img src="<?php echo e(asset('assets/img/pdf-icon.png')); ?>" alt=""></a>
+                            <a href="<?php echo e(route('transportation.detail',$val->id)); ?>"><img src="<?php echo e(($val->logo!=null)?'uploads/logo/'.$val->logo:'assets/img/profiles/avatar.png'); ?>" alt=""></a></a>
                         </div>
                         <div class="dropdown profile-action">
                             <a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>

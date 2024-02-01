@@ -22,21 +22,40 @@ class TransDocument extends Controller
     public function store(Request $request)
     {
     
+        $reg_ids = [];
+        $reg_types = explode(', ',$request->reg_type);
+        //dd($request->all());
+        if(!empty($reg_types) && count($reg_types) > 0):
+            foreach($reg_types as $key => $val):
+                $check_reg_exists = RegistrationType::where('name',$val)->first();
+                if(!empty($check_reg_exists)):
+                    $reg_ids[] = $check_reg_exists->id;
+                else:
+                    $save_data = new RegistrationType();
+                    $save_data->name = $val;
+                    $save_data->save();
+                    $reg_ids[] = $save_data->id ?? '';
+                endif;
+            endforeach;
+        endif;
+
+        $doc_data_reg = TransportationDoc::where('id', $request->id)->first();
+        if(!empty($request->reg_type)):
+            $reg_im_data = implode(",",$reg_ids);
+        else:
+            $reg_im_data = $doc_data_reg->reg_type ?? '';
+        endif;
+
         $insertArr = array(
             'transportation_id'=>$request->transpo_id ?? 0,
+            'doc_number' => $request->doc_number,
             'doc_name' => $request->doc_name,
             'expiry_date'      =>  $request->expiry_date,
             'alert_days'     =>  $request->alert_days,
-            'cost'     =>  $request->cost
+            'cost'     =>  $request->cost,
+            'reg_type' => $reg_im_data,
         );
 
-        if($request->has('car_document')) 
-        {
-            $image = $request->file('car_document');
-            $filename = $image->getClientOriginalName();
-            $image->move(public_path('uploads/transportation'), $filename);
-            $insertArr['car_document'] = $filename;
-        }
 
         if(!empty($request->id)):
             $doc_data = TransportationDoc::where('id', $request->id)->update($insertArr);
@@ -91,10 +110,17 @@ class TransDocument extends Controller
         $reg_html = '';
         $doc_data = TransportationDoc::where('id',$request->id)->first();
         $doc_files = TranspoFiles::where('transpo_id',$request->id)->get();
-       
+        $get_reg_types = RegistrationType::whereIn('id',explode(',',$doc_data->reg_type ?? ''))->get();
+        if(!empty($get_reg_types) && count($get_reg_types) > 0):
+            foreach($get_reg_types as $key => $val):
+                $reg_html.= '<div class="token" data-value="'.$val->name.'"><span class="token-label">'.$val->name.'</span><a href="#" data-docid="'.$request->id.'" data-reg_id="'.$val->id.'" class="close close_reg_data" tabindex="-1">×</a></div>';
+            endforeach;
+        endif;
+
         $pass_array=array(
 			'doc_data' => $doc_data,
             'doc_files'=>$doc_files,
+            'reg_html'=>$reg_html,
         );
         $html =  view('transportation.document_modal', $pass_array )->render();
 		$arr = [
@@ -103,6 +129,26 @@ class TransDocument extends Controller
 		];
 		return response()->json($arr);
 
+    }
+
+    public function deletetransregtypebydocument(Request $request){
+        $doc_data = TransportationDoc::where('id',$request->doc_id)->first();
+        if(!empty($doc_data)):
+            $reg_data = explode(',',$doc_data->reg_type);
+            if(!empty($reg_data) && count($reg_data) > 0):
+                foreach($reg_data as $key => $val):
+                    if($val == $request->reg_id):
+                        unset($reg_data[$key]);
+                    endif;
+                endforeach;
+            endif;
+            $doc_data->reg_type = implode(',',$reg_data);
+            $doc_data->save();
+            $arr = [
+                'success' => 'true',
+            ];
+            return response()->json($arr);
+        endif;
     }
 
         

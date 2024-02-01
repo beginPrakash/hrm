@@ -1,7 +1,46 @@
 <script type="text/javascript" src="<?php echo e(asset('assets/js/app.js')); ?>"></script>
 <script>
+    var reg_url = "<?php echo e(route('getRegtype')); ?>";
+    $('#reg_type').tokenfield({
+        autocomplete :{
+            source: function(request, response)
+            {
+                jQuery.get(reg_url, {
+                    query : request.term
+                }, function(data){
+                    data = JSON.parse(data);
+                    response(data);
+                });
+            },
+
+            delay: 100
+        }
+    });
+
+    $(document).on('click','.close_reg_data',function(){
+        $(this).parent().remove();
+        var doc_id= $(this).attr('data-docid');
+        var reg_id= $(this).attr('data-reg_id');
+        $.ajax({
+        url: "<?php echo e(route('deletetransregtypebydocument')); ?>",
+        type: "POST",
+        dataType: "json",
+        data: {"_token": "<?php echo e(csrf_token()); ?>", doc_id:doc_id,reg_id:reg_id},
+        success:function(response)
+            {
+                $('#add_document').html(response.html).fadeIn();
+            }
+        });
+    });
+
+    var reghtml = '<?php echo e($reg_html ?? ''); ?>';
+    $('#reg_type').parent('.tokenfield').prepend($('.regtype_data').text());
+    
     $("#document_form").validate({
         rules: {
+            doc_number: {
+                required : true
+            },
             doc_name: {
                 required : true
             },
@@ -19,6 +58,9 @@
             },
         },
         messages: {
+            doc_number: {
+                required : "Please enter document number"
+            },
             doc_name: {
                 required : "Please enter document name"
             },
@@ -70,6 +112,10 @@
             <input type="hidden" name="id" value="<?php echo e($doc_data->id ?? ''); ?>" class="doc_id_hid">
             <?php if(isset($doc_data) && !empty($doc_data)): ?>
                 <input type="hidden" name="transpo_id" value="<?php echo e($doc_data->transportation_id ?? ''); ?>">
+                <div class="regtype_data d-none">
+                    <?php echo e($reg_html ?? ''); ?>
+
+                </div>
             <?php else: ?>
                 <input type="hidden" name="transpo_id" value="<?php echo e($trans_detail->id ?? ''); ?>">
             <?php endif; ?>
@@ -77,15 +123,24 @@
             <div class="row">
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <label>Car Document <span class="text-danger">*</span></label>
-                        <input class="form-control" type="file" name="car_document"><?php echo e($doc_data->car_document ?? ''); ?>
-
+                        <label>Document Number<span class="text-danger">*</span></label>
+                        <input class="form-control" type="text" name="doc_number" value="<?php echo e($doc_data->doc_number ?? ''); ?>">
                     </div>
                 </div>
                 <div class="col-sm-6">
                     <div class="form-group">
                         <label>Document Name <span class="text-danger">*</span></label>
                         <input class="form-control" type="text" name="doc_name" value="<?php echo e($doc_data->doc_name ?? ''); ?>">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Registration Type</label>
+                        <div class="input-group regtype_main_div">
+                            <input type="text" id="reg_type" name="reg_type" placeholder="" autocomplete="off" class="form-control input-lg" />
+                        </div>
+                        <br />
+                        <span id="country_name"></span>
                     </div>
                 </div>
                 <div class="col-sm-6">
@@ -104,7 +159,7 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <label>Cost<span class="text-danger">*</span></label>
-                        <input class="form-control digitsOnly" type="text" name="cost" value="<?php echo e($doc_data->cost ?? ''); ?>">
+                        <input class="form-control allowfloatnumber" type="text" name="cost" value="<?php echo e($doc_data->cost ?? ''); ?>">
                     </div>
                 </div>
                 <div class="col-sm-6">

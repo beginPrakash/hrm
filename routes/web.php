@@ -279,6 +279,7 @@ Route::post('/deleteregtypebydocument', [App\Http\Controllers\DocumentController
 Route::post('/transdocuments/store', [App\Http\Controllers\TransDocument::class, 'store'])->name('transdoc.store');
 Route::post('/gettransdocumentDetailsById', [App\Http\Controllers\TransDocument::class, 'gettransdocumentDetailsById'])->name('gettransdocumentDetailsById');
 Route::post('/transdocuments/delete', [App\Http\Controllers\TransDocument::class, 'delete'])->name('transdoc.delete');
+Route::post('/deletetransregtypebydocument', [App\Http\Controllers\TransDocument::class, 'deletetransregtypebydocument'])->name('deletetransregtypebydocument');
 
 // Payroll Items
 Route::get('/payroll-items', [App\Http\Controllers\PayrollController::class, 'items']);

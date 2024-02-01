@@ -208,7 +208,7 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <label>Cost<span class="text-danger">*</span></label>
-                        <input class="form-control digitsOnly" type="text" name="cost" value="<?php echo e($doc_data->cost ?? ''); ?>">
+                        <input class="form-control allowfloatnumber" type="text" name="cost" value="<?php echo e($doc_data->cost ?? ''); ?>">
                     </div>
                 </div>
                 <div class="col-sm-6">

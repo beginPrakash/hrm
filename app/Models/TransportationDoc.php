@@ -11,6 +11,6 @@ class TransportationDoc extends Model
     public $timestamps = true;
     protected $table = 'transportation_documents';
     protected $fillable = [
-		'transportation_id','car_document','doc_name','expiry_date','alert_days','cost'
+		'transportation_id','doc_number','doc_name','reg_type','expiry_date','alert_days','cost'
 	];
 }

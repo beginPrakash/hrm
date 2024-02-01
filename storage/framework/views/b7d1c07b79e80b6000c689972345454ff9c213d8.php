@@ -1,6 +1,6 @@
 <?php echo $__env->make('includes/header', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 <?php echo $__env->make('includes/sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
-
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tokenfield/0.12.0/css/bootstrap-tokenfield.min.css">
 <!-- Page Wrapper -->
 <div class="page-wrapper">
     
@@ -211,6 +211,8 @@
 </html>
 
 <?php echo $__env->make('includes/footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tokenfield/0.12.0/bootstrap-tokenfield.js"></script>
 <script>
    $(document).on('click','.edit_trans_btn',function(){
         $('#add_transp').html('');
@@ -226,6 +228,23 @@
             }
         });
     });
+
+    var reg_url = "<?php echo e(route('getRegtype')); ?>";
+    $('#reg_type').tokenfield({
+        autocomplete :{
+            source: function(request, response)
+            {
+                jQuery.get(reg_url, {
+                    query : request.term
+                }, function(data){
+                    data = JSON.parse(data);
+                    response(data);
+                });
+            },
+            delay: 100
+        }
+    });
+    
 
     $(document).on('click','.deleteDocButton',function(){
         var id = $(this).data('data');
@@ -277,6 +296,9 @@
 
     $("#document_form").validate({
         rules: {
+            doc_number: {
+                required : true
+            },
             doc_name: {
                 required : true
             },
@@ -294,6 +316,9 @@
             },
         },
         messages: {
+            doc_number: {
+                required : "Please enter document number"
+            },
             doc_name: {
                 required : "Please enter document name"
             },
@@ -323,6 +348,19 @@
         if(event.which !=8 && isNaN(String.fromCharCode(event.which))){
             event.preventDefault();
         }
+    });
+
+    $(".allowfloatnumber").keypress(function (eve) {
+        if ((eve.which != 46 || $(this).val().indexOf('.') != -1) && (eve.which < 48 || eve.which > 57) || (eve.which == 46 && $(this).caret().start == 0)) {
+            eve.preventDefault();
+        }
+
+    // this part is when left part of number is deleted and leaves a . in the leftmost position. For example, 33.25, then 33 is deleted
+    $('.allowfloatnumber').keyup(function(eve) {
+            if ($(this).val().indexOf('.') == 0) {
+            $(this).val($(this).val().substring(1));
+            }
+        });
     });
 
     $(document).on('click','.edit_doc_btn',function(){

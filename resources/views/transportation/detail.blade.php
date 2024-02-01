@@ -1,6 +1,6 @@
 @include('includes/header')
 @include('includes/sidebar')
-
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tokenfield/0.12.0/css/bootstrap-tokenfield.min.css">
 <!-- Page Wrapper -->
 <div class="page-wrapper">
     
@@ -210,6 +210,8 @@
 </html>
 
 @include('includes/footer')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tokenfield/0.12.0/bootstrap-tokenfield.js"></script>
 <script>
    $(document).on('click','.edit_trans_btn',function(){
         $('#add_transp').html('');
@@ -225,6 +227,23 @@
             }
         });
     });
+
+    var reg_url = "{{route('getRegtype')}}";
+    $('#reg_type').tokenfield({
+        autocomplete :{
+            source: function(request, response)
+            {
+                jQuery.get(reg_url, {
+                    query : request.term
+                }, function(data){
+                    data = JSON.parse(data);
+                    response(data);
+                });
+            },
+            delay: 100
+        }
+    });
+    
 
     $(document).on('click','.deleteDocButton',function(){
         var id = $(this).data('data');
@@ -276,6 +295,9 @@
 
     $("#document_form").validate({
         rules: {
+            doc_number: {
+                required : true
+            },
             doc_name: {
                 required : true
             },
@@ -293,6 +315,9 @@
             },
         },
         messages: {
+            doc_number: {
+                required : "Please enter document number"
+            },
             doc_name: {
                 required : "Please enter document name"
             },

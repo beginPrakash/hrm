@@ -104,7 +104,7 @@ class Dashboard extends Controller
         $indemnityDetails = Indemnity::get();
         // echo '<pre>';print_r($indemnityDetails);
         // echo '--------Values test-----------<br>';
-        if(isset($indemnityDetails) && !empty($indemnityDetails[0]))
+        if(isset($indemnityDetails))
         { 
                 // echo '......indemnity exists......<br>';
             if($diffExplode[0] >= $indemnityDetails[0]->min_year)
@@ -179,23 +179,57 @@ class Dashboard extends Controller
                             $finalIndemnity += (round($indemnityEarned,6)/100) * $id->percentage_ia;
                         }
 
+
                         // echo $finalIndemnity;
                         //check if indemnity already generated
+                        $checkIndemnityarray = array(
+                            'user_id'           =>  $user_id,
+                            'status'            =>  'active'
+                        );
+                        $checkIndemnityCount = EmployeeIndemnity::where($checkIndemnityarray)->get();
+                        $IndemnityId = 0;
+                        if($checkIndemnityCount->count() > 0)
+                        {
+                            $IndemnityId = $checkIndemnityCount[$checkIndemnityCount->count()-1]->id;
+                        }
+                        $insertArray = array(
+                            'user_id'           =>  $user_id,
+                            'joined_on'         =>  $joinedOn,
+                            'today_date'        =>  $today,
+                            'years_diff'        =>  $diff,
+                            'months_earned'     =>  $monthsEarned,
+                            'max_months_eligible'   =>  $maxMonthsEligible,
+                            'months_taken'      =>  $monthsEligible,
+                            'indemnity_amount'  =>  $id->indemnity_amount,
+                            'indemnity_perc'    =>  $per,//$id->percentage_ia,
+                            'current_salary'    =>  (isset($employee[0]) && isset($employee[0]->employee_salary->basic_salary))?$employee[0]->employee_salary->basic_salary:0,
+                            'month_days'        =>  26,
+                            'perday_salary'     =>  $perDaySalary,
+                            'total_months'      =>  $monthsEarned,
+                            'total_amount'      =>  $finalIndemnity,
+                            'created_at'        =>  date('Y-m-d h:i:s'),
+                            'status'            =>  'active');
+                        if($IndemnityId > 0)
+                        {
+                            EmployeeIndemnity::where('id', $IndemnityId)->update($insertArray);
+                        }
+                        else
+                        {
+                            EmployeeIndemnity::insertGetId($insertArray);
+                        }
                         
-                        return $finalIndemnity ?? 0;
-                        exit;
-
+                        // echo '<br>';
                     }
                 }
             }
             else
             {
-                $finalIndemnity = 0;;
+                $finalIndemnity = 0;
             }
             return $finalIndemnity;
         }
         
-        return 0;
+        return null;
     }
     
 }

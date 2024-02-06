@@ -15,6 +15,8 @@ use App\Models\EmployeeOvertimeData;
 use App\Models\EmployeeDeduction;
 use App\Models\Holidays;
 use App\Models\Shifting;
+use App\Models\Residency;
+use App\Models\EmployeeDetails;
 
 function getLastId()
 {
@@ -617,6 +619,16 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         endif;
         return $break_time;
         
+    }
+
+    function _get_company_name($id){
+        $data = Residency::where('id',$id)->value('name');
+        return $data ?? '';
+    }
+
+    function _sum_of_empcost($ids='',$type=''){
+        $data = EmployeeDetails::whereIn('emp_id',explode(',',$ids))->whereNotNull($type)->sum($type);
+        return $data;
     }
 
     

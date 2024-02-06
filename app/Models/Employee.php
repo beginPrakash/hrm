@@ -78,6 +78,10 @@ class Employee extends Model
 		return $this->hasOne(Residency::class, 'id', 'company');
 	} 
 
+	public function employee_subcompany(){
+		return $this->hasOne(Subresidency::class, 'id', 'subcompany');
+	} 
+
 	public function user()
 	{
 		return $this->belongsTo(User::class,'user_id','id');

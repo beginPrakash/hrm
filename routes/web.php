@@ -301,6 +301,12 @@ Route::post('/deductionDelete', [App\Http\Controllers\PayrollController::class, 
 Route::get('/generateSalaryList/{mid}', [App\Http\Controllers\CronjobController::class, 'salaryEntry']);
 Route::get('/leaveSalaryCalculate', [App\Http\Controllers\CronjobController::class, 'leaveSalaryCalculate']);
 Route::get('/generateOvertimeList/{mid}', [App\Http\Controllers\CronjobController::class, 'overtimeEntry']);
+
+//Reports 
+Route::match(array('GET','POST'),'/civil_reports', [App\Http\Controllers\Reports::class, 'civil_report'])->name('civil_report');
+Route::post('/listuserbycompany', [App\Http\Controllers\Reports::class, 'listuserbycompany'])->name('listuserbycompany');
+Route::match(array('GET','POST'),'/baladiya_reports', [App\Http\Controllers\Reports::class, 'baladiya_report'])->name('baladiya_report');
+Route::post('/blistuserbycompany', [App\Http\Controllers\Reports::class, 'blistuserbycompany'])->name('blistuserbycompany');
 });
 
 Route::get('/ind-test/{id}', [App\Http\Controllers\PayrollController::class, 'calculateIndemnity']);

@@ -17,6 +17,7 @@ use App\Models\Holidays;
 use App\Models\Shifting;
 use App\Models\Residency;
 use App\Models\EmployeeDetails;
+use App\Models\CompanyDocuments;
 
 function getLastId()
 {
@@ -630,6 +631,12 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $data = EmployeeDetails::whereIn('emp_id',explode(',',$ids))->whereNotNull($type)->sum($type);
         return $data;
     }
+
+    function _sum_of_companycost($ids=''){
+        $data = CompanyDocuments::whereIn('id',explode(',',$ids))->whereNotNull('cost')->sum('cost');
+        return $data;
+    }
+
 
     
     

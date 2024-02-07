@@ -192,7 +192,7 @@
                                     <td><?php echo e((isset($data->employee_details) && !empty($data->employee_details->expi_c_id)) ? date('d, M Y', strtotime($data->employee_details->expi_b_id)) : ''); ?></td>
                                     <td><?php echo e((isset($data->employee_residency) && !empty($data->employee_residency)) ? $data->employee_residency->name : ''); ?></td>
                                     <td><?php echo e((isset($data->employee_subcompany) && !empty($data->employee_subcompany)) ? $data->employee_subcompany->name : ''); ?></td>
-                                    <td>KWD <?php echo e($baladiya_cost ?? 0); ?></td>
+                                    <td>KWD <?php echo e(number_format($baladiya_cost,2) ?? 0); ?></td>
                                     <td><?php echo e($status); ?></td>
                                 </tr>
                                 <?php $i++; ?>

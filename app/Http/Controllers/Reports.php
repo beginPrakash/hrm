@@ -10,6 +10,7 @@ use App\Models\Subresidency;
 use App\Models\Branch;
 use App\Models\Departments;
 use App\Models\Designations;
+use App\Models\CompanyDocuments;
 
 class Reports extends Controller
 {
@@ -212,6 +213,87 @@ class Reports extends Controller
         endif;
         
         return view('reports.baladiya',compact('data_list','user_list','search','company','subcompany','branch','department','designation'));
+    }
+
+    public function company_report(Request $request)
+    { 
+        $search = [];
+        $search['expiry_date'] = '';
+        $search['to_date'] = '';
+        $search['company'] = $_POST['company'] ?? '';
+        $search['reg_name'] = $_POST['reg_name'] ?? '';
+        $search['branch'] = $_POST['branch'] ?? '';
+        $search['status'] = $_POST['status'] ?? '';
+
+        $que_list = CompanyDocuments::with('company_details')->whereHas('company_details', function($q){
+            $q->whereNotNull('name');
+        });
+
+        if(!empty($_POST['expiry_date']) && !empty($_POST['to_date']))
+        {
+            $search['expiry_date'] = $_POST['expiry_date'];
+            $search['to_date'] = $_POST['to_date'];
+            $startDate = date('Y-m-d', strtotime($_POST['expiry_date']));
+            $to_date = date('Y-m-d', strtotime($_POST['to_date']));
+            $que_list->whereBetween('expiry_date',array($startDate,$to_date));
+        }elseif(empty($_POST['expiry_date']) && !empty($_POST['to_date']))
+        {
+            $search['to_date'] = $_POST['to_date'];
+            $to_date = date('Y-m-d', strtotime($_POST['to_date']));
+            $que_list->whereDate('expiry_date',$to_date);
+        }elseif(!empty($_POST['expiry_date']) && empty($_POST['to_date']))
+        {
+            $search['expiry_date'] = $_POST['expiry_date'];
+            $expiry_date = date('Y-m-d', strtotime($_POST['expiry_date']));
+            $que_list->whereDate('expiry_date','>',$expiry_date);
+        }
+
+        if(isset($_POST['company']) && $_POST['company']!='')
+        {
+            $que_list->where('company_id',(int)$_POST['company']);
+        }
+
+        if(isset($_POST['branch']) && $_POST['branch']!='')
+        {
+            $que_list->where('branch_id',(int)$_POST['branch']);
+        }
+
+        if(isset($_POST['reg_name']) && $_POST['reg_name']!='')
+        {
+            $que_list->where(DB::raw("reg_name") , 'like', '%'.$_POST['reg_name'].'%');
+        }
+
+        if(isset($_POST['status']) && $_POST['status']!='')
+        {
+            $cur_date = date('Y-m-d');
+            if($_POST['status'] == 'expired'):
+                $que_list->whereDate('expiry_date','<',$cur_date);
+            else:
+                $que_list->whereDate('expiry_date','>=',$cur_date);
+            endif;
+
+        }
+        
+
+        $data_list = $que_list->get();
+
+        $com_list = $que_list->select('company_id')->selectRaw('GROUP_CONCAT(id) as ids')
+        ->groupBy('company_id')->orderBy('company_id','asc')->get();
+        $company = Residency::where('status','active')->select('id','name')->pluck('name','id');
+        $branch = Branch::where('status','active')->select('id','name')->pluck('name','id');
+        if(isset($_POST['type']) && $_POST['type']=='pdf'):
+            $pass_array = array(
+                "data_list" => $data_list,
+                "com_list" => $com_list,
+            );
+            $cdate = date('Y-m-d');
+            $rname = $cdate.'_companyreport.pdf';
+            $pdf = PDF::loadView('reports.company_report_pdf', $pass_array)->setPaper('a4', 'landscape')->setWarnings(false);
+            //print_r($pdf);
+            return $pdf->download($rname);
+        endif;
+        
+        return view('reports.company',compact('data_list','search','company','branch'));
     }
 
     public function listuserbycompany(Request $request){

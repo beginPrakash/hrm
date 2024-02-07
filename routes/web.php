@@ -307,6 +307,8 @@ Route::match(array('GET','POST'),'/civil_reports', [App\Http\Controllers\Reports
 Route::post('/listuserbycompany', [App\Http\Controllers\Reports::class, 'listuserbycompany'])->name('listuserbycompany');
 Route::match(array('GET','POST'),'/baladiya_reports', [App\Http\Controllers\Reports::class, 'baladiya_report'])->name('baladiya_report');
 Route::post('/blistuserbycompany', [App\Http\Controllers\Reports::class, 'blistuserbycompany'])->name('blistuserbycompany');
+Route::match(array('GET','POST'),'/company_reports', [App\Http\Controllers\Reports::class, 'company_report'])->name('company_report');
+
 });
 
 Route::get('/ind-test/{id}', [App\Http\Controllers\PayrollController::class, 'calculateIndemnity']);

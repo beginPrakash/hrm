@@ -13,4 +13,17 @@ class CompanyDocuments extends Model
     protected $fillable = [
 		'company_id','reg_name', 'reg_no','reg_type','branch_id','civil_no','issuing_date','expiry_date','alert_days','remarks','cost'
 	];
+
+  public function company_details(){
+		return $this->hasOne('App\Models\Residency','id','company_id');
+	}
+
+  public function branch_details(){
+		return $this->hasOne(Branch::class, 'id', 'branch_id');
+	}
+
+  public function regis_type(){
+		return $this->hasOne(RegistrationType::class, 'id', 'reg_type');
+	}
+
 }

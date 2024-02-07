@@ -21,7 +21,6 @@ class DocumentController extends Controller
     {
         $reg_ids = [];
         $reg_types = explode(', ',$request->reg_type);
-        //dd($request->all());
         if(!empty($reg_types) && count($reg_types) > 0):
             foreach($reg_types as $key => $val):
                 $check_reg_exists = RegistrationType::where('name',$val)->first();

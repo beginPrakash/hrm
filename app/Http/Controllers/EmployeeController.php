@@ -208,7 +208,8 @@ class EmployeeController extends Controller
 
         $empArray = array(
             'passport_no'       =>  $request->passport_no,
-            'passport_expiry'   =>  $request->pass_expiry
+            'passport_expiry'   =>  $request->pass_expiry,
+            'hiring_type' => $request->hiring_type ?? NULL
         );
         Employee::where("id", $request->id)->update($empArray);
 

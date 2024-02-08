@@ -9,7 +9,7 @@ class Employee extends Model
 {
     use HasFactory;
     protected $fillable = [
-		'user_id', 'company_id', 'first_name' , 'last_name' , 'email', 'password' ,'conf_password' ,'emp_generated_id' ,'joining_date', 'passport_no' ,'passport_expiry' , 'local_address', 'phone' ,'visa_no'  ,'company' , 'branch', 'subcompany', 'department','designation' , 'username', 'opening_leave_days','used_leave', 'opening_leave_amount', 'public_holidays_balance', 'public_holidays_amount','is_manual_punchin','is_passport'
+		'user_id', 'company_id', 'first_name' , 'last_name' , 'email', 'password' ,'conf_password' ,'emp_generated_id' ,'joining_date', 'passport_no' ,'passport_expiry' , 'local_address', 'phone' ,'visa_no'  ,'company' , 'branch', 'subcompany', 'department','designation' , 'username', 'opening_leave_days','used_leave', 'opening_leave_amount', 'public_holidays_balance', 'public_holidays_amount','is_manual_punchin','is_passport','hiring_type'
 	];
 
 	public function getFullNameAttribute(){

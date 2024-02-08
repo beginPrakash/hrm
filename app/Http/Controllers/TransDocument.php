@@ -11,6 +11,7 @@ use App\Models\Branch;
 use App\Models\RegistrationType;
 use App\Models\TransportationDoc;
 use App\Models\TranspoFiles;
+use App\Models\Transportation;
 
 class TransDocument extends Controller
 {
@@ -45,9 +46,10 @@ class TransDocument extends Controller
         else:
             $reg_im_data = $doc_data_reg->reg_type ?? '';
         endif;
-
+        $company_id = Transportation::where('id',$request->transpo_id ?? 0)->value('under_company');
         $insertArr = array(
             'transportation_id'=>$request->transpo_id ?? 0,
+            'company' => $company_id ?? 0,
             'doc_number' => $request->doc_number,
             'doc_name' => $request->doc_name,
             'expiry_date'      =>  $request->expiry_date,

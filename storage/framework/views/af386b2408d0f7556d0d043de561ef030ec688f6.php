@@ -1,9 +1,24 @@
 <script type="text/javascript" src="<?php echo e(asset('assets/js/app.js')); ?>"></script>
 <script>
     var reg_url = "<?php echo e(route('getRegtype')); ?>";
-    $('#reg_type').tokenfield({
-        autocomplete :{
-            source: function(request, response)
+    // $('#reg_type').tokenfield({
+    //     autocomplete :{
+    //         source: function(request, response)
+    //         {
+    //             jQuery.get(reg_url, {
+    //                 query : request.term
+    //             }, function(data){
+    //                 data = JSON.parse(data);
+    //                 response(data);
+    //             });
+    //         },
+
+    //         delay: 100
+    //     }
+    // });
+
+    $("#reg_type").autocomplete({
+        source: function(request, response)
             {
                 jQuery.get(reg_url, {
                     query : request.term
@@ -12,9 +27,6 @@
                     response(data);
                 });
             },
-
-            delay: 100
-        }
     });
 
     $(document).on('click','.close_reg_data',function(){
@@ -34,7 +46,7 @@
     });
 
     var reghtml = '<?php echo e($reg_html ?? ''); ?>';
-    $('#reg_type').parent('.tokenfield').prepend($('.regtype_data').text());
+    //$('#reg_type').parent('.tokenfield').prepend($('.regtype_data').text());
     
     $("#document_form").validate({
         rules: {
@@ -137,7 +149,7 @@
                     <div class="form-group">
                         <label>Registration Type</label>
                         <div class="input-group regtype_main_div">
-                            <input type="text" id="reg_type" name="reg_type" placeholder="" autocomplete="off" class="form-control input-lg" />
+                            <input type="text" id="reg_type" name="reg_type" placeholder="" autocomplete="off" class="form-control input-lg" value="<?php echo e((isset($doc_data->regis_type) && !empty($doc_data->regis_type)) ? $doc_data->regis_type->name : ''); ?>"/>
                         </div>
                         <br />
                         <span id="country_name"></span>

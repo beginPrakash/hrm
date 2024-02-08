@@ -163,6 +163,11 @@ if ($currentMonth >= 4) {
                                         <div class="title">Marital status</div>
                                         <div class="text">{{$user->employee_details ? $user->employee_details->marital_status : "--"}}</div>
                                     </li>
+
+                                    <li>
+                                        <div class="title">Hiring Type</div>
+                                        <div class="text">{{ucfirst($user->hiring_type ?? '--')}}</div>
+                                    </li>
                                    
                                     <li>
                                         <div class="title">No. of children</div>
@@ -1497,12 +1502,13 @@ if ($currentMonth >= 4) {
                     </button>
                 </div>
                 <div class="modal-body">
-                     
+                    <form  action="/employeeInformationUpdate/<?php echo $user->id; ?>" method="post" id="employee_info_update" enctype="multipart/form-data">
+                        @csrf
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="profile-img-wrap edit-img">
                                       
-    <!-- Profile picture -->
+                                     <!-- Profile picture -->
                                     <img class="inline-block" src="{{ ($user->profile!=null)?'uploads/profile/'.$user->profile:'assets/img/profiles/avatar.png'}}" alt="user" id="blah">
                                     <div class="fileupload btn">
                                         <span class="btn-text">edit</span>
@@ -1512,24 +1518,17 @@ if ($currentMonth >= 4) {
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            
-                                            
-            <!-- name -->                                
+                                             <!-- name -->                                
                                             <label>First Name</label>
                                             <input type="text" class="form-control" value="{{$user->first_name ? $user->first_name : ''}}" name="first_name">
                                         </div>
                                     </div>
-                                    
-                                    
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Last Name</label>
                                             <input type="text" class="form-control" value="{{$user->last_name ? $user->last_name : ''}}" name="last_name">
                                         </div>
                                     </div>
-                                    
-                                    
-                                    
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Birth Date</label>
@@ -2262,6 +2261,16 @@ if ($currentMonth >= 4) {
                                        {{$user->employee_details ? $user->employee_details->marital_status : '-'}}</option>
                                         <option value="Single">Single</option>
                                         <option value="Married">Married</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Hiring Type</label>
+                                    <select class="select form-control {{$user->employee_details ? 'selected' : ''}}" name="hiring_type" >
+                                        <option value="">Select Hiring Type</option>
+                                        <option value="local" {{(isset($user) && ($user->hiring_type == 'local')) ? 'selected' : ''}}>Local</option>
+                                        <option value="oversease" {{(isset($user) && ($user->hiring_type == 'oversease')) ? 'selected' : ''}}>Oversease</option>
                                     </select>
                                 </div>
                             </div>

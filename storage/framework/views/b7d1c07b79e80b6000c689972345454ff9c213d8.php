@@ -230,9 +230,23 @@
     });
 
     var reg_url = "<?php echo e(route('getRegtype')); ?>";
-    $('#reg_type').tokenfield({
-        autocomplete :{
-            source: function(request, response)
+    // $('#reg_type').tokenfield({
+    //     autocomplete :{
+    //         source: function(request, response)
+    //         {
+    //             jQuery.get(reg_url, {
+    //                 query : request.term
+    //             }, function(data){
+    //                 data = JSON.parse(data);
+    //                 response(data);
+    //             });
+    //         },
+    //         delay: 100
+    //     }
+    // });
+
+    $("#reg_type").autocomplete({
+        source: function(request, response)
             {
                 jQuery.get(reg_url, {
                     query : request.term
@@ -241,8 +255,6 @@
                     response(data);
                 });
             },
-            delay: 100
-        }
     });
     
 

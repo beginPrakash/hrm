@@ -11,6 +11,9 @@ use App\Models\Branch;
 use App\Models\Departments;
 use App\Models\Designations;
 use App\Models\CompanyDocuments;
+use App\Models\TransportationDoc;
+use App\Models\RegistrationType;
+use App\Models\Transportation;
 
 class Reports extends Controller
 {
@@ -294,6 +297,109 @@ class Reports extends Controller
         endif;
         
         return view('reports.company',compact('data_list','search','company','branch'));
+    }
+
+    public function transport_report(Request $request)
+    { 
+        $search = [];
+        $search['expiry_date'] = '';
+        $search['to_date'] = '';
+        $search['company'] = $_POST['company'] ?? '';
+        $search['subcompany'] = $_POST['subcompany'] ?? '';
+        $search['car_name'] = $_POST['car_name'] ?? '';
+        $search['doc_name'] = $_POST['doc_name'] ?? '';
+        $search['status'] = $_POST['status'] ?? '';
+        $search['reg_type'] = $_POST['reg_type'] ?? '';
+
+        $que_list = TransportationDoc::with('trans_detail')->whereHas('trans_detail', function($q){
+            $q->whereNotNull('expiry_date');
+        });
+
+        if(!empty($_POST['expiry_date']) && !empty($_POST['to_date']))
+        {
+            $search['expiry_date'] = $_POST['expiry_date'];
+            $search['to_date'] = $_POST['to_date'];
+            $startDate = date('Y-m-d', strtotime($_POST['expiry_date']));
+            $to_date = date('Y-m-d', strtotime($_POST['to_date']));
+            $que_list->whereBetween('expiry_date',array($startDate,$to_date));
+        }elseif(empty($_POST['expiry_date']) && !empty($_POST['to_date']))
+        {
+            $search['to_date'] = $_POST['to_date'];
+            $to_date = date('Y-m-d', strtotime($_POST['to_date']));
+            $que_list->whereDate('expiry_date',$to_date);
+        }elseif(!empty($_POST['expiry_date']) && empty($_POST['to_date']))
+        {
+            $search['expiry_date'] = $_POST['expiry_date'];
+            $expiry_date = date('Y-m-d', strtotime($_POST['expiry_date']));
+            $que_list->whereDate('expiry_date','>',$expiry_date);
+        }
+
+        if(isset($_POST['company']) && $_POST['company']!='')
+        {
+            $company = $_POST['company'];
+            $que_list->whereHas('trans_detail', function($q) use($company){
+                $q->where('under_company',(int)$company);
+            });
+        }
+
+        if(isset($_POST['subcompany']) && $_POST['subcompany']!='')
+        {
+            $subcompany = $_POST['subcompany'];
+            $que_list->whereHas('trans_detail', function($q) use($subcompany){
+                $q->where('under_subcompany',(int)$subcompany);
+            });
+        }
+
+        if(isset($_POST['car_name']) && $_POST['car_name']!='')
+        {
+            $car_name = $_POST['car_name'];
+            $que_list->whereHas('trans_detail', function($q) use($car_name){
+                $q->where(DB::raw("car_name") , 'like', '%'.$car_name.'%');
+            });
+        }
+
+        if(isset($_POST['doc_name']) && $_POST['doc_name']!='')
+        {
+            $que_list->where(DB::raw("doc_name") , 'like', '%'.$_POST['doc_name'].'%');
+        }
+
+        if(isset($_POST['reg_type']) && $_POST['reg_type']!='')
+        {
+            $que_list->where('reg_type',$_POST['reg_type']);
+        }
+
+        if(isset($_POST['status']) && $_POST['status']!='')
+        {
+            $cur_date = date('Y-m-d');
+            if($_POST['status'] == 'expired'):
+                $que_list->whereDate('expiry_date','<',$cur_date);
+            else:
+                $que_list->whereDate('expiry_date','>=',$cur_date);
+            endif;
+
+        }
+    
+        $data_list = $que_list->get();
+        // $com_list = $que_list->select('id','transportation_id')->selectRaw('GROUP_CONCAT(id) as ids')
+        // ->groupBy('transportation_id')->orderBy('transportation_id','asc')->get();
+        $com_list = $que_list->select('company')->selectRaw('GROUP_CONCAT(id) as ids')
+        ->groupBy('company')->orderBy('company','asc')->get();
+
+        $company = Residency::where('status','active')->select('id','name')->pluck('name','id');
+        $reg_type = RegistrationType::select('id','name')->pluck('name','id');
+        if(isset($_POST['type']) && $_POST['type']=='pdf'):
+            $pass_array = array(
+                "data_list" => $data_list,
+                "com_list" => $com_list,
+            );
+            $cdate = date('Y-m-d');
+            $rname = $cdate.'_transportreport.pdf';
+            $pdf = PDF::loadView('reports.transport_report_pdf', $pass_array)->setPaper('a4', 'landscape')->setWarnings(false);
+            //print_r($pdf);
+            return $pdf->download($rname);
+        endif;
+        
+        return view('reports.transport',compact('data_list','search','company','reg_type'));
     }
 
     public function listuserbycompany(Request $request){

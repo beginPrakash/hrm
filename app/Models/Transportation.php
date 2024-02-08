@@ -23,4 +23,8 @@ class Transportation extends Model
     {
         return $this->hasOne(Residency::class,'id','under_subcompany');
     }
+  public function doc_detail()
+    {
+        return $this->hasMany(TransportationDoc::class,'transportation_id','id');
+    }
 }

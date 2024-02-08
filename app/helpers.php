@@ -18,6 +18,8 @@ use App\Models\Shifting;
 use App\Models\Residency;
 use App\Models\EmployeeDetails;
 use App\Models\CompanyDocuments;
+use App\Models\TransportationDoc;
+use App\Models\Transportation;
 
 function getLastId()
 {
@@ -626,6 +628,7 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $data = Residency::where('id',$id)->value('name');
         return $data ?? '';
     }
+    
 
     function _sum_of_empcost($ids='',$type=''){
         $data = EmployeeDetails::whereIn('emp_id',explode(',',$ids))->whereNotNull($type)->sum($type);
@@ -636,6 +639,12 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $data = CompanyDocuments::whereIn('id',explode(',',$ids))->whereNotNull('cost')->sum('cost');
         return $data;
     }
+
+    function _sum_of_transportcost($ids=''){
+        $data = TransportationDoc::whereIn('id',explode(',',$ids))->whereNotNull('cost')->sum('cost');
+        return $data;
+    }
+    
 
 
     

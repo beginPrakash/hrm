@@ -402,6 +402,85 @@ class Reports extends Controller
         return view('reports.transport',compact('data_list','search','company','reg_type'));
     }
 
+    public function passport_report(Request $request)
+    { 
+        $search = [];
+        $search['expiry_date'] = '';
+        $search['to_date'] = '';
+        $search['emp_name'] = $_POST['emp_name'] ?? '';
+        $search['is_passport'] = $_POST['is_passport'] ?? '';
+        $search['hiring_type'] = $_POST['hiring_type'] ?? '';
+        $search['status'] = $_POST['status'] ?? '';
+        $search['designation'] = $_POST['designation'] ?? '';
+
+        $que_list = Employee::with('employee_details')->whereNotNUll('joining_date');
+
+        if(!empty($_POST['expiry_date']) && !empty($_POST['to_date']))
+        {
+            $search['expiry_date'] = $_POST['expiry_date'];
+            $search['to_date'] = $_POST['to_date'];
+            $startDate = date('Y-m-d', strtotime($_POST['expiry_date']));
+            $to_date = date('Y-m-d', strtotime($_POST['to_date']));
+            $que_list->whereBetween('passport_expiry',array($startDate,$to_date));
+        }elseif(empty($_POST['expiry_date']) && !empty($_POST['to_date']))
+        {
+            $search['to_date'] = $_POST['to_date'];
+            $to_date = date('Y-m-d', strtotime($_POST['to_date']));
+            $que_list->whereDate('passport_expiry',$to_date);
+        }elseif(!empty($_POST['expiry_date']) && empty($_POST['to_date']))
+        {
+            $search['expiry_date'] = $_POST['expiry_date'];
+            $expiry_date = date('Y-m-d', strtotime($_POST['expiry_date']));
+            $que_list->whereDate('passport_expiry','>',$expiry_date);
+        }
+
+        if(isset($_POST['emp_name']) && $_POST['emp_name']!='')
+        {
+            $que_list->where(DB::raw("first_name") , 'like', '%'.$_POST['emp_name'].'%');
+        }
+
+        if(isset($_POST['designation']) && $_POST['designation']!='')
+        {
+            $que_list->where('designation',(int)$_POST['designation']);
+        }
+
+        if(isset($_POST['is_passport']) && $_POST['is_passport']!='')
+        {
+            $que_list->where('is_passport',(int)$_POST['is_passport']);
+        }
+
+        if(isset($_POST['hiring_type']) && $_POST['hiring_type']!='')
+        {
+            $que_list->where('hiring_type',$_POST['hiring_type']);
+        }
+
+        if(isset($_POST['status']) && $_POST['status']!='')
+        {
+            $cur_date = date('Y-m-d');
+            if($_POST['status'] == 'expired'):
+                $que_list->whereDate('passport_expiry','<',$cur_date)->whereNotNull('passport_expiry');
+            else:
+                $que_list->whereDate('passport_expiry','>=',$cur_date)->whereNotNull('passport_expiry');
+            endif;
+
+        }
+       
+        $data_list = $que_list->get();
+        $designation = Designations::where('status','active')->select('id','name')->pluck('name','id');
+        if(isset($_POST['type']) && $_POST['type']=='pdf'):
+            $pass_array = array(
+                "data_list" => $data_list,
+            );
+            $cdate = date('Y-m-d');
+            $rname = $cdate.'_passportreport.pdf';
+            $pdf = PDF::loadView('reports.passport_report_pdf', $pass_array)->setPaper('a4', 'landscape')->setWarnings(false);
+            //print_r($pdf);
+            return $pdf->download($rname);
+        endif;
+        
+        return view('reports.passport',compact('data_list','search','designation'));
+    }
+
     public function listuserbycompany(Request $request){
         $user_list = Employee::with('employee_details')->where('company',$request->id ?? '')->whereNotNUll('joining_date')->whereHas('employee_details', function($q){
             $q->whereNotNull('expi_c_id')->whereNotNull('civil_cost');

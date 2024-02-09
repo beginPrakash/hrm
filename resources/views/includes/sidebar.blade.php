@@ -122,6 +122,7 @@ $is_store_user = _is_user_role_owner($user_id);
                             <a class="<?php echo ($page == 'baladiya_reports')?'active':'';?>" href="/baladiya_reports"><i class="la la-cog"></i> <span>Baladeya ID</span></a>
                             <a class="<?php echo ($page == 'company_reports')?'active':'';?>" href="/company_reports"><i class="la la-cog"></i> <span>Company Licenses</span></a>
                             <a class="<?php echo ($page == 'transport_reports')?'active':'';?>" href="/transport_reports"><i class="la la-cog"></i> <span>Transport Licenses</span></a>
+                            <a class="<?php echo ($page == 'passport_reports')?'active':'';?>" href="/passport_reports"><i class="la la-cog"></i> <span>Passport</span></a>
                     </ul>
                 </li>
                 <?php } ?>

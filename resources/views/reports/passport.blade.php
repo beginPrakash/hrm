@@ -23,7 +23,7 @@
         </div>           
         <!-- /Page Header -->
         <!-- Search Filter -->
-        <form method="post" action="{{route('baladiya_report')}}">
+        <form method="post" action="{{route('passport_report')}}">
                     @csrf
             
             <input type="hidden" name="type" class="type_val">
@@ -44,85 +44,55 @@
                         <label class="focus-label">Expiry To Date</label>
                     </div>
                 </div>
-                <div class="col-sm-6 col-md-3"> 
-                    <div class="form-group form-focus select-focus">
-                        <select class="selectwith_search company_drp" name="company">
-                            <option value="">Select Company</option>
-                            <?php foreach ($company as $key => $val) {?>
-                                <option value="{{$key}}" <?php echo (isset($search['company']) && $search['company']==$key)?'selected':''; ?>>{{$val}}</option>
-                            <?php } ?>
-                        </select>
-                        <label class="focus-label">Company</label>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-md-3"> 
-                    <div class="form-group form-focus select-focus">
-                        <select class="selectwith_search subcompany_drp" name="subcompany">
-                            <option value="">Select SubCompany</option>
-                            <?php foreach ($subcompany as $key => $val) {?>
-                                <option value="{{$key}}" <?php echo (isset($search['subcompany']) && $search['subcompany']==$key)?'selected':''; ?>>{{$val}}</option>
-                            <?php } ?>
-                        </select>
-                        <label class="focus-label">SubCompany</label>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-md-3"> 
-                    <div class="form-group form-focus select-focus">
-                        <select id="multiple-checkboxes" name="user_ids[]" multiple="multiple"> 
-                            <option value="">Select User</option> 
-                            @if(isset($user_list) && count($user_list) > 0)
-                                @foreach($user_list as $key => $val)
-                                @if(isset($search['user_ids']) && !empty($search['user_ids']))
-                                    @php
-                                    if (in_array($val->id, $search['user_ids'])) { 
-                                        $selected = 'selected';
-                                    } else { 
-                                        $selected = '';
-                                    } 
-                                    @endphp
-                                @endif
-                                    <option value="{{$val->id}}" {{$selected ?? ''}}>{{$val->first_name}} {{$val->last_name}}</option>
-                                @endforeach
-                            @endif 
-                        </select>  
-                    </div> 
-                </div>
-
-                <div class="col-sm-6 col-md-3"> 
-                    <div class="form-group form-focus select-focus">
-                        <select class="selectwith_search" name="branch">
-                            <option value="">Select Branch</option>
-                            <?php foreach ($branch as $key => $val) {?>
-                                <option value="{{$key}}" <?php echo (isset($search['branch']) && $search['branch']==$key)?'selected':''; ?>>{{$val}}</option>
-                            <?php } ?>
-                        </select>
-                        <label class="focus-label">Branch</label>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-md-3"> 
-                    <div class="form-group form-focus select-focus">
-                        <select class="selectwith_search" name="department">
-                            <option value="">Select Department</option>
-                            <?php foreach ($department as $key => $val) {?>
-                                <option value="{{$key}}" <?php echo (isset($search['department']) && $search['department']==$key)?'selected':''; ?>>{{$val}}</option>
-                            <?php } ?>
-                        </select>
-                        <label class="focus-label">Department</label>
+                <div class="col-sm-6 col-md-3">  
+                    <div class="form-group form-focus focused">
+                            <input class="form-control floating" type="text" name="emp_name" id="emp_name" value="<?php echo (isset($search['emp_name']) && !empty($search['emp_name'])) ? $search['emp_name'] : ''; ?>">
+                        <label class="focus-label">Name</label>
                     </div>
                 </div>
 
                 <div class="col-sm-6 col-md-3"> 
                     <div class="form-group form-focus select-focus">
                         <select class="selectwith_search" name="designation">
-                            <option value="">Select Job Title</option>
+                            <option value="">Select Designation</option>
                             <?php foreach ($designation as $key => $val) {?>
                                 <option value="{{$key}}" <?php echo (isset($search['designation']) && $search['designation']==$key)?'selected':''; ?>>{{$val}}</option>
                             <?php } ?>
                         </select>
-                        <label class="focus-label">Job Title</label>
+                        <label class="focus-label">Designation</label>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-md-3"> 
+                    <div class="form-group form-focus select-focus">
+                        <select class="selectwith_search" name="is_passport">
+                            <option value="">Is Passport</option>
+                            <option value="1" {{(isset($search['is_passport']) && $search['is_passport'] == '1') ? 'selected' : ''}}>Yes</option>
+                            <option value="0" {{(isset($search['is_passport']) && $search['is_passport'] == '0') ? 'selected' : ''}}>No</option>
+                        </select>
+                        <label class="focus-label">Is Passport</label>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-md-3"> 
+                    <div class="form-group form-focus select-focus">
+                        <select class="selectwith_search" name="hiring_type">
+                            <option value="">Select Hiring Type</option>
+                            <option value="local" {{(isset($search['hiring_type']) && $search['hiring_type'] == 'local') ? 'selected' : ''}}>Local</option>
+                            <option value="oversease" {{(isset($search['hiring_type']) && $search['hiring_type'] == 'oversease') ? 'selected' : ''}}>Oversease</option>
+                        </select>
+                        <label class="focus-label">Hiring Type</label>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-md-3"> 
+                    <div class="form-group form-focus select-focus">
+                        <select class="selectwith_search" name="status">
+                            <option value="">Select Status</option>
+                            <option value="active" {{(isset($search['status']) && $search['status'] == 'active') ? 'selected' : ''}}>Active</option>
+                            <option value="expired" {{(isset($search['status']) && $search['status'] == 'expired') ? 'selected' : ''}}>Expired</option>
+                        </select>
+                        <label class="focus-label">Status</label>
                     </div>
                 </div>
                 
@@ -152,22 +122,21 @@
                                     <th>Designation</th>
                                     <th>Date Of Joining</th>
                                     <th>Expired</th>
-                                    <th>Company</th>
-                                    <th>SubCompany</th>
-                                    <th>Cost</th>
+                                    <th>Is Passport</th>
+                                    <th>Hiring Type</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
 
-                                @php $i = 1; $baladiya_cost = 0;@endphp
+                                @php $i = 1; $civil_cost = 0;@endphp
                             	@if(isset($data_list))
                             	    @foreach($data_list as $data)
                                         @if(isset($data->employee_details) && !empty($data->employee_details))
-                                            @php $baladiya_cost =  $data->employee_details->baladiya_cost ?? 0;
-                                                $expi_b_id =  $data->employee_details->expi_b_id ?? '';
-                                                if(!empty($expi_b_id)):
-                                                    $exp_str = strtotime($expi_b_id);
+                                            @php $civil_cost =  $data->employee_details->civil_cost ?? 0;
+                                                $passport_expiry =  $data->passport_expiry ?? '';
+                                                if(!empty($passport_expiry)):
+                                                    $exp_str = strtotime($passport_expiry);
                                                     $cur_str = strtotime(date('Y-m-d'));
                                                     if($exp_str < $cur_str):
                                                         $status = 'Expired';
@@ -188,10 +157,9 @@
                                     <td>{{(isset($data->employee_details) && !empty($data->employee_details)) ? $data->employee_details->c_id : ''}}</td>
                                     <td>{{(isset($data->employee_designation) && !empty($data->employee_designation)) ? $data->employee_designation->name : ''}}</td>
                                     <td>{{date('d, M Y', strtotime($data->joining_date))}}</td>
-                                    <td>{{(isset($data->employee_details) && !empty($data->employee_details->expi_c_id)) ? date('d, M Y', strtotime($data->employee_details->expi_b_id)) : ''}}</td>
-                                    <td>{{(isset($data->employee_residency) && !empty($data->employee_residency)) ? $data->employee_residency->name : ''}}</td>
-                                    <td>{{(isset($data->employee_subcompany) && !empty($data->employee_subcompany)) ? $data->employee_subcompany->name : ''}}</td>
-                                    <td>KWD {{number_format($baladiya_cost,2) ?? 0}}</td>
+                                    <td>{{(isset($data) && !empty($data->passport_expiry)) ? date('d, M Y', strtotime($data->passport_expiry)) : ''}}</td>
+                                    <td>{{($data->is_passport==1) ? 'Yes' : 'No'}}</td>
+                                    <td>{{ucfirst($data->hiring_type) ?? ''}}</td>
                                     <td>{{$status}}</td>
                                 </tr>
                                 @php $i++; @endphp
@@ -255,12 +223,13 @@
         var id= $(this).val();
         var sid= $('.subcompany_drp').val();
         $.ajax({
-            url: "{{route('listuserbycompany')}}",
+            url: "{{route('blistuserbycompany')}}",
             type: "POST",
             dataType: "json",
             data: {"_token": "{{ csrf_token() }}", id:id,sid:sid},
             success:function(response)
                 {
+                    console.log(response);
                     $('#multiple-checkboxes').html(response.res).fadeIn();
                 }
         });
@@ -270,7 +239,7 @@
         var sid= $(this).val();
         var id= $('.company_drp').val();
         $.ajax({
-            url: "{{route('listuserbycompany')}}",
+            url: "{{route('blistuserbycompany')}}",
             type: "POST",
             dataType: "json",
             data: {"_token": "{{ csrf_token() }}", id:id,sid:sid},

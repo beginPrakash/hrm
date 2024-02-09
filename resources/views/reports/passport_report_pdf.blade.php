@@ -48,40 +48,38 @@
             <table class="custom-table" style="margin-bottom: 30px;max-width:400px;">
                 <thead style="background-color: #F5F5F5">
                     <tr>
-                    <th>Sr.No</th>
-                    <th>Employee ID</th>
-                    <th>Name</th>
-                    <th>Civil Id</th>
-                    <th>Designation</th>
-                    <th>Date Of Joining</th>
-                    <th>Expired</th>
-                    <th>Company</th>
-                    <th>SubCompany</th>
-                    <th>Cost</th>
-                    <th>Status</th>
+                        <th>Sr.No</th>
+                        <th>Employee ID</th>
+                        <th>Name</th>
+                        <th>Civil Id</th>
+                        <th>Designation</th>
+                        <th>Date Of Joining</th>
+                        <th>Expired</th>
+                        <th>Is Passport</th>
+                        <th>Hiring Type</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
                             
                     @if(isset($data_list) && count($data_list) > 0)
-                        @php $i = 1; $com_arr =[]; $sum = 0; $total = 0; $company = ''; $sumarr=[];@endphp
+                        @php $i = 1; @endphp
                         @foreach($data_list as $key => $data)
-                            @if(isset($data->employee_details) && !empty($data->employee_details))
-                                @php $baladiya_cost =  $data->employee_details->baladiya_cost ?? 0;
-                                    $expi_b_id =  $data->employee_details->expi_b_id ?? '';
-                                    if(!empty($expi_b_id)):
-                                        $exp_str = strtotime($expi_b_id);
-                                        $cur_str = strtotime(date('Y-m-d'));
-                                        if($exp_str < $cur_str):
-                                            $status = 'Expired';
-                                        else:
-                                            $status = 'Active';
-                                        endif;
-                                    else:
-                                        $status = '';
-                                    endif;
-                                @endphp
-                            @endif
+                        @php
+                            $passport_expiry =  $data->passport_expiry ?? '';
+                            if(!empty($passport_expiry)):
+                                $exp_str = strtotime($passport_expiry);
+                                $cur_str = strtotime(date('Y-m-d'));
+                                if($exp_str < $cur_str):
+                                    $status = 'Expired';
+                                else:
+                                    $status = 'Active';
+                                endif;
+                            else:
+                                $status = '';
+                            endif;
+                            
+                            @endphp
                             <tr>
                                 <td>
                                     <h3 class="mb-0">{{$i}}</h3>
@@ -102,16 +100,13 @@
                                     <p>{{date('d, M Y', strtotime($data->joining_date))}}</p>
                                 </td>
                                 <td>
-                                    <p>{{(isset($data->employee_details) && !empty($data->employee_details->expi_b_id)) ? date('d, M Y', strtotime($data->employee_details->expi_b_id)) : ''}}</p>
+                                    <p>{{(isset($data) && !empty($data->passport_expiry)) ? date('d, M Y', strtotime($data->passport_expiry)) : ''}}</p>
                                 </td>
                                 <td>
-                                    <p>{{(isset($data->employee_residency) && !empty($data->employee_residency)) ? $data->employee_residency->name : ''}}</p>
+                                    <p>{{($data->is_passport==1) ? 'Yes' : 'No'}}</p>
                                 </td>
                                 <td>
-                                    <p>{{(isset($data->employee_subcompany) && !empty($data->employee_subcompany)) ? $data->employee_subcompany->name : ''}}</p>
-                                </td>
-                                <td>
-                                    <p>KWD {{$baladiya_cost ?? 0}}</p>
+                                    <p>{{ucfirst($data->hiring_type) ?? ''}}</p>
                                 </td>
                                 <td>
                                     <p>{{$status}}</p>
@@ -121,32 +116,6 @@
                        
                         
                     @endforeach
-                    @php $sum = 0; @endphp
-                            @if(isset($com_list) && count($com_list) > 0)
-                                @foreach($com_list as $val)
-                                @php $cost_sum = _sum_of_empcost($val->ids,'baladiya_cost'); 
-                                $sum = $sum +$cost_sum; @endphp
-                                    <tr>                       
-                                        <td colspan="8">
-                                            <p align="center">Sub total of</p>
-                                        </td>
-                                        <td colspna="1">
-                                            <p align="center">{{_get_company_name($val->company)}}</p>
-                                        </td>
-                                        <td colspan = "2">
-                                            <p align="center"> KWD {{number_format($cost_sum,2)}}</p>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            <tr>
-                                <td colspan="9">
-                                    <p align="center">Total</p>
-                                </td>
-                                <td colspan = "2">
-                                    <p align="center"> KWD {{number_format($sum,2)}}</p>
-                                </td>
-                            </tr>
-                            @endif
                     @endif
                 </tbody>
             </table>

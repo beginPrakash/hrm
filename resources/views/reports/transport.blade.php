@@ -198,10 +198,7 @@
 
         $('.type_val').val('');
         $('#datatable').DataTable( {
-            dom: 'Bfrtip',
-            buttons: [
-                //'pdfHtml5'
-            ]
+            paging: true,
         } );
     } );
 

@@ -44,11 +44,26 @@
                         <label class="focus-label">Expiry To Date</label>
                     </div>
                 </div>
-                <div class="col-sm-6 col-md-3">  
-                    <div class="form-group form-focus focused">
-                            <input class="form-control floating" type="text" name="emp_name" id="emp_name" value="<?php echo (isset($search['emp_name']) && !empty($search['emp_name'])) ? $search['emp_name'] : ''; ?>">
-                        <label class="focus-label">Name</label>
-                    </div>
+                <div class="col-sm-6 col-md-3"> 
+                    <div class="form-group form-focus select-focus">
+                        <select id="multiple-checkboxes" name="user_ids[]" multiple="multiple"> 
+                            <option value="">Select User</option> 
+                            @if(isset($user_list) && count($user_list) > 0)
+                                @foreach($user_list as $key => $val)
+                                @if(isset($search['user_ids']) && !empty($search['user_ids']))
+                                    @php
+                                    if (in_array($val->id, $search['user_ids'])) { 
+                                        $selected = 'selected';
+                                    } else { 
+                                        $selected = '';
+                                    } 
+                                    @endphp
+                                @endif
+                                    <option value="{{$val->id}}" {{$selected ?? ''}}>{{$val->first_name}} {{$val->last_name}}</option>
+                                @endforeach
+                            @endif 
+                        </select>  
+                    </div> 
                 </div>
 
                 <div class="col-sm-6 col-md-3"> 
@@ -85,7 +100,7 @@
                     </div>
                 </div>
 
-                <div class="col-sm-6 col-md-3"> 
+                <div class="col-sm-6 col-md-2"> 
                     <div class="form-group form-focus select-focus">
                         <select class="selectwith_search" name="status">
                             <option value="">Select Status</option>
@@ -195,10 +210,8 @@
 
         $('.type_val').val('');
         $('#datatable').DataTable( {
-            dom: 'Bfrtip',
-            buttons: [
-                //'pdfHtml5'
-            ]
+           // dom: 'Bfrtip',
+            paging: true,
         } );
     } );
 

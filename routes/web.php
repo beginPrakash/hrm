@@ -116,6 +116,8 @@ Route::get('/change_manual_punchin_status/{user_id}/{status}',[App\Http\Controll
 Route::get('/change_passport_status/{user_id}/{status}',[App\Http\Controllers\EmployeeController::class, 'change_passport_status']);
 Route::post('/employeeSearch', [EmployeeController::class, 'search']);
 Route::post('/save_cost',[App\Http\Controllers\EmployeeController::class, 'save_cost'])->name('save_cost');
+Route::post('/download_fnf_pdf',[App\Http\Controllers\Dashboard::class, 'download_fnf_pdf'])->name('download_fnf_pdf');
+
 
 Route::post('/employeeInsert',[EmployeeController::class, 'store']);
 

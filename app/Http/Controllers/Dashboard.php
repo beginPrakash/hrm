@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use DB, Carbon\Carbon;
-use Session;
+use Session, PDF;
 use App\Models\Scheduling;
 use Illuminate\Http\Request;
 use App\Models\Leaves;
@@ -230,6 +230,38 @@ class Dashboard extends Controller
         }
         
         return null;
+    }
+
+    public function download_fnf_pdf(Request $request){
+        $this->calculateIndemnity($request->u_id);
+        $additions = '';$deductions = '';
+        $salaryDetails = EmployeeMonthlySalary::where('emp_id', $request->u_id)->where(array('es_month'=>date('m'), 'es_year' => date('Y')))->first();
+        if(!empty($salaryDetails))
+        {
+            $additions = EmployeeSalaryHistory::where('entry_type', 'addition')->where('ems_id', $salaryDetails->id)->where('status','active')->get();
+            $deductions = EmployeeSalaryHistory::where('entry_type', 'deduction')->where('ems_id', $salaryDetails->id)->where('status','active')->get();
+        }
+        $indemnityDetails = EmployeeIndemnity::where('user_id', $request->u_id)->get();
+        $annualleavedetails = getAnnualLeaveDetails($request->u_id);
+        $employee = Employee::with([
+            "employee_accounts", "employee_contacts", "employee_details","employee_company","employee_designation",
+            "employee_education", "employee_education", "employee_experiences", "employee_loan", "employee_salary","employee_document", "employee_leaves", "employee_branch"
+        ])->where("user_id", $request->u_id)->first();
+        $user_img = ($employee->profile!=null)? url('uploads/profile/'.$employee->profile): url('assets/img/profiles/avatar.png');
+
+        $pass_array = array(
+            "additions" => $additions,
+            "deductions"=>$deductions,
+            "indemnityDetails"=>$indemnityDetails,
+            "salaryDetails"=>$salaryDetails,
+            "annualleavedetails"=>$annualleavedetails,
+            "user"=>$employee,
+            "user_img"=>$user_img,
+        );
+        $cdate = date('Y-m-d');
+        $rname = $cdate.'_fnf.pdf';
+        $pdf = PDF::loadView('edbr.fnf_pdf', $pass_array)->setPaper('a4', 'landscape')->setWarnings(false);
+        return $pdf->download($rname);
     }
     
 }

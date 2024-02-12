@@ -734,15 +734,23 @@ if ($currentMonth >= 4) {
                                                     </li>
                                                     <li>
                                                         <div class="title">Used Leave Days</div>
-                                                        <div class="text"><?php echo (isset($annualleavedetails))?$annualleavedetails['used']:0; ?></div>
+                                                        <div class="text"><?php echo e($user->used_leave ?? 0); ?></div>
                                                     </li>
                                                     <li>
                                                         <div class="title">Leave Balance Days</div>
-                                                        <div class="text"><?php echo (isset($annualleavedetails))?$annualleavedetails['leaveBalance']:0; ?></div>
+                                                        <?php $cal_leave = (isset($annualleavedetails) && $annualleavedetails['totalLeaveDays']>0 )?$annualleavedetails['totalLeaveDays']:0; 
+                                                            $used_leave = $user->used_leave ?? 0;
+                                                            $bal_leave = $cal_leave - $used_leave;?>
+                                                        <div class="text"><?php echo e($bal_leave ?? 0); ?></div>
                                                     </li>
                                                     <li>
                                                         <div class="title">Leave Balance Amount</div>
-                                                        <div class="text">KWD <?php echo (isset($annualleavedetails))?number_format($annualleavedetails['leaveAmount'], 2):0; ?></div>
+                                                        <div class="text">
+                                                            <?php $e_sal = (isset($user->employee_salary) && !empty($user->employee_salary)) ? $user->employee_salary->basic_salary : 0; 
+                                                            $em_sal = _calculate_salary_by_days($e_sal,$bal_leave ?? 0); ?>
+                                                            KWD <?php echo e(number_format(_calculate_salary_by_days($e_sal,$bal_leave ?? 0),2)); ?>
+
+                                                        </div>
                                                     </li>
                                                     <Hr/>
                                                     <h4 class="m-b-10"><strong>Public Holidays</strong></h4>
@@ -754,16 +762,22 @@ if ($currentMonth >= 4) {
                                                     </li>
                                                     <li>
                                                         <div class="title">Balance Amount</div>
-                                                        <div class="text">KWD <?php echo (isset($user->public_holidays_amount))?$user->public_holidays_amount:0; ?></div>
+                                                        <?php 
+                                                        $bal = 0;
+                                                        $days = $user->public_holidays_balance ?? 0;
+                                                        $sal = $user->employee_salary ?$user->employee_salary->basic_salary : 0;
+                                                        $bal = _calculate_salary_by_days($sal,$days);
+                                                        ?>
+                                                        <div class="text">KWD <?php echo e(number_format($bal,2)); ?></div>
                                                     </li>
 
                                                     <hr/>
                                                     <h4 class="m-b-10"><strong>Earnings Summary</strong></h4>
                                                     <div>
                                                         <?php
-                                                        $totadditions = $addtot + $annualleavedetails['leaveAmount'] + $user->public_holidays_amount;
+                                                        $totadditions = $addtot + $em_sal + $bal;
                                                         $total_overtime_salary = (isset($salaryDetails->total_overtime_salary) && $salaryDetails->total_overtime_salary >0)?$salaryDetails->total_overtime_salary:0;
-                                                        $totpayable = ($totsalary + $addtot + $total_overtime_salary + $totIndemnity + $annualleavedetails['leaveAmount'] + $user->public_holidays_amount) - $dedtot;
+                                                        $totpayable = ($totsalary + $addtot + $total_overtime_salary + $totIndemnity + $em_sal + $bal) - $dedtot;
                                                         ?>
                                                         <table class="table table-bordered">
                                                             <tbody>
@@ -780,10 +794,10 @@ if ($currentMonth >= 4) {
                                                                     <td><strong>Total Indemnity</strong> <span class="float-end">KWD <?php echo number_format($totIndemnity,2); ?></span></td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td><strong>Total Annual Leave</strong> <span class="float-end">KWD <?php echo number_format($annualleavedetails['leaveAmount'],2); ?></span></td>
+                                                                    <td><strong>Total Annual Leave</strong> <span class="float-end">KWD <?php echo e(number_format(_calculate_salary_by_days($e_sal,$bal_leave ?? 0),2)); ?></span></td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td><strong>Total Public Holiday</strong> <span class="float-end">KWD <?php echo number_format($user->public_holidays_amount,2); ?></span></td>
+                                                                    <td><strong>Total Public Holiday</strong> <span class="float-end">KWD <?php echo e(number_format($bal,2)); ?></span></td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td><strong>Total Deductions</strong> <span class="float-end">KWD <?php echo number_format($dedtot, 2); ?></span></td>
@@ -2845,6 +2859,11 @@ if ($currentMonth >= 4) {
         Are you sure you want to Deactivate/Generate FNF?
       </div>
       <div class="modal-footer">
+       <form action = "<?php echo e(route('download_fnf_pdf')); ?>" method="POST">
+        <?php echo csrf_field(); ?>
+            <input type="hidden" name="u_id" value="<?php echo e($user->user_id ?? ''); ?>">
+            <button type="submit" class="btn btn-primary download_pdf">Download PDF</button>
+        </form>
         <button type="button" class="btn btn-secondary" onclick="resign(1)">Generate FNF</button>
         <button type="button" class="btn btn-danger" onclick="resign(0)">Resign</button>
       </div>

@@ -407,13 +407,13 @@ class Reports extends Controller
         $search = [];
         $search['expiry_date'] = '';
         $search['to_date'] = '';
-        $search['emp_name'] = $_POST['emp_name'] ?? '';
+        $search['user_ids'] = $_POST['user_ids'] ?? '';
         $search['is_passport'] = $_POST['is_passport'] ?? '';
         $search['hiring_type'] = $_POST['hiring_type'] ?? '';
         $search['status'] = $_POST['status'] ?? '';
         $search['designation'] = $_POST['designation'] ?? '';
 
-        $que_list = Employee::with('employee_details')->whereNotNUll('joining_date');
+        $que_list = Employee::with('employee_details')->whereNotNUll('passport_expiry');
 
         if(!empty($_POST['expiry_date']) && !empty($_POST['to_date']))
         {
@@ -434,9 +434,9 @@ class Reports extends Controller
             $que_list->whereDate('passport_expiry','>',$expiry_date);
         }
 
-        if(isset($_POST['emp_name']) && $_POST['emp_name']!='')
+        if(isset($_POST['user_ids']) && $_POST['user_ids']!='')
         {
-            $que_list->where(DB::raw("first_name") , 'like', '%'.$_POST['emp_name'].'%');
+            $que_list->whereIn('id',$_POST['user_ids']);
         }
 
         if(isset($_POST['designation']) && $_POST['designation']!='')
@@ -466,6 +466,7 @@ class Reports extends Controller
         }
        
         $data_list = $que_list->get();
+        $user_list = Employee::with('employee_details')->whereNotNUll('passport_expiry')->get();
         $designation = Designations::where('status','active')->select('id','name')->pluck('name','id');
         if(isset($_POST['type']) && $_POST['type']=='pdf'):
             $pass_array = array(
@@ -478,7 +479,7 @@ class Reports extends Controller
             return $pdf->download($rname);
         endif;
         
-        return view('reports.passport',compact('data_list','search','designation'));
+        return view('reports.passport',compact('data_list','search','designation','user_list'));
     }
 
     public function listuserbycompany(Request $request){

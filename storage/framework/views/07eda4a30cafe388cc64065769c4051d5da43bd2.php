@@ -148,7 +148,7 @@
                                     <th>Sr.No</th>
                                     <th>Employee ID</th>
                                     <th>Name</th>
-                                    <th>Baladeya Id</th>
+                                    <th>Civil Id</th>
                                     <th>Designation</th>
                                     <th>Date Of Joining</th>
                                     <th>Expired</th>
@@ -186,7 +186,7 @@
                                     </td>
                                     <td><?php echo e($data->emp_generated_id); ?></td>
                                     <td><?php echo e($data->first_name); ?> <?php echo e($data->last_name); ?></td>
-                                    <td><?php echo e((isset($data->employee_details) && !empty($data->employee_details)) ? $data->employee_details->b_id : ''); ?></td>
+                                    <td><?php echo e((isset($data->employee_details) && !empty($data->employee_details)) ? $data->employee_details->c_id : ''); ?></td>
                                     <td><?php echo e((isset($data->employee_designation) && !empty($data->employee_designation)) ? $data->employee_designation->name : ''); ?></td>
                                     <td><?php echo e(date('d, M Y', strtotime($data->joining_date))); ?></td>
                                     <td><?php echo e((isset($data->employee_details) && !empty($data->employee_details->expi_c_id)) ? date('d, M Y', strtotime($data->employee_details->expi_b_id)) : ''); ?></td>
@@ -228,10 +228,7 @@
 
         $('.type_val').val('');
         $('#datatable').DataTable( {
-            dom: 'Bfrtip',
-            buttons: [
-                //'pdfHtml5'
-            ]
+            paging: true,
         } );
     } );
 

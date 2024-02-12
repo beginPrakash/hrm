@@ -44,11 +44,26 @@
                         <label class="focus-label">Expiry To Date</label>
                     </div>
                 </div>
-                <div class="col-sm-6 col-md-3">  
-                    <div class="form-group form-focus focused">
-                            <input class="form-control floating" type="text" name="emp_name" id="emp_name" value="<?php echo (isset($search['emp_name']) && !empty($search['emp_name'])) ? $search['emp_name'] : ''; ?>">
-                        <label class="focus-label">Name</label>
-                    </div>
+                <div class="col-sm-6 col-md-3"> 
+                    <div class="form-group form-focus select-focus">
+                        <select id="multiple-checkboxes" name="user_ids[]" multiple="multiple"> 
+                            <option value="">Select User</option> 
+                            <?php if(isset($user_list) && count($user_list) > 0): ?>
+                                <?php $__currentLoopData = $user_list; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <?php if(isset($search['user_ids']) && !empty($search['user_ids'])): ?>
+                                    <?php
+                                    if (in_array($val->id, $search['user_ids'])) { 
+                                        $selected = 'selected';
+                                    } else { 
+                                        $selected = '';
+                                    } 
+                                    ?>
+                                <?php endif; ?>
+                                    <option value="<?php echo e($val->id); ?>" <?php echo e($selected ?? ''); ?>><?php echo e($val->first_name); ?> <?php echo e($val->last_name); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            <?php endif; ?> 
+                        </select>  
+                    </div> 
                 </div>
 
                 <div class="col-sm-6 col-md-3"> 
@@ -85,7 +100,7 @@
                     </div>
                 </div>
 
-                <div class="col-sm-6 col-md-3"> 
+                <div class="col-sm-6 col-md-2"> 
                     <div class="form-group form-focus select-focus">
                         <select class="selectwith_search" name="status">
                             <option value="">Select Status</option>
@@ -196,10 +211,8 @@
 
         $('.type_val').val('');
         $('#datatable').DataTable( {
-            dom: 'Bfrtip',
-            buttons: [
-                //'pdfHtml5'
-            ]
+           // dom: 'Bfrtip',
+            paging: true,
         } );
     } );
 

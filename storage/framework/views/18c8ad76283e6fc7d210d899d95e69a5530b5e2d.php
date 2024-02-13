@@ -1,6 +1,13 @@
 <script type="text/javascript" src="<?php echo e(asset('assets/js/app.js')); ?>"></script>
 <script>
     var reg_url = "<?php echo e(route('getRegtype')); ?>";
+
+     $('.selectpro').select2({
+        minimumResultsForSearch: 1,
+        width: '100%',
+        //allowClear: true,
+        dropdownParent: $("#add_document"),
+    });
     // $('#reg_type').tokenfield({
     //     autocomplete :{
     //         source: function(request, response)
@@ -207,7 +214,7 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <label>Select Branch <span class="text-danger">*</span></label>
-                        <select class="form-control select" name="branch_id">
+                        <select class="form-control selectpro" name="branch_id">
                             <option value="">Select Branch</option>
                             <?php if(isset($branches) && count($branches) > 0): ?>
                                 <?php $__currentLoopData = $branches; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>

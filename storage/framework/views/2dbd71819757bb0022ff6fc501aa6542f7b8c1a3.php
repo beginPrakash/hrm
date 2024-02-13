@@ -44,14 +44,14 @@
 </head>
 <body>
     <div style="display: block; margin:0 auto;">
-    
+            <h3 class="page-title">Baladeya Reports</h3>
             <table class="custom-table" style="margin-bottom: 30px;max-width:400px;">
                 <thead style="background-color: #F5F5F5">
                     <tr>
                     <th>Sr.No</th>
                     <th>Employee ID</th>
                     <th>Name</th>
-                    <th>Baladeya Id</th>
+                    <th>Civil Id</th>
                     <th>Designation</th>
                     <th>Date Of Joining</th>
                     <th>Expired</th>
@@ -93,7 +93,7 @@
                                     <p><?php echo e($data->first_name); ?> <?php echo e($data->last_name); ?></p>
                                 </td>
                                 <td>
-                                    <p><?php echo e((isset($data->employee_details) && !empty($data->employee_details)) ? $data->employee_details->b_id : ''); ?></p> 
+                                    <p><?php echo e((isset($data->employee_details) && !empty($data->employee_details)) ? $data->employee_details->c_id : ''); ?></p> 
                                 </td>
                                 <td>
                                     <p><?php echo e((isset($data->employee_designation) && !empty($data->employee_designation)) ? $data->employee_designation->name : ''); ?></p>

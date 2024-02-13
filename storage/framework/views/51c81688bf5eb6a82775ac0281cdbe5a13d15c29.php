@@ -1,6 +1,14 @@
 <head> 
     <script type="text/javascript" src="<?php echo e(asset('assets/js/app.js')); ?>"></script>
         <script>$(document).ready(function() {
+
+            $('.select').select2({
+                //-^^^^^^^^--- update here
+                minimumResultsForSearch: 1,
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#add_leave')
+            });
         // Add More Dept
         $('.add_more_dept_btn').click(function() {
             var element = $('.add_new_dept:first').clone();
@@ -14,9 +22,10 @@
             element.insertAfter($(this).parents().find('.add_dept_div:last'));
             $('.select').select2({
                 //-^^^^^^^^--- update here
-                minimumResultsForSearch: -1,
-                //allowClear: true,
-                width: '100%'
+                minimumResultsForSearch: 1,
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#add_leave')
             });
             
             if(j>=1){
@@ -29,6 +38,13 @@
                 $('.title_select:last').attr('name','sub_title[]');
                 $('#title_select'+j).select2('destroy');
                 $('#title_select'+j).select2();
+                $('.select').select2({
+                //-^^^^^^^^--- update here
+                minimumResultsForSearch: 1,
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#add_leave')
+            });
             }
             if(j >= 1){
                   $(".add_more_dept_btn:last").remove();

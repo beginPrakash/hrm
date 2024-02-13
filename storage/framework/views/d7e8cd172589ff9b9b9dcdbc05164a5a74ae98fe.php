@@ -279,7 +279,7 @@
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label class="col-form-label">Shifts <span class="text-danger">*</span></label>
-                                            <select class="select shift_addschedule addsched" name="shift_addschedule" id="shift_addschedule">
+                                            <select class="selectproadd shift_addschedule addsched" name="shift_addschedule" id="shift_addschedule">
                                                 <option value="">Select Shift</option>
                                                 <?php foreach ($shifts as $shf) {?>
                                                     <option value="<?php echo $shf->id?>"><?php echo $shf->shift_name?></option>
@@ -422,7 +422,7 @@
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label class="col-form-label">Shifts <span class="text-danger">*</span></label>
-                                            <select class="select shift_addschedule editsched" name="shift_addschedule" id="edit_shift_addschedule">
+                                            <select class="selectpro shift_addschedule editsched" name="shift_addschedule" id="edit_shift_addschedule">
                                                 <option value="">Select Shift</option>
                                                 <?php foreach ($shifts as $shf) {?>
                                                     <option value="<?php echo $shf->id?>"><?php echo $shf->shift_name?></option>
@@ -561,6 +561,18 @@
 		minimumResultsForSearch: 1,
 		width: '100%'
 	});
+    $('.selectproadd').select2({
+        minimumResultsForSearch: 1,
+        width: '100%',
+        allowClear: true,
+        dropdownParent: $('#add_schedule')
+    });
+    $('.selectpro').select2({
+        minimumResultsForSearch: 1,
+        width: '100%',
+        allowClear: true,
+        dropdownParent: $('#edit_schedule')
+    });
 // var days = daysdifference('03/19/2021', '03/31/2024');
 // console.log(days);
 function daysdifference(firstDate, secondDate){  

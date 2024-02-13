@@ -11,10 +11,10 @@
         <div class="page-header">
             <div class="row align-items-center">
                 <div class="col">
-                    <h3 class="page-title">Reports</h3>
+                    <h3 class="page-title">Company Reports</h3>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="admin-dashboard.php">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Reports</li>
+                        <li class="breadcrumb-item active">Company Reports</li>
                     </ul>
                 </div>
                 

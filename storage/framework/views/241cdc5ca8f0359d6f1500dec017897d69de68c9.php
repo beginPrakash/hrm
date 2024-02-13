@@ -44,7 +44,7 @@
 </head>
 <body>
     <div style="display: block; margin:0 auto;">
-    
+            <h3 class="page-title">Company Reports</h3>
             <table class="custom-table" style="margin-bottom: 30px;max-width:400px;">
                 <thead style="background-color: #F5F5F5">
                     <tr>

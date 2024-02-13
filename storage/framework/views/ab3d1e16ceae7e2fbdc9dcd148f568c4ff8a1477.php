@@ -1633,7 +1633,7 @@ if ($currentMonth >= 4) {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Company <span class="text-danger">*</span></label>
-                                    <select class="select" id="company" name="company">
+                                    <select class="selectpro" id="company" name="company">
                                         <option  value="">Select Company</option>
                                         <?php
                                         foreach ($company_dropdown as $company_value) {?>
@@ -1646,7 +1646,7 @@ if ($currentMonth >= 4) {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Branch <span class="text-danger">*</span></label>
-                                    <select class="select" id="branch" name="branch">>
+                                    <select class="selectpro" id="branch" name="branch">>
                                         <option  value="">Select Branch</option>
                                         <?php
                                         if(isset($user->branch))
@@ -1662,7 +1662,7 @@ if ($currentMonth >= 4) {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Department <span class="text-danger">*</span></label>
-                                    <select class="select"  id="department"  name="department">
+                                    <select class="selectpro"  id="department"  name="department">
                                         <option  value="">Select Department</option>
                                         <?php
                                         if(isset($user->department))
@@ -1678,7 +1678,7 @@ if ($currentMonth >= 4) {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Job title <span class="text-danger">*</span></label>
-                                    <select class="select" name="designation" id="designation">
+                                    <select class="selectpro" name="designation" id="designation">
                                         <option  value="">Select Job title</option>
                                         <?php
                                         if(isset($user->designation))
@@ -1694,7 +1694,7 @@ if ($currentMonth >= 4) {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Licence <!-- <span class="text-danger">*</span> --></label>
-                                    <select class="select"  name="subcompany"  id="subcompany">
+                                    <select class="selectpro"  name="subcompany"  id="subcompany">
                                         <option  value="">Select Licence</option>
                                         <?php
                                         if(isset($user->subcompany))
@@ -2880,6 +2880,7 @@ if ($currentMonth >= 4) {
 
 <?php echo $__env->make('includes/footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 <script type="text/javascript">
+
     $(document).on('click','#is_manual_punchin',function(){
         var check_val = $(this).val();
         var user_id = $(this).data('id');
@@ -3017,11 +3018,22 @@ if ($currentMonth >= 4) {
         $('#trans_type').val('download');
     });
 
+    $(document).on('click','.download_pdf',function(){
+        $('#confirmModal').modal('hide');
+    });
+
     
 </script>
 
 <script type="text/javascript">
     $(document).ready(function() {
+        
+        $('.selectpro').select2({
+            minimumResultsForSearch: 1,
+            width: '100%',
+            allowClear: true,
+            dropdownParent: $('#profile_info')
+        });
 
         $("#bank_account").validate({
             rules: {

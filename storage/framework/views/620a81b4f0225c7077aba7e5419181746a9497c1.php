@@ -50,7 +50,7 @@
                         </div>
                         <div class="col-sm-6 col-md-3"> 
                             <div class="form-group form-focus select-focus">
-                                <select class="selectwith_search floating" name="designation"> 
+                                <select class="selectwith_searchb floating" name="designation"> 
                                     <option value="">Select Job title</option>
                                     <?php
                                     foreach ($designations as $designation) {?>
@@ -62,7 +62,7 @@
                         </div>
                         <div class="col-sm-6 col-md-3"> 
                             <div class="form-group form-focus select-focus">
-                                <select class="select floating" name="branch"> 
+                                <select class="selectwith_searchb floating" name="branch"> 
                                     <option value="">Select Branch</option>
                                     <?php
                                     foreach ($branches as $branch) {?>
@@ -218,7 +218,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Job title <span class="text-danger">*</span></label>
-                                            <select class="select" name="designation" id="designation">
+                                            <select class="selectwith_search" name="designation" id="designation">
                                                 <option value="">Select Job title</option>
                                                 <?php foreach ($designationsWEmpCount as $designationEEC) {?>
                                                     <option data-id="<?=$designationEEC->multi_user?>" data-priority="<?=$designationEEC->priority_level?>" value="<?=$designationEEC->id?>" <?php echo($designationEEC->multi_user==0 && $designationEEC->employees_count == 1)?'disabled':''; ?>><?=$designationEEC->name?></option>
@@ -229,7 +229,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group" id="department_div">
                                             <label>Department <span class="text-danger">*</span></label>
-                                            <select class="form-control select" name="department" id="department">
+                                            <select class="form-control selectwith_search" name="department" id="department">
                                                 <!-- <option value="">Select Department</option> -->
                                                 <?php foreach ($departments as $department) {?>
                                                     <option  value="<?=$department->id?>"><?=$department->name?></option>
@@ -242,7 +242,7 @@
                                     <div class="col-sm-6">
                                         <div class="form-group" id="company_div">
                                             <label class="col-form-label">Company <span class="text-danger">*</span></label>
-                                            <select class="select" name="company" id="company"><option value="">Select Company</option>
+                                            <select class="selectwith_search" name="company" id="company"><option value="">Select Company</option>
                                                 <?php
                                                 foreach ($companies as $company) {?>
                                                     <option  value="<?=$company->id?>"><?=$company->name?></option>
@@ -377,7 +377,13 @@
 
     $('.selectwith_search').select2({
 		minimumResultsForSearch: 1,
-		width: '100%'
+		width: '100%',
+        allowClear: true,
+        dropdownParent: $('#add_Form')
+	});
+    $('.selectwith_searchb').select2({
+		minimumResultsForSearch: 1,
+		width: '100%',
 	});
     $(document).ready(function() {
         $("#addemployee").validate({

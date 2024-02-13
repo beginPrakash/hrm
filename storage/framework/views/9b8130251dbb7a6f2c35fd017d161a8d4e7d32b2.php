@@ -61,7 +61,7 @@
                 <!-- /Page Content -->
                 
                 <!-- Add Leave Modal -->
-                <div id="add_leave" class="modal custom-modal fade" role="dialog">
+                <div id="add_leave" class="modal custom-modal fade" aria-labelledby="myModalLabel" aria-hidden="true">
                     <?php echo $__env->make('policies/admin_leave_modal', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                 </div>
                 <!-- /Add Leave Modal -->
@@ -75,6 +75,13 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
+        $('.select').select2({
+                //-^^^^^^^^--- update here
+                minimumResultsForSearch: 1,
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#add_leave')
+            });
         // Add More Dept
         $('.add_more_dept_btn').click(function() {
            
@@ -88,9 +95,10 @@
             element.insertAfter($(this).parents().find('.add_dept_div:last'));
             $('.select').select2({
                 //-^^^^^^^^--- update here
-                minimumResultsForSearch: -1,
-                //allowClear: true,
-                width: '100%'
+                minimumResultsForSearch: 1,
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#add_leave')
             });
             if(j>=1){
                 $('.dept_select:last').attr('id','dept_select'+j);
@@ -106,6 +114,7 @@
             if ($('.agenda_div').length > 1) {
                 $('.agenda_div').find('.remove_agenda').show();
             }
+            
         });
 
         //remove row when click remove button

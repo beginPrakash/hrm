@@ -57,7 +57,7 @@
                     <tr>
                         <th width="80px" style="vertical-align:top">                        
                             <p class="text-left mb-0">
-                            <!-- <img alt="" src="<?php echo e($user_img ?? ''); ?>"> -->
+                            <!-- <img src="<?php echo e($user_img ?? ''); ?>" style="height:50px;width:50px"> -->
                             </p>
                         </th>
                     </tr>

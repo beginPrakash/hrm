@@ -223,6 +223,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tokenfield/0.12.0/bootstrap-tokenfield.js"></script>
 <script>
+    $('.selectpro').select2({
+        minimumResultsForSearch: 1,
+        width: '100%',
+        //allowClear: true,
+        dropdownParent: $("#add_document"),
+    });
     $(document).on('click','.editButton',function(){
         $('#add_company').html('');
         var id= $(this).attr('data-id');

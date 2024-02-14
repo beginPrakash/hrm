@@ -215,10 +215,10 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="col-md-6">
+                                    <div class="col-md-6" id="desigdiv">
                                         <div class="form-group">
-                                            <label>Job title <span class="text-danger">*</span></label>
-                                            <select class="selectwith_search" name="designation" id="designation">
+                                            <label class="col-form-label">Job title <span class="text-danger">*</span></label>
+                                            <select class="selectwith_search desigdrop" name="designation" id="designation">
                                                 <option value="">Select Job title</option>
                                                 <?php foreach ($designationsWEmpCount as $designationEEC) {?>
                                                     <option data-id="<?=$designationEEC->multi_user?>" data-priority="<?=$designationEEC->priority_level?>" value="<?=$designationEEC->id?>" <?php echo($designationEEC->multi_user==0 && $designationEEC->employees_count == 1)?'disabled':''; ?>><?=$designationEEC->name?></option>
@@ -226,10 +226,10 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-6" id="deptdiv">
                                         <div class="form-group" id="department_div">
-                                            <label>Department <span class="text-danger">*</span></label>
-                                            <select class="form-control selectwith_search" name="department" id="department">
+                                            <label class="col-form-label">Department <span class="text-danger">*</span></label>
+                                            <select class="form-control deptdrop" name="department" id="department">
                                                 <!-- <option value="">Select Department</option> -->
                                                 <?php foreach ($departments as $department) {?>
                                                     <option  value="<?=$department->id?>"><?=$department->name?></option>
@@ -240,9 +240,9 @@
                                     </div>
                                     
                                     <div class="col-sm-6">
-                                        <div class="form-group" id="company_div">
+                                        <div class="form-group" id="companydiv">
                                             <label class="col-form-label">Company <span class="text-danger">*</span></label>
-                                            <select class="selectwith_search" name="company" id="company"><option value="">Select Company</option>
+                                            <select class="companydrop" name="company" id="company"><option value="">Select Company</option>
                                                 <?php
                                                 foreach ($companies as $company) {?>
                                                     <option  value="<?=$company->id?>"><?=$company->name?></option>
@@ -375,12 +375,30 @@
 <?php echo $__env->make('includes/footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 <script type="text/javascript">
 
-    $('.selectwith_search').select2({
+    $('.desigdrop').select2({
 		minimumResultsForSearch: 1,
 		width: '100%',
-        allowClear: true,
-        dropdownParent: $('#add_Form')
+        //allowClear: true,
+        dropdownParent: $('#desigdiv')
 	});
+    $('.deptdrop').select2({
+            minimumResultsForSearch: 1,
+            width: '100%',
+            //allowClear: true,
+            dropdownParent: $('#deptdiv').parent()
+        });
+    $('.companydrop').select2({
+        minimumResultsForSearch: 1,
+        width: '100%',
+        //allowClear: true,
+        dropdownParent: $('#companydiv').parent()
+    });
+    $('.licdrop').select2({
+            minimumResultsForSearch: 1,
+            width: '100%',
+            //allowClear: true,
+            dropdownParent: $('#licediv').parent()
+        });
     $('.selectwith_searchb').select2({
 		minimumResultsForSearch: 1,
 		width: '100%',

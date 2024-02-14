@@ -78,7 +78,7 @@
         $('.select').select2({
                 //-^^^^^^^^--- update here
                 minimumResultsForSearch: 1,
-                allowClear: true,
+                //allowClear: true,
                 width: '100%',
                 dropdownParent: $('#add_leave')
             });
@@ -96,9 +96,9 @@
             $('.select').select2({
                 //-^^^^^^^^--- update here
                 minimumResultsForSearch: 1,
-                allowClear: true,
+                //allowClear: true,
                 width: '100%',
-                dropdownParent: $('#add_leave')
+                dropdownParent: $(this).parent()
             });
             if(j>=1){
                 $('.dept_select:last').attr('id','dept_select'+j);

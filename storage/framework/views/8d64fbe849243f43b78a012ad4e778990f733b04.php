@@ -23,12 +23,12 @@ $maxDays=date('t', strtotime($start_date));
                     <?php echo $__env->make('includes/breadcrumbs', ['title' => $title], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                     
                     <!-- Search Filter -->
-                    <form action="/attendance" method="post">
+                    <form action="/attendance" method="post" class="att_search_frm">
                         <div class="row filter-row">
                             <?php echo csrf_field(); ?>
                             <div class="col-sm-6 col-md-3">  
                                 <div class="form-group form-focus">
-                                    <select class="selectwith_search floating" name="employee">
+                                    <select class="selectwith_search floating" name="employee" id="emp_search">
                                         <option value="">-</option>
                                     <?php
                                     if(isset($allEmployees))
@@ -379,6 +379,10 @@ $maxDays=date('t', strtotime($start_date));
             }
       });
     })
+
+    $(document).on('change','#emp_search',function(){
+        $('.att_search_frm').submit();
+    });
 
     $(document).on('click', '.CreateAttPopup', function()
     {

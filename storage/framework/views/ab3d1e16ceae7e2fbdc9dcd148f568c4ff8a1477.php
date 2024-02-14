@@ -1630,10 +1630,10 @@ if ($currentMonth >= 4) {
                             
                             
                             
-                            <div class="col-md-6">
+                            <div class="col-md-6" id="companydiv">
                                 <div class="form-group">
                                     <label>Company <span class="text-danger">*</span></label>
-                                    <select class="selectpro" id="company" name="company">
+                                    <select class="companydrop" id="company" name="company">
                                         <option  value="">Select Company</option>
                                         <?php
                                         foreach ($company_dropdown as $company_value) {?>
@@ -1643,10 +1643,10 @@ if ($currentMonth >= 4) {
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6" id="branchdiv">
                                 <div class="form-group">
                                     <label>Branch <span class="text-danger">*</span></label>
-                                    <select class="selectpro" id="branch" name="branch">>
+                                    <select class="branchdrop" id="branch" name="branch">>
                                         <option  value="">Select Branch</option>
                                         <?php
                                         if(isset($user->branch))
@@ -1659,10 +1659,10 @@ if ($currentMonth >= 4) {
                             </div>
 
                             <?php if($user->designation==0 || $user->designation > 2){ ?>
-                            <div class="col-md-6">
+                            <div class="col-md-6" id="deptdiv">
                                 <div class="form-group">
                                     <label>Department <span class="text-danger">*</span></label>
-                                    <select class="selectpro"  id="department"  name="department">
+                                    <select class="deptdrop"  id="department"  name="department">
                                         <option  value="">Select Department</option>
                                         <?php
                                         if(isset($user->department))
@@ -1675,10 +1675,10 @@ if ($currentMonth >= 4) {
                             </div>
                             <?php } ?>
                             
-                            <div class="col-md-6">
+                            <div class="col-md-6" id="desigdiv">
                                 <div class="form-group">
                                     <label>Job title <span class="text-danger">*</span></label>
-                                    <select class="selectpro" name="designation" id="designation">
+                                    <select class="desigdrop" name="designation" id="designation">
                                         <option  value="">Select Job title</option>
                                         <?php
                                         if(isset($user->designation))
@@ -1691,10 +1691,10 @@ if ($currentMonth >= 4) {
                             </div>
                             
                             
-                            <div class="col-md-6">
+                            <div class="col-md-6" id="licediv">
                                 <div class="form-group">
                                     <label>Licence <!-- <span class="text-danger">*</span> --></label>
-                                    <select class="selectpro"  name="subcompany"  id="subcompany">
+                                    <select class="licdrop"  name="subcompany"  id="subcompany">
                                         <option  value="">Select Licence</option>
                                         <?php
                                         if(isset($user->subcompany))
@@ -3028,11 +3028,39 @@ if ($currentMonth >= 4) {
 <script type="text/javascript">
     $(document).ready(function() {
         
-        $('.selectpro').select2({
+        $('.desigdrop').select2({
             minimumResultsForSearch: 1,
             width: '100%',
-            allowClear: true,
-            dropdownParent: $('#profile_info')
+            //allowClear: true,
+            dropdownParent: $('#desigdiv').parent()
+        });
+
+        $('.deptdrop').select2({
+            minimumResultsForSearch: 1,
+            width: '100%',
+            //allowClear: true,
+            dropdownParent: $('#deptdiv').parent()
+        });
+
+        $('.companydrop').select2({
+            minimumResultsForSearch: 1,
+            width: '100%',
+            //allowClear: true,
+            dropdownParent: $('#companydiv').parent()
+        });
+
+        $('.licdrop').select2({
+            minimumResultsForSearch: 1,
+            width: '100%',
+            //allowClear: true,
+            dropdownParent: $('#licediv').parent()
+        });
+
+        $('.branchdrop').select2({
+            minimumResultsForSearch: 1,
+            width: '100%',
+            //allowClear: true,
+            dropdownParent: $('#branchdiv').parent()
         });
 
         $("#bank_account").validate({

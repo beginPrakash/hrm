@@ -35,10 +35,11 @@ class AttendanceController extends Controller
         $emp = '';
 
         $where = array();
+
             // 'status'    =>  'active');
 
-        if(isset($_POST['search']))
-        {
+        // if(isset($_POST['search']))
+        // {
             if(isset($_POST['year']) && $_POST['year']!='')
             {
                 $year = $_POST['year'];
@@ -52,7 +53,7 @@ class AttendanceController extends Controller
                 $where['user_id'] = $_POST['employee'];
                 $emp = $_POST['employee'];
             }
-        }
+       // }
 
         $attEmployees = Employee::where($where)->where('status', '!=', 'deleted')->get();
         $allEmployees = Employee::where('status', 'active')->get();

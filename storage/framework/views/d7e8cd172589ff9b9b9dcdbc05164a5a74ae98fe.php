@@ -249,7 +249,7 @@
                                     <div class="col-sm-6" id="dep_drop">
                                         <div class="form-group">
                                             <label class="col-form-label">Department <span class="text-danger">*</span></label>
-                                            <select class="select addsched" name="department_addschedule" id="department_addschedule">
+                                            <select class="depdiv addsched" name="department_addschedule" id="department_addschedule">
                                                 <option value="">Select Department</option>
                                                 <?php foreach ($department as $dept) {?>
                                                     <option value="<?php echo $dept->id?>"><?php echo $dept->name?></option>
@@ -276,7 +276,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6" id="shift_add">
                                         <div class="form-group">
                                             <label class="col-form-label">Shifts <span class="text-danger">*</span></label>
                                             <select class="selectproadd shift_addschedule addsched" name="shift_addschedule" id="shift_addschedule">
@@ -419,10 +419,10 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6" id="shift_edit">
                                         <div class="form-group">
                                             <label class="col-form-label">Shifts <span class="text-danger">*</span></label>
-                                            <select class="selectpro shift_addschedule editsched" name="shift_addschedule" id="edit_shift_addschedule">
+                                            <select class="selectshift shift_addschedule editsched" name="shift_addschedule" id="edit_shift_addschedule">
                                                 <option value="">Select Shift</option>
                                                 <?php foreach ($shifts as $shf) {?>
                                                     <option value="<?php echo $shf->id?>"><?php echo $shf->shift_name?></option>
@@ -564,14 +564,21 @@
     $('.selectproadd').select2({
         minimumResultsForSearch: 1,
         width: '100%',
-        allowClear: true,
-        dropdownParent: $('#add_schedule')
+        //allowClear: true,
+        dropdownParent: $('#shift_add')
     });
-    $('.selectpro').select2({
+    $('.depdiv').select2({
         minimumResultsForSearch: 1,
         width: '100%',
-        allowClear: true,
-        dropdownParent: $('#edit_schedule')
+        //allowClear: true,
+        dropdownParent: $('#dep_drop')
+    });
+    
+    $('.selectshift').select2({
+        minimumResultsForSearch: 1,
+        width: '100%',
+        //allowClear: true,
+        dropdownParent: $('#shift_edit')
     });
 // var days = daysdifference('03/19/2021', '03/31/2024');
 // console.log(days);
@@ -858,7 +865,14 @@ jQuery.validator.addMethod("datecchange", function(value, element){
         }
         else
         {
+            
             $('#dep_drop').show(); 
+            $('.depdiv').select2({
+        minimumResultsForSearch: 1,
+        width: '100%',
+        //allowClear: true,
+        dropdownParent: $('#dep_drop')
+    });
             $('#employee_addschedule').show();
             $('.select2').show();
             $('#employee_addschedule_name').addClass('hideit');
@@ -911,7 +925,10 @@ jQuery.validator.addMethod("datecchange", function(value, element){
                     }
 
                    
-                    $('#edit_shift_addschedule').val(shdetails.shift).select2();
+                    $('#edit_shift_addschedule').val(shdetails.shift).select2({minimumResultsForSearch: 1,
+        width: '100%',
+        //allowClear: true,
+        dropdownParent: $('#shift_edit')});
                     $('#schedule_id').val(shdetails.id);
                     $('.edit_s_time').val(changeDateFormatTime(shdetails.start_time));
                     $('.edit_min_s_time').val(changeDateFormatTime(shdetails.min_start_time));

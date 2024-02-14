@@ -227,7 +227,7 @@
         minimumResultsForSearch: 1,
         width: '100%',
         //allowClear: true,
-        dropdownParent: $("#add_document"),
+        dropdownParent: $("#branchdiv"),
     });
     $(document).on('click','.editButton',function(){
         $('#add_company').html('');

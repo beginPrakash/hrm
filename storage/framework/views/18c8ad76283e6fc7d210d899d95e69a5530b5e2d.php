@@ -6,7 +6,7 @@
         minimumResultsForSearch: 1,
         width: '100%',
         //allowClear: true,
-        dropdownParent: $("#add_document"),
+        dropdownParent: $("#branchdiv"),
     });
     // $('#reg_type').tokenfield({
     //     autocomplete :{
@@ -211,7 +211,7 @@
                         <input class="form-control" type="text" name="remarks" value="<?php echo e($doc_data->remarks ?? ''); ?>">
                     </div>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-6" id="branchdiv">
                     <div class="form-group">
                         <label>Select Branch <span class="text-danger">*</span></label>
                         <select class="form-control selectpro" name="branch_id">

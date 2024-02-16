@@ -112,7 +112,7 @@
                             <p class="text-left mb-0" style="font-weight:100;">
                             @php $cal_leave = (isset($annualleavedetails) && $annualleavedetails['totalLeaveDays']>0 )?$annualleavedetails['totalLeaveDays']:0; 
                                                             $used_leave = $user->used_leave ?? 0;
-                                                            $bal_leave = $cal_leave - $used_leave;@endphp
+                                                            $bal_leave = (int) ($cal_leave - $used_leave);@endphp
                                 <b>Leave Balance Days: </b>{{$bal_leave ?? 0}}
                             </p>
                         </th>

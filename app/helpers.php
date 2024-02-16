@@ -462,7 +462,7 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
 
         $interval = $currentDateTime->diff($joiningDateTime);
         $total_days = $interval->days ?? 0;
-        $total_leave = ($total_days/30)*2.5;
+        $total_leave = ($total_days/30.41)*2.5;
         return $total_leave;
        
         // $curl_url = 'https://test.hrmado.com/annual_leave_calculator.php?date='.$joiningDate.'&cdate='.$currentDate.'';

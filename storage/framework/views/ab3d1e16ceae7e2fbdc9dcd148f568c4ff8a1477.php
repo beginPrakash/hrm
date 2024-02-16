@@ -740,7 +740,7 @@ if ($currentMonth >= 4) {
                                                         <div class="title">Leave Balance Days</div>
                                                         <?php $cal_leave = (isset($annualleavedetails) && $annualleavedetails['totalLeaveDays']>0 )?$annualleavedetails['totalLeaveDays']:0; 
                                                             $used_leave = $user->used_leave ?? 0;
-                                                            $bal_leave = $cal_leave - $used_leave;?>
+                                                            $bal_leave = (int) ($cal_leave - $used_leave);?>
                                                         <div class="text"><?php echo e($bal_leave ?? 0); ?></div>
                                                     </li>
                                                     <li>
@@ -927,7 +927,7 @@ if ($currentMonth >= 4) {
                                                         <div class="title">Balance Days</div>
                                                         <?php $cal_leave = (isset($annualleavedetails) && $annualleavedetails['totalLeaveDays']>0 )?$annualleavedetails['totalLeaveDays']:0; 
                                                             $used_leave = $user->used_leave ?? 0;
-                                                            $bal_leave = $cal_leave - $used_leave;?>
+                                                            $bal_leave = (int)($cal_leave - $used_leave);?>
                                                         <div class="text"><?php echo e($bal_leave ?? 0); ?></div>
                                                     </li>
                                                     <li>

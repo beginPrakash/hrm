@@ -312,6 +312,15 @@ Route::post('/blistuserbycompany', [App\Http\Controllers\Reports::class, 'blistu
 Route::match(array('GET','POST'),'/company_reports', [App\Http\Controllers\Reports::class, 'company_report'])->name('company_report');
 Route::match(array('GET','POST'),'/transport_reports', [App\Http\Controllers\Reports::class, 'transport_report'])->name('transport_report');
 Route::match(array('GET','POST'),'/passport_reports', [App\Http\Controllers\Reports::class, 'passport_report'])->name('passport_report');
+
+
+//Selling Period Mangement
+Route::match(array('GET','POST'),'/selling_period', [App\Http\Controllers\SellingPeriod::class, 'index'])->name('selling_period.list');
+Route::post('/selling_period/store', [App\Http\Controllers\SellingPeriod::class, 'store'])->name('selling_period.store');
+Route::post('/selling_period/detail', [App\Http\Controllers\SellingPeriod::class, 'getsellingdetaiById'])->name('getsellingdetaiById');
+Route::post('/selling_period/delete', [App\Http\Controllers\SellingPeriod::class, 'delete'])->name('selling_period.delete');
+Route::get('/selling_period/statuschange/{id}/{status}', [App\Http\Controllers\SellingPeriod::class, 'statuschange'])->name('selling_period.statuschange');
+
 });
 
 Route::get('/ind-test/{id}', [App\Http\Controllers\PayrollController::class, 'calculateIndemnity']);

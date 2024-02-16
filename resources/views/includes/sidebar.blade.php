@@ -125,6 +125,14 @@ $is_store_user = _is_user_role_owner($user_id);
                             <a class="<?php echo ($page == 'passport_reports')?'active':'';?>" href="/passport_reports"><i class="la la-cog"></i> <span>Passport</span></a>
                     </ul>
                 </li>
+
+                <li class="submenu">
+                    <a href="#"><i class="la la-cog"></i> <span> Selling Period Management </span> <span class="menu-arrow"></span></a>
+                    <ul style="display: none;">
+                        
+                            <a class="<?php echo ($page == 'selling_period')?'active':'';?>" href="/selling_period"><i class="la la-cog"></i> <span>Selling Period</span></a>
+                    </ul>
+                </li>
                 <?php } ?>
             </ul>
         </div>

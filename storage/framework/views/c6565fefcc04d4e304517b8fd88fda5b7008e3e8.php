@@ -59,7 +59,6 @@
                                     } 
                                     ?>
                                 <?php endif; ?>
-                                <option disabled value="">__________</option>
                                     <option value="<?php echo e($val->id); ?>" <?php echo e($selected ?? ''); ?>><?php echo e($val->first_name); ?> <?php echo e($val->last_name); ?></option>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             <?php endif; ?> 

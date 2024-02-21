@@ -20,6 +20,9 @@ use App\Models\EmployeeDetails;
 use App\Models\CompanyDocuments;
 use App\Models\TransportationDoc;
 use App\Models\Transportation;
+use App\Models\Branch;
+use App\Models\SellingPeriod;
+use App\Models\SalesTargetMaster;
 
 function getLastId()
 {
@@ -628,6 +631,17 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $data = Residency::where('id',$id)->value('name');
         return $data ?? '';
     }
+
+    function _get_branch_name_by_comapny($id,$company_id){
+        $data = Branch::where('id',$id)->where('residency',$company_id)->value('name');
+        return $data ?? '';
+    }
+
+    function _get_sellingperiod_by_comapny($id,$company_id,$branch_id){
+        $s_name = SellingPeriod::where('id',$id)->value('item_name');
+        $data = SellingPeriod::where('item_name',$s_name)->where('company_id',$company_id)->where('branch_id',$branch_id)->value('item_name');
+        return $data ?? '';
+    }
     
 
     function _sum_of_empcost($ids='',$type=''){
@@ -644,6 +658,19 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $data = TransportationDoc::whereIn('id',explode(',',$ids))->whereNotNull('cost')->sum('cost');
         return $data;
     }
+
+    function _get_sales_master_data_by_id($company_id,$branch_id,$sell_id,$month){
+        $s_id = SellingPeriod::where('id',$sell_id)->value('id');
+        $data = SalesTargetMaster::where('company_id',$company_id)->where('branch_id',$branch_id)->where('sell_p_id',$s_id)->where('month',$month)->first();
+        return $data;
+    }
+
+    function _get_sales_master_sum_by_id($company_id,$branch_id,$sell_id,$month){
+        $data = SalesTargetMaster::where('company_id',$company_id)->where('branch_id',$branch_id)->where('month',$month)->sum('per_day_price');
+        return $data;
+    }
+
+    
     
 
 

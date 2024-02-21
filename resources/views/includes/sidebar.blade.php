@@ -131,6 +131,7 @@ $is_store_user = _is_user_role_owner($user_id);
                     <ul style="display: none;">
                         
                             <a class="<?php echo ($page == 'selling_period')?'active':'';?>" href="/selling_period"><i class="la la-cog"></i> <span>Selling Period</span></a>
+                            <a class="<?php echo ($page == 'sales_target')?'active':'';?>" href="/sales_target"><i class="la la-cog"></i> <span>Sales Target</span></a>
                     </ul>
                 </li>
                 <?php } ?>

@@ -321,6 +321,17 @@ Route::post('/selling_period/detail', [App\Http\Controllers\SellingPeriod::class
 Route::post('/selling_period/delete', [App\Http\Controllers\SellingPeriod::class, 'delete'])->name('selling_period.delete');
 Route::get('/selling_period/statuschange/{id}/{status}', [App\Http\Controllers\SellingPeriod::class, 'statuschange'])->name('selling_period.statuschange');
 
+
+//Selling Period Mangement
+
+Route::match(array('GET','POST'),'/sales_target', [App\Http\Controllers\SalesTarget::class, 'index'])->name('sales_target.list');
+Route::post('/sales_target/branchlistbycompany', [App\Http\Controllers\SalesTarget::class, 'branchlistbycompany'])->name('sales_target.branchlistbycompany');
+Route::post('/sales_target/sellplistbycompany', [App\Http\Controllers\SalesTarget::class, 'sellplistbycompany'])->name('sales_target.sellplistbycompany');
+Route::post('/sales_target/store', [App\Http\Controllers\SalesTarget::class, 'store'])->name('sales_target.store');
+Route::post('/selling_period/detail', [App\Http\Controllers\SellingPeriod::class, 'getsellingdetaiById'])->name('getsellingdetaiById');
+Route::post('/selling_period/delete', [App\Http\Controllers\SellingPeriod::class, 'delete'])->name('selling_period.delete');
+Route::get('/selling_period/statuschange/{id}/{status}', [App\Http\Controllers\SellingPeriod::class, 'statuschange'])->name('selling_period.statuschange');
+
 });
 
 Route::get('/ind-test/{id}', [App\Http\Controllers\PayrollController::class, 'calculateIndemnity']);

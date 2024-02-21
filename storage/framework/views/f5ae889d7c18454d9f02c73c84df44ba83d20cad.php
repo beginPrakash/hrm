@@ -27,29 +27,54 @@
             <div class="row filter-row">
                 <div class="col-sm-6 col-md-3"> 
                     <div class="form-group form-focus select-focus">
-                        <select class="selectwith_search company_drop select_change" name="company">
-                            <option value="">Select Company</option>
-                            <?php foreach ($company_list as $key => $val) {?>
-                                <option value="<?php echo e($key); ?>" <?php echo (isset($search['company']) && $search['company']==$key)?'selected':''; ?>><?php echo e($val); ?></option>
-                            <?php } ?>
-                        </select>
-                        <label class="focus-label">Company</label>
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" 
+                                    id="dropdownMenu1" data-toggle="dropdown" 
+                                    aria-haspopup="true" aria-expanded="true">
+                                Select Company
+                            
+                            </button>
+                            <ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="dropdownMenu1">
+                                <?php if(isset($company_list) && count($company_list) > 0): ?>  
+                                    <?php $__currentLoopData = $company_list; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <li>
+                                        <label>
+                                            <input type="checkbox" class="company_check select_change" name="company[]" value="<?php echo e($key); ?>"><?php echo e($val); ?>
+
+                                        </label>
+                                        </li>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php endif; ?>
+                            </ul>
+                        </div> 
                     </div>
                 </div>
 
                 <div class="col-sm-6 col-md-3"> 
                     <div class="form-group form-focus select-focus">
-                        <select class="selectwith_search branch_drop select_change" name="branch">
-                            <option value="">Select Branch</option>
-                            <?php foreach ($branch_list as $key => $val) {?>
-                                <option value="<?php echo e($key); ?>" <?php echo (isset($search['branch']) && $search['branch']==$key)?'selected':''; ?>><?php echo e($val); ?></option>
-                            <?php } ?>
-                        </select>
-                        <label class="focus-label">Branch</label>
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle branch_checklist" type="button" 
+                                    id="dropdownMenu1" data-toggle="dropdown" 
+                                    aria-haspopup="true" aria-expanded="true">
+                                Select Branch
+                            </button>
+                            <ul class="dropdown-menu checkbox-menu allow-focus branch_menu" aria-labelledby="dropdownMenu1">
+                                <?php if(isset($branch_list) && count($branch_list) > 0): ?>  
+                                    <?php $__currentLoopData = $branch_list; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <li>
+                                        <label>
+                                            <input type="checkbox" class="branch_check select_change" name="branch[]" value="<?php echo e($key); ?>"><?php echo e($val); ?>
+
+                                        </label>
+                                        </li>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php endif; ?>
+                            </ul>
+                        </div> 
                     </div>
                 </div>
                 <div class="col-auto float-end ms-auto add_sell_btn" style="display:none">
-                    <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_Form"><i class="fa fa-plus"></i> Add Selling Period</a>
+                    <a href="#" class="btn add-btn" data-toggle="modal" data-target="#add_Form"><i class="fa fa-plus"></i> Add Selling Period</a>
                 </div>
             </div>
         </form>
@@ -77,8 +102,8 @@
                                                 <div class="form-check form-switch">
                                                     <input class="form-check-input" type="checkbox" role="switch" data-url="<?php echo e(route('selling_period.statuschange',array($val->id,$val->is_show ?? 0))); ?>" id="flexSwitchCheckChecked" <?php echo e((!empty($val->is_show)) ? 'checked' : ''); ?>>
                                                 </div>
-                                                <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#add_Form" class="action-icon edit_branch" data-id="<?php echo e($val->id); ?>"><i class="fa fa-pencil"></i></a>
-                                                <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#delete_form" class="action-icon delete_branch" data-id="<?php echo e($val->id); ?>"><i class="fa fa-trash"></i></a>
+                                                <a href="javascript:void(0);" data-toggle="modal" data-target="#add_Form" class="action-icon edit_branch" data-id="<?php echo e($val->id); ?>"><i class="fa fa-pencil"></i></a>
+                                                <a href="javascript:void(0);" data-toggle="modal" data-target="#delete_form" class="action-icon delete_branch" data-id="<?php echo e($val->id); ?>"><i class="fa fa-trash"></i></a>
                                                 
                                             </div>
                                         </td>
@@ -118,7 +143,7 @@
                               </form>
                                 </div>
                             <div class="col-6">
-                                <a href="javascript:void(0);" data-bs-dismiss="modal" class="btn btn-primary cancel-btn">Cancel</a>
+                                <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-primary cancel-btn">Cancel</a>
                             </div>
                         </div>
                     </div>
@@ -141,34 +166,28 @@
 </html>
 
 <?php echo $__env->make('includes/footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.js"></script>
 <script type="text/javascript">
-    $(document).ready(function() {
-
-        var com_id = $('.company_drop').val();
-        var br_id = $('.branch_drop').val();
-        $('#company_id').val(com_id);
-        $('#branch_id').val(br_id);
-        if(com_id != '' && br_id != ''){
-            $('.add_sell_btn').show();
-        }else{
-            $('.add_sell_btn').hide();
-        }
-
-        $('.selectwith_search').select2({
-            minimumResultsForSearch: 1,
-            width: '100%'
-        });
-       
+    $(document).on('click','.select_change',function(){
+        
+        var com_id = $('.company_check:checked').val();
+        var company_id = $('.company_check:checked').map(function() {
+            return this.value;
+        }).get().join(',');
+        $('#company_id').val(company_id);
     });
 
-    $(document).on('change','.select_change',function(){
-        var com_id = $('.company_drop').val();
-        var br_id = $('.branch_drop').val();
-        $('#company_id').val(com_id);
-        $('#branch_id').val(br_id);
+    $(document).on('click','.branch_check',function(){
+        var com_id = $('.company_check:checked').val();
+        var br_id = $('.branch_check:checked').val();
+        var sel_val = $('.branch_check:checked').map(function() {
+            return this.value;
+        }).get().join(',');
+        
+        $('#branch_id').val(sel_val);
         if(com_id != '' && br_id != ''){
             $('.add_sell_btn').show();
-            $('#search_form').submit();
         }else{
             $('.add_sell_btn').hide();
         }
@@ -204,6 +223,24 @@
         $("#is_bill_count").prop('checked',false);
         $('#item_name').val('');
         $('.leave_m_title').text('Create Selling Period');
+    });
+
+    $(document).on('click','.company_check',function(){
+        $('.branch_menu').remove();
+        var sel_val = $('.company_check:checked').map(function() {
+            return this.value;
+        }).get().join(',');
+
+        $.ajax({
+            url: "<?php echo e(route('sales_target.branchlistbycompany')); ?>",
+            type: "POST",
+            dataType: "json",
+            data: {"_token": "<?php echo e(csrf_token()); ?>", sel_val:sel_val},
+            success:function(response)
+                {
+                    $('.branch_checklist').after(response.html).fadeIn();
+                }
+        });
     });
 </script>
 <?php /**PATH C:\wamp64_new\www\hrm\resources\views/selling_management/selling_period.blade.php ENDPATH**/ ?>

@@ -45,13 +45,20 @@ class SellingPeriod extends Controller
             endif;
             return redirect()->back()->with('success','Data updated successfully');
         else:
-            $save_data = new SellingPeriodModel();
-            if(!empty($request->company_id) && !empty($request->branch_id)):
-                $save_data->company_id = $request->company_id;
-                $save_data->branch_id = $request->branch_id;
-                $save_data->item_name = $request->item_name;
-                $save_data->is_bill_count = $request->is_bill_count ?? 0;
-                $save_data->save();
+            $branch_ids = explode(',',$request->branch_id);
+            $company_ids = explode(',',$request->company_id);
+            if(!empty($company_ids) && !empty($branch_ids)):
+                if(!empty($branch_ids) && count($branch_ids) > 0):
+                    foreach($branch_ids as $key => $val):
+                        $save_data = new SellingPeriodModel();
+                        $branch_data = Branch::find($val);
+                        $save_data->company_id = $branch_data->residency ?? NULL;
+                        $save_data->branch_id = $val;
+                        $save_data->item_name = $request->item_name;
+                        $save_data->is_bill_count = $request->is_bill_count ?? 0;
+                        $save_data->save();
+                    endforeach;
+                endif;
                 return redirect()->back()->with('success','Data saved successfully');
             else:
                 return redirect()->back()->with('error','First select company and branch');

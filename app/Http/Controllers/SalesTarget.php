@@ -44,6 +44,15 @@ class SalesTarget extends Controller
             $search['sells_list'] = $request->sells_list;
         }
 
+       
+        $selling_data = $selling_data->get();
+        $company_list = Residency::where('status','active')->pluck('name','id');
+        $branch_list = Branch::where('status','active')->pluck('name','id');
+        return view('selling_management.sales_target',compact('search','b_list','s_list','title','selling_data','company_list','branch_list'));
+    }
+
+
+    public function store(Request $request){
         $month = $request->month ?? date('m');
         $no_of_monthday = cal_days_in_month(CAL_GREGORIAN, $month, date('y'));
         if(isset($request->target_price) && count($request->target_price) > 0):
@@ -63,11 +72,12 @@ class SalesTarget extends Controller
                 $save_data->save();
             endforeach;
         endif;
+
+        $arr = [
+			'success' => 'true',
+		];
+		return response()->json($arr);
        
-        $selling_data = $selling_data->get();
-        $company_list = Residency::where('status','active')->pluck('name','id');
-        $branch_list = Branch::where('status','active')->pluck('name','id');
-        return view('selling_management.sales_target',compact('search','b_list','s_list','title','selling_data','company_list','branch_list'));
     }
 
 

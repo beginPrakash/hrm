@@ -322,17 +322,21 @@ Route::post('/selling_period/delete', [App\Http\Controllers\SellingPeriod::class
 Route::get('/selling_period/statuschange/{id}/{status}', [App\Http\Controllers\SellingPeriod::class, 'statuschange'])->name('selling_period.statuschange');
 
 
-//Selling Period Mangement
+//Sales Target
 
 Route::match(array('GET','POST'),'/sales_target', [App\Http\Controllers\SalesTarget::class, 'index'])->name('sales_target.list');
 Route::post('/sales_target/branchlistbycompany', [App\Http\Controllers\SalesTarget::class, 'branchlistbycompany'])->name('sales_target.branchlistbycompany');
 Route::post('/sales_target/sellplistbycompany', [App\Http\Controllers\SalesTarget::class, 'sellplistbycompany'])->name('sales_target.sellplistbycompany');
 Route::post('/sales_target/store', [App\Http\Controllers\SalesTarget::class, 'store'])->name('sales_target.store');
-Route::post('/selling_period/detail', [App\Http\Controllers\SellingPeriod::class, 'getsellingdetaiById'])->name('getsellingdetaiById');
-Route::post('/selling_period/delete', [App\Http\Controllers\SellingPeriod::class, 'delete'])->name('selling_period.delete');
-Route::get('/selling_period/statuschange/{id}/{status}', [App\Http\Controllers\SellingPeriod::class, 'statuschange'])->name('selling_period.statuschange');
-
 });
+
+//Tracking Heading
+Route::match(array('GET','POST'),'/tracking_heading', [App\Http\Controllers\TrackingHeading::class, 'index'])->name('tracking_heading.list');
+Route::post('/tracking_heading/store', [App\Http\Controllers\TrackingHeading::class, 'store'])->name('tracking_heading.store');
+Route::post('/tracking_heading/detail', [App\Http\Controllers\TrackingHeading::class, 'getsellingdetaiById'])->name('gettrackingdetaiById');
+Route::post('/tracking_heading/delete', [App\Http\Controllers\TrackingHeading::class, 'delete'])->name('tracking_heading.delete');
+Route::get('/tracking_heading/statuschange/{id}/{status}', [App\Http\Controllers\TrackingHeading::class, 'statuschange'])->name('tracking_heading.statuschange');
+
 
 Route::get('/ind-test/{id}', [App\Http\Controllers\PayrollController::class, 'calculateIndemnity']);
 

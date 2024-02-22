@@ -3,7 +3,7 @@
         @foreach($data as $key => $val)
             <li>
                 <label>
-                    <input type="checkbox" name="sells_list[]" value="{{$val->id}}">{{$val->item_name}}
+                    <input type="checkbox" class="sells_check" name="sells_list[]" value="{{$val->id}}">{{$val->item_name}}
                 </label>
             </li>    
         

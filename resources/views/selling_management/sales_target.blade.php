@@ -182,7 +182,7 @@
                                         @if(!empty($branch_name))
                                         <div class="card target_sectiondiv{{$bkey}}">
                                             <div class="card-body">
-                                                <form action="{{route('sales_target.list')}}" method="post">
+                                                <form action="#" class="store_form_{{$bval}}">
                                                     @csrf
                                                     <div class="row">
                                                         <div class="col-md-12">
@@ -206,7 +206,7 @@
                                                                                             <input type="hidden" name="branch_id" value="{{$bval}}">
                                                                                             <input type="hidden" name="company_id" value="{{$val}}">
                                                                                             <input type="hidden" name="sell_id[]" value="{{$sval}}">
-                                                                                            <input type="hidden" name="per_day_price[]" class="sell_p_perday" value="{{$sales_detail->per_day_price ?? ''}}">
+                                                                                            <input type="hidden" name="per_day_price[]" class="sell_p_perday_{{$bkey}}" value="{{$sales_detail->per_day_price ?? ''}}">
                                                                                             <input type="hidden" name="month" value="{{$search['month'] ?? ''}}">
                                                                                             @if(!empty($sales_detail->per_day_price))
                                                                                                 <span class="period_span">{{$sales_detail->per_day_price ?? ''}} Per Day</span>
@@ -224,7 +224,7 @@
                                                                                     </div>
                                                                                     <div class="col-md-3">
                                                                                         <div class="form-group">
-                                                                                            <button type="submit" name="update" class="btn btn-primary submit-btn">Save</button>
+                                                                                            <button type="button" name="update" class="btn btn-primary submit-btn save_store_btn" data-id="{{$bval}}">Save</button>
                                                                                         </div>
                                                                                     </div>
                                                                                 @endif
@@ -334,6 +334,21 @@
 		 location.href=url;
 	});
 
+    $(document).on('click','.save_store_btn',function(){
+        var url ="{{route('sales_target.store')}}";
+        var id= $(this).attr('data-id');
+        $.ajax({
+           url: "{{route('sales_target.store')}}",
+           type: "POST",
+           dataType: "json",
+           data: $('.store_form_'+id).serialize(),
+           success:function(response)
+            {
+                $('#add_Form').html(response.html).fadeIn();
+            }
+        });
+    });
+
     $("#add_Form").on("hidden.bs.modal", function(){
         
         $("#is_bill_count").prop('checked',false);
@@ -366,10 +381,11 @@
         var total = 0;
         $(this).parent().find('.period_span').remove();
         var target_val = $(this).val();
+        var id = $(this).attr('data-id');
         var cal_val = target_val / days;
 
-        $(this).after('<span class="period_span">'+cal_val+' Per Day</span>');
-        $(this).parent().find('.sell_p_perday').val(cal_val);
+        $(this).after('<span class="period_span">'+cal_val.toFixed(2)+' Per Day</span>');
+        $(this).parent().find('.sell_p_perday_'+id).val(cal_val);
         
     });
 
@@ -378,15 +394,23 @@
         $('.target_sectiondiv'+id).remove();
     });
     var totalPrice = 0;
+    
     $('.period_cost').keydown(function(eve){
         var id = $(this).attr('data-id');
-        $(this).parent().find('.sell_p_perday').each(function(){
+        var queryArr = [];
+        $('.sell_p_perday_'+id).each(function(){
+            
             if (eve.which == 9) {
                    var sum =  parseFloat(this.value);
-                   totalPrice += Number(sum);    
+                   totalPrice += Number(sum); 
+                   queryArr.push(this.value);   
             }
         });
-        $(this).parents().find('.total_period_'+id).html(totalPrice+'Per Day');
+        queryArr = queryArr.map(Number);
+
+        var total = queryArr.reduce(function(a,b){  return a+b },0)
+
+        $(this).parents().find('.total_period_'+id).html(total.toFixed(2)+' Per Day');
         
     });
    

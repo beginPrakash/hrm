@@ -3,7 +3,7 @@
         <?php $__currentLoopData = $data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <li>
                 <label>
-                    <input type="checkbox" name="sells_list[]" value="<?php echo e($val->id); ?>"><?php echo e($val->item_name); ?>
+                    <input type="checkbox" class="sells_check" name="sells_list[]" value="<?php echo e($val->id); ?>"><?php echo e($val->item_name); ?>
 
                 </label>
             </li>    

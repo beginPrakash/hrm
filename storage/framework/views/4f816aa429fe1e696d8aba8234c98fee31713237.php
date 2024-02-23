@@ -1,4 +1,5 @@
 <?php echo $__env->make('includes/header', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+<link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
 <?php echo $__env->make('includes/sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
    <!-- Page Wrapper -->
 <!-- Page Wrapper -->
@@ -76,8 +77,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-auto float-end ms-auto add_sell_btn" style="display:none">
-                    <a href="#" class="btn add-btn" data-toggle="modal" data-target="#add_Form"><i class="fa fa-plus"></i> Add Heading</a>
+                <div class="col-sm-6 col-md-2 add_sell_btn" style="display:none">
+                    <a href="#" class="btn add-btn" data-toggle="modal" id="fwb" data-target="#add_Form"><i class="fa fa-plus"></i> Add Heading</a>
                 </div>
             </div>
         </form>
@@ -103,7 +104,7 @@
                                         <td><?php echo e((isset($val->sellp_detail) && !empty($val->sellp_detail->item_name)) ? $val->sellp_detail->item_name : ''); ?></td>
                                         <td><?php echo e($val->title); ?></td>
                                         <td>
-                                            <div class="pull-right">
+                                            <div class="pull-right begin_actions">
                                                 <div class="form-check form-switch">
                                                     <input class="form-check-input" type="checkbox" role="switch" data-url="<?php echo e(route('tracking_heading.statuschange',array($val->id,$val->is_show ?? 0))); ?>" id="flexSwitchCheckChecked" <?php echo e((!empty($val->is_show)) ? 'checked' : ''); ?>>
                                                 </div>
@@ -171,9 +172,32 @@
 </html>
 
 <?php echo $__env->make('includes/footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css" rel="stylesheet"/>
+
+<link href="<?php echo e(asset('assets/css/bootstrap-new.css')); ?>" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.js"></script>
 <script type="text/javascript">
+
+    $(document).ready(function() {
+        $("#addForm").validate({
+            rules: {
+                item_name: {
+                    required : true,
+                },
+            },
+            messages: {
+                item_name: {
+                    required : 'Item name is required',
+                },           
+            },
+    });
+    
+    });
+
+    $("#add_Form").on("hidden.bs.modal", function(){
+    
+        $('#item_name').val('');
+        $('.leave_m_title').text('Create Heading');
+    });
     $(document).on('click','.sells_check',function(){
         var com_id = $('.company_check:checked').val();
         var br_id = $('.branch_check:checked').val();
@@ -182,7 +206,7 @@
             return this.value;
         }).get().join(',');
         
-        $('#selling_id').val(sel_val);
+        $('#sell_id').val(sel_val);
         if(com_id != '' && br_id != '' && sell_id != ''){
             $('.add_sell_btn').show();
         }else{
@@ -262,6 +286,5 @@
         $('.leave_m_title').text('Create Selling Period');
     });
 
-    
 </script>
 <?php /**PATH C:\wamp64_new\www\hrm\resources\views/selling_management/tracking_heading.blade.php ENDPATH**/ ?>

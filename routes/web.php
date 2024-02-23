@@ -338,6 +338,10 @@ Route::post('/tracking_heading/delete', [App\Http\Controllers\TrackingHeading::c
 Route::get('/tracking_heading/statuschange/{id}/{status}', [App\Http\Controllers\TrackingHeading::class, 'statuschange'])->name('tracking_heading.statuschange');
 
 
+
+//Store manager Daily sales
+Route::match(array('GET','POST'),'/store_daily_sales', [App\Http\Controllers\DailySales::class, 'index'])->name('store_daily_sales.list');
+
 Route::get('/ind-test/{id}', [App\Http\Controllers\PayrollController::class, 'calculateIndemnity']);
 
 

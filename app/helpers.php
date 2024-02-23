@@ -23,6 +23,7 @@ use App\Models\Transportation;
 use App\Models\Branch;
 use App\Models\SellingPeriod;
 use App\Models\SalesTargetMaster;
+use App\Models\TrackingHeading;
 
 function getLastId()
 {
@@ -667,6 +668,11 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
 
     function _get_sales_master_sum_by_id($company_id,$branch_id,$sell_id,$month){
         $data = SalesTargetMaster::where('company_id',$company_id)->where('branch_id',$branch_id)->where('month',$month)->sum('per_day_price');
+        return $data;
+    }
+
+    function _tracking_heading_by_speriod($company_id,$branch_id,$sell_id){
+        $data = TrackingHeading::where('company_id',$company_id)->where('branch_id',$branch_id)->where('sell_p_id',$sell_id)->get();
         return $data;
     }
 

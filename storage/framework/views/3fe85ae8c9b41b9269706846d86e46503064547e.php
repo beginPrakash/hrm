@@ -44,7 +44,7 @@ $is_store_user = _is_user_role_owner($user_id);
                 <?php } ?>
                 <li class="submenu"> 
                     <?php
-                    $mangae_lts = request()->is("attendance*") || request()->is("leaves*") || request()->is("shifting*") ||  request()->is("user_scheduling*") || request()->is("scheduling*");
+                    $mangae_lts = request()->is("attendance*") || request()->is("leaves*") || request()->is("shifting*") ||  request()->is("user_scheduling*") ||  request()->is("store_daily_sales*") || request()->is("scheduling*");
                 ?>
                     <a href="#" class="<?php echo e($mangae_lts ? 'active-ho-jao' : ''); ?>"><i class="la la-files-o"></i> <span> Manage LTS </span> <span class="menu-arrow"></span></a>
                     <ul style="display: none;">
@@ -63,6 +63,7 @@ $is_store_user = _is_user_role_owner($user_id);
                         <?php } ?>
                         <?php if(!empty($is_store_user)): ?>
                         <li><a class="<?php echo ($page == 'user_scheduling')?'active':'';?>" href="/user_scheduling">Scheduling</a></li>
+                        <li><a class="<?php echo ($page == 'store_daily_sales')?'active':'';?>" href="/store_daily_sales">Daily Sales</a></li>
                         <?php endif; ?>
                     </ul>
                 </li>

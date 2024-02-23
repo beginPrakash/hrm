@@ -2,6 +2,8 @@
 @include('includes/sidebar')
    <!-- Page Wrapper -->
 <!-- Page Wrapper -->
+<link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
+
 <div class="page-wrapper">
 
     <!-- Page Content -->
@@ -24,7 +26,7 @@
         <!-- Search Filter -->
         <form method="post" action="{{route('selling_period.list')}}" id="search_form">
             @csrf
-            <div class="row filter-row">
+            <div class="row ">
                 <div class="col-sm-6 col-md-3"> 
                     <div class="form-group form-focus select-focus">
                         <div class="dropdown">
@@ -61,14 +63,14 @@
                         </div> 
                     </div>
                 </div>
-                <div class="col-auto float-end ms-auto add_sell_btn" style="display:none">
-                    <a href="#" class="btn add-btn" data-toggle="modal" data-target="#add_Form"><i class="fa fa-plus"></i> Add Selling Period</a>
+                <div class="col-sm-6 col-md-2 add_sell_btn" style="display:none">
+                    <a href="#" class="btn  add-btn" data-toggle="modal" id="fwb" data-target="#add_Form"><i class="fa fa-plus"></i> Add Selling Period</a>
                 </div>
             </div>
         </form>
         <div class="row">
             <div class="col-md-12">
-                <div class="responsive">
+                <div class="">
                     <table class="table table-striped custom-table mb-0 datatable stable">
                         <thead>
                             <tr>
@@ -86,13 +88,14 @@
                                         <td>{{(isset($val->branch_detail) && !empty($val->branch_detail->name)) ? $val->branch_detail->name : ''}}</td>
                                         <td>{{$val->item_name}}</td>
                                         <td>
-                                            <div class="pull-right">
+                                            <div class="pull-right begin_actions">
                                                 <div class="form-check form-switch">
                                                     <input class="form-check-input" type="checkbox" role="switch" data-url="{{route('selling_period.statuschange',array($val->id,$val->is_show ?? 0))}}" id="flexSwitchCheckChecked" {{(!empty($val->is_show)) ? 'checked' : ''}}>
                                                 </div>
+                                                <div class="">
                                                 <a href="javascript:void(0);" data-toggle="modal" data-target="#add_Form" class="action-icon edit_branch" data-id="{{$val->id}}"><i class="fa fa-pencil"></i></a>
                                                 <a href="javascript:void(0);" data-toggle="modal" data-target="#delete_form" class="action-icon delete_branch" data-id="{{$val->id}}"><i class="fa fa-trash"></i></a>
-                                                
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>
@@ -154,10 +157,12 @@
 </html>
 
 @include('includes/footer')
-<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css" rel="stylesheet"/>
+<link href="{{ asset('assets/css/bootstrap-new.css') }}" rel="stylesheet"/>
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.js"></script>
 <script type="text/javascript">
-        $(document).ready(function() {
+    $(document).ready(function() {
             $("#addForm").validate({
                 rules: {
                     item_name: {

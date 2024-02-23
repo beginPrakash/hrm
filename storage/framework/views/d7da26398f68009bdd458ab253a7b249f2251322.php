@@ -1,4 +1,6 @@
 <?php echo $__env->make('includes/header', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+<link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
+<link href="<?php echo e(asset('assets/css/bootstrap-new.css')); ?>" rel="stylesheet"/>
 <?php echo $__env->make('includes/sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
    <!-- Page Wrapper -->
 <!-- Page Wrapper -->
@@ -24,7 +26,7 @@
         <!-- Search Filter -->
         <form method="post" action="<?php echo e(route('sales_target.list')); ?>" id="search_form">
             <?php echo csrf_field(); ?>
-            <div class="row filter-row">
+            <div class="row">
                 <div class="col-sm-6 col-md-2"> 
                     <div class="form-group form-focus select-focus">
                     <?php
@@ -270,7 +272,6 @@
 </html>
 
 <?php echo $__env->make('includes/footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.js"></script>
 <script type="text/javascript">
     $(document).on('click','.company_check',function(){

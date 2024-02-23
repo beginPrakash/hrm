@@ -1,4 +1,5 @@
 @include('includes/header')
+<link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
 @include('includes/sidebar')
    <!-- Page Wrapper -->
 <!-- Page Wrapper -->
@@ -75,8 +76,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-auto float-end ms-auto add_sell_btn" style="display:none">
-                    <a href="#" class="btn add-btn" data-toggle="modal" data-target="#add_Form"><i class="fa fa-plus"></i> Add Heading</a>
+                <div class="col-sm-6 col-md-2 add_sell_btn" style="display:none">
+                    <a href="#" class="btn add-btn" data-toggle="modal" id="fwb" data-target="#add_Form"><i class="fa fa-plus"></i> Add Heading</a>
                 </div>
             </div>
         </form>
@@ -102,7 +103,7 @@
                                         <td>{{(isset($val->sellp_detail) && !empty($val->sellp_detail->item_name)) ? $val->sellp_detail->item_name : ''}}</td>
                                         <td>{{$val->title}}</td>
                                         <td>
-                                            <div class="pull-right">
+                                            <div class="pull-right begin_actions">
                                                 <div class="form-check form-switch">
                                                     <input class="form-check-input" type="checkbox" role="switch" data-url="{{route('tracking_heading.statuschange',array($val->id,$val->is_show ?? 0))}}" id="flexSwitchCheckChecked" {{(!empty($val->is_show)) ? 'checked' : ''}}>
                                                 </div>
@@ -170,7 +171,8 @@
 </html>
 
 @include('includes/footer')
-<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css" rel="stylesheet"/>
+
+<link href="{{ asset('assets/css/bootstrap-new.css') }}" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.js"></script>
 <script type="text/javascript">
 
@@ -283,5 +285,4 @@
         $('.leave_m_title').text('Create Selling Period');
     });
 
-    
 </script>

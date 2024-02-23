@@ -1,4 +1,6 @@
 @include('includes/header')
+<link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
+<link href="{{ asset('assets/css/bootstrap-new.css') }}" rel="stylesheet"/>
 @include('includes/sidebar')
    <!-- Page Wrapper -->
 <!-- Page Wrapper -->
@@ -24,7 +26,7 @@
         <!-- Search Filter -->
         <form method="post" action="{{route('sales_target.list')}}" id="search_form">
             @csrf
-            <div class="row filter-row">
+            <div class="row">
                 <div class="col-sm-6 col-md-2"> 
                     <div class="form-group form-focus select-focus">
                     <?php
@@ -267,7 +269,6 @@
 </html>
 
 @include('includes/footer')
-<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.js"></script>
 <script type="text/javascript">
     $(document).on('click','.company_check',function(){

@@ -165,13 +165,13 @@
                 
                 <div class="col-sm-6 col-md-2">
                     <div class="d-grid"> 
-                        <button type="submit" class="btn add-btn"><i class="fa fa-arrow"></i>Next</button> 
+                        <button type="submit" id="fwb" class="btn add-btn">Next    <i class="fa fa-arrow-right"></i></button> 
                     </div>  
                 </div>
             </div>
         </form>
        
-        <div class="page-header">
+        <div class="page-header sales_target">
             <div class="row align-items-center">
                 <div class="col">    
                     <?php if(isset($search['company']) && !empty($search['company'])): ?>
@@ -192,8 +192,8 @@
                                                     <div class="row">
                                                         <div class="col-md-12">
                                                             <div class="profile-view">
-                                                                <div class="profile-basic">
-                                                                    <div class="row">
+                                                                <div class="">
+                                                                    <div class="">
                                                                         <h3><?php echo e(_get_branch_name_by_comapny($bval,$val)); ?></h3>
                                                                         <?php if(isset($search['sells_list']) && !empty($search['sells_list'])): ?>
                                                                             <?php $__currentLoopData = $search['sells_list']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $skey => $sval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -203,11 +203,11 @@
                                                                                     $sales_detail = _get_sales_master_data_by_id($val,$bval,$sval,$search['month']);
                                                                                     $sales_detail_sum = _get_sales_master_sum_by_id($val,$bval,$sval,$search['month']);
                                                                                 ?>
-                                                                                    <div class="col-md-3">
+                                                                                    <div class="col-md-2">
                                                                                         <div class="form-group">
                                                                                             <label><?php echo e($s_period_name); ?></label>
-                                                                                            <input type="text" name="target_price[]" class="form-control allowfloatnumber period_cost"  data-id="<?php echo e($bkey); ?>" placeholder="Enter Item Name" value="<?php echo e($sales_detail->target_price ?? ''); ?>">
-                                                                                            <input type="hidden" name="sales_tar_id[]" value="<?php echo e($sales_detail->id ?? ''); ?>">
+                                                                                            <input type="text" name="target_price[]" class="form-control allowfloatnumber period_cost"  data-id="<?php echo e($bkey); ?>" placeholder="Enter value" value="<?php echo e($sales_detail->target_price ?? ''); ?>">
+                                                                                            <input type="hidden" name="sales_tar_id[]" class="sales_tar_id_<?php echo e($bval); ?>" value="<?php echo e($sales_detail->id ?? ''); ?>">
                                                                                             <input type="hidden" name="branch_id" value="<?php echo e($bval); ?>">
                                                                                             <input type="hidden" name="company_id" value="<?php echo e($val); ?>">
                                                                                             <input type="hidden" name="sell_id[]" value="<?php echo e($sval); ?>">
@@ -221,15 +221,15 @@
                                                                                 <?php endif; ?>
                                                                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                                             <?php if($scou > 0): ?>
-                                                                                    <div class="col-md-3">
+                                                                                    <div class="col-md-2">
                                                                                         <div class="form-group">
                                                                                             <label>Total</label>
                                                                                         </div>
                                                                                         <span class="total_period_<?php echo e($bkey); ?>"> <?php echo e((!empty($sales_detail_sum)) ? number_format($sales_detail_sum,2) : ''); ?> <?php echo e((!empty($sales_detail_sum)) ? 'Per Day' : ''); ?></span>
                                                                                     </div>
-                                                                                    <div class="col-md-3">
+                                                                                    <div class="col-md-2">
                                                                                         <div class="form-group">
-                                                                                            <button type="button" name="update" class="btn btn-primary submit-btn save_store_btn" data-id="<?php echo e($bval); ?>">Save</button>
+                                                                                            <button type="button" name="update" id="white-button" class="btn btn-primary submit-btn save_store_btn" data-id="<?php echo e($bval); ?>">Save</button>
                                                                                         </div>
                                                                                     </div>
                                                                                 <?php endif; ?>
@@ -240,9 +240,8 @@
                                                                 <div class="pro-edit"><a href="javascript:void(0);" class="delete_target_sec" data-id="<?php echo e($bkey); ?>"><i class="fa fa-close"></i></a></div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                    
-                                        </form>
+                                                    </div>                                                 
+                                                </form>
                                             </div>
                                         </div>
                                         <?php endif; ?>
@@ -348,7 +347,10 @@
            data: $('.store_form_'+id).serialize(),
            success:function(response)
             {
-                $('#add_Form').html(response.html).fadeIn();
+                console.log('.sales_tar_id_'+id);
+                if(response.sal_id != ''){
+                    $('.sales_tar_id_'+id).val(response.sal_id);
+                }
             }
         });
     });

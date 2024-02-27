@@ -27,8 +27,8 @@
 <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
         <div class="modal-header">
-            <h5 class="modal-title leave_m_title">{{(isset($data) && !empty($data->id)) ? 'Edit' : 'Create'}} Selling Period</h5>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <h5 class="modal-title leave_m_title">{{(isset($data) && !empty($data->id)) ? 'Change' : 'Create'}} Selling Period</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
@@ -44,7 +44,7 @@
                 </div>
                 <div class="form-group">
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="is_bill_count" id="is_bill_count" value="{{$data->is_bill_count ?? 1}}" @if(isset($data->is_bill_count) && $data->is_bill_count==1) checked @endif>
+                        <input class="form-check-input" type="checkbox" name="is_bill_count" id="is_bill_count" value="1" @if(isset($data->is_bill_count) && $data->is_bill_count==1) checked @endif>
                         <label class="form-check-label" for="is_bill_count">
                             Bill Count
                         </label>

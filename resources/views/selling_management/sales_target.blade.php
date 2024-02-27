@@ -162,13 +162,13 @@
                 
                 <div class="col-sm-6 col-md-2">
                     <div class="d-grid"> 
-                        <button type="submit" class="btn add-btn"><i class="fa fa-arrow"></i>Next</button> 
+                        <button type="submit" id="fwb" class="btn add-btn">Next    <i class="fa fa-arrow-right"></i></button> 
                     </div>  
                 </div>
             </div>
         </form>
        
-        <div class="page-header">
+        <div class="page-header sales_target">
             <div class="row align-items-center">
                 <div class="col">    
                     @if(isset($search['company']) && !empty($search['company']))
@@ -189,8 +189,8 @@
                                                     <div class="row">
                                                         <div class="col-md-12">
                                                             <div class="profile-view">
-                                                                <div class="profile-basic">
-                                                                    <div class="row">
+                                                                <div class="">
+                                                                    <div class="">
                                                                         <h3>{{_get_branch_name_by_comapny($bval,$val)}}</h3>
                                                                         @if(isset($search['sells_list']) && !empty($search['sells_list']))
                                                                             @foreach($search['sells_list'] as $skey => $sval)
@@ -200,11 +200,11 @@
                                                                                     $sales_detail = _get_sales_master_data_by_id($val,$bval,$sval,$search['month']);
                                                                                     $sales_detail_sum = _get_sales_master_sum_by_id($val,$bval,$sval,$search['month']);
                                                                                 @endphp
-                                                                                    <div class="col-md-3">
+                                                                                    <div class="col-md-2">
                                                                                         <div class="form-group">
                                                                                             <label>{{$s_period_name}}</label>
-                                                                                            <input type="text" name="target_price[]" class="form-control allowfloatnumber period_cost"  data-id="{{$bkey}}" placeholder="Enter Item Name" value="{{$sales_detail->target_price ?? ''}}">
-                                                                                            <input type="hidden" name="sales_tar_id[]" value="{{$sales_detail->id ?? ''}}">
+                                                                                            <input type="text" name="target_price[]" class="form-control allowfloatnumber period_cost"  data-id="{{$bkey}}" placeholder="Enter value" value="{{$sales_detail->target_price ?? ''}}">
+                                                                                            <input type="hidden" name="sales_tar_id[]" class="sales_tar_id_{{$bval}}" value="{{$sales_detail->id ?? ''}}">
                                                                                             <input type="hidden" name="branch_id" value="{{$bval}}">
                                                                                             <input type="hidden" name="company_id" value="{{$val}}">
                                                                                             <input type="hidden" name="sell_id[]" value="{{$sval}}">
@@ -218,15 +218,15 @@
                                                                                 @endif
                                                                             @endforeach
                                                                             @if($scou > 0)
-                                                                                    <div class="col-md-3">
+                                                                                    <div class="col-md-2">
                                                                                         <div class="form-group">
                                                                                             <label>Total</label>
                                                                                         </div>
                                                                                         <span class="total_period_{{$bkey}}"> {{(!empty($sales_detail_sum)) ? number_format($sales_detail_sum,2) : ''}} {{(!empty($sales_detail_sum)) ? 'Per Day' : ''}}</span>
                                                                                     </div>
-                                                                                    <div class="col-md-3">
+                                                                                    <div class="col-md-2">
                                                                                         <div class="form-group">
-                                                                                            <button type="button" name="update" class="btn btn-primary submit-btn save_store_btn" data-id="{{$bval}}">Save</button>
+                                                                                            <button type="button" name="update" id="white-button" class="btn btn-primary submit-btn save_store_btn" data-id="{{$bval}}">Save</button>
                                                                                         </div>
                                                                                     </div>
                                                                                 @endif
@@ -237,9 +237,8 @@
                                                                 <div class="pro-edit"><a href="javascript:void(0);" class="delete_target_sec" data-id="{{$bkey}}"><i class="fa fa-close"></i></a></div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                    
-                                        </form>
+                                                    </div>                                                 
+                                                </form>
                                             </div>
                                         </div>
                                         @endif
@@ -345,7 +344,10 @@
            data: $('.store_form_'+id).serialize(),
            success:function(response)
             {
-                $('#add_Form').html(response.html).fadeIn();
+                console.log('.sales_tar_id_'+id);
+                if(response.sal_id != ''){
+                    $('.sales_tar_id_'+id).val(response.sal_id);
+                }
             }
         });
     });

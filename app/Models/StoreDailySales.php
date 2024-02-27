@@ -13,7 +13,7 @@ class StoreDailySales extends Model
         'company_id',
         'branch_id',
         'sell_p_id',
-        'tracking_id',
+        'sales_date',
         'achieve_target',
         'bill_count',
         'target_price',

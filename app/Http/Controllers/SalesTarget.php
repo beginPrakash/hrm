@@ -74,6 +74,7 @@ class SalesTarget extends Controller
         endif;
 
         $arr = [
+            'sal_id' => $save_data->id ?? '',
 			'success' => 'true',
 		];
 		return response()->json($arr);

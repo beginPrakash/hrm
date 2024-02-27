@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\SellingPeriod as SellingPeriodModel;
 use App\Models\TrackingHeading as TrackingHeadingModel;
-use Session;
+use Session, DB;
 use App\Models\Employee;
+use App\MOdels\StoreDailySales;
 
 class DailySales extends Controller
 {
@@ -18,8 +19,15 @@ class DailySales extends Controller
     { 
         $user_id  = Session::get('user_id');
         $title = $this->title;
+
+        //get login user detail
+        $user = Employee::with('employee_branch')->where('user_id',$user_id)->first();
+        $branch_id  = $user->branch ?? '';
+        $company_id  = $user->company ?? '';
+        $sell_id_default = SellingPeriodModel::where('company_id',$company_id)->where('branch_id',$branch_id)->orderBy('id','asc')->pluck('id')->join(',');;
+        $sell_id_default = explode(',',$sell_id_default);
         $search['search_date'] = $request->search_date ?? '';
-        $search['sells_id'] = $request->sells_id ?? '';
+        $search['sells_id'] = $request->sells_id ?? $sell_id_default;
         $search_sells_data = [];
 
         //get login user detail
@@ -31,81 +39,47 @@ class DailySales extends Controller
         if(!empty($search['sells_id'])):
             $search_sells_data = SellingPeriodModel::whereIn('id',$search['sells_id'])->orderBy('id','asc')->get();
         endif;
-        return view('selling_management.store_daily_sales',compact('user','title','sells_p_data','search','search_sells_data'));
+        $today_target = _target_total_cal_by_sell($company_id,$branch_id,$search['sells_id'],$search['search_date']);
+        $today_sale = _dailysale_total_cal($company_id,$branch_id,$search['sells_id'],$search['search_date']);
+        $today_vari = $today_sale - $today_target;
+        $today_bill_avg  = _dailysale_bill_avg($company_id,$branch_id,$search['sells_id'],$search['search_date']);
+        $no_of_days = date('d',strtotime($search['search_date']));
+        $mtd_target = $no_of_days * $today_target;
+        $mtd_sale = _dailysale_total_cal($company_id,$branch_id,$search['sells_id'],$search['search_date'],'mtd');
+        $mtd_vari = $mtd_sale - $mtd_target;
+        $mtd_bill_avg  = _dailysale_bill_avg($company_id,$branch_id,$search['sells_id'],$search['search_date'],'mtd');
+        return view('selling_management.store_daily_sales',compact('user','title','sells_p_data','search','search_sells_data','today_target','today_sale','today_vari','today_bill_avg','mtd_target','mtd_sale','mtd_vari','mtd_bill_avg'));
     }
 
-    public function store(Request $request){
-        if(!empty($request->tracking_id)):
-            $save_data = TrackingHeadingModel::find($request->tracking_id);
-            if(!empty($save_data)):
-                $save_data->title = $request->item_name;
-                $save_data->save();
-            endif;
-            return redirect()->back()->with('success','Data updated successfully');
-        else:
-            $branch_ids = explode(',',$request->branch_id);
-            $company_ids = explode(',',$request->company_id);
-            $selling_ids = explode(',',$request->sell_id);
-            if(!empty($company_ids) && !empty($branch_ids) && !empty($selling_ids)):
-                if(!empty($selling_ids) && count($selling_ids) > 0):
-                    foreach($selling_ids as $key => $val):
-                        
-                        $sell_data = SellingPeriodModel::find($val);
-                        $selling_data = SellingPeriodModel::whereIn('company_id',$company_ids)->whereIn('branch_id',$branch_ids)->where('item_name',$sell_data->item_name)->get();
-                        if(!empty($selling_data)):
-                            foreach($selling_data as $skey => $sval):
-                                $save_data = new TrackingHeadingModel();
-                                $save_data->company_id = $sval->company_id ?? NULL;
-                                $save_data->branch_id = $sval->branch_id ?? NULL;
-                                $save_data->sell_p_id = $sval->id;
-                                $save_data->title = $request->item_name;
-                                $save_data->save();
-                            endforeach;
-                        endif;
-                    endforeach;
-                endif;
-                return redirect()->back()->with('success','Data saved successfully');
+    public function save_store_daily_sales(Request $request){
+        $user_id  = Session::get('user_id');
+        $heading_price = $request->heading_price;
+        $sells_p_detail = SellingPeriodModel::find($request->sells_p_id);
+        if(!empty($sells_p_detail)):
+            if(!empty($request->daily_sales_id)):
+                $save_data =StoreDailySales::find($request->daily_sales_id);
             else:
-                return redirect()->back()->with('error','First select company and branch');
+                $save_data = new StoreDailySales();
             endif;
+           
+            $save_data->company_id = $sells_p_detail->company_id;
+            $save_data->branch_id = $sells_p_detail->branch_id;
+            $save_data->sell_p_id = $sells_p_detail->id;
+            $save_data->sales_date = date('Y-m-d',strtotime($request->serch_date));
+            $save_data->achieve_target = $request->achieve_target;
+            $save_data->bill_count = $request->bill_count;
+            $save_data->target_price = $request->target_price;
+            $save_data->avg_bill_count = $request->bill_count;
+            $save_data->headings = json_encode($heading_price);
+            $save_data->action_by = $user_id;
+            $save_data->save();
+
+            $arr = [
+                'success' => 'true',
+                'sal_id' => $save_data->id ?? '',
+            ];
+            return response()->json($arr);
         endif;
-    }
-
-    public function getsellingdetaiById(Request $request)
-    {
-        $data = TrackingHeadingModel::find($request->id);
-        $pass_array=array(
-			'data' => $data,
-        );
-        $html =  view('selling_management.tracking_heading_modal', $pass_array )->render();
-		$arr = [
-			'success' => 'true',
-			'html' => $html
-		];
-		return response()->json($arr);
-
-    }
-
-    public function delete(Request $request){
-        $id = $request->selling_id ?? '';
-        TrackingHeadingModel::where('id',$id)->delete();
-        return redirect()->back()->with('success','Data deleted successfully');
-    }
-
-    public function statuschange($id='',$status=''){
-        $message = '';
-        if($status == '1'):
-            $data = ['is_show' => 0];
-            $message = "Data changed successfully.";
-        elseif($status == '0'):
-            $data = ['is_show' => 1];
-            $message = "Data changed successfully.";
-        endif;
-        if (isset($data) && count($data)):
-            $d = TrackingHeadingModel::find($id);
-            $d->update($data);
-        endif;  
-        return redirect()->back()->with('success', $message);
     }
         
 }

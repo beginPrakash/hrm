@@ -24,6 +24,7 @@ use App\Models\Branch;
 use App\Models\SellingPeriod;
 use App\Models\SalesTargetMaster;
 use App\Models\TrackingHeading;
+use App\MOdels\StoreDailySales;
 
 function getLastId()
 {
@@ -535,6 +536,7 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         
         $sal = (isset($employee->employee_salary->basic_salary))?$employee->employee_salary->basic_salary:0;
         $perday = $sal / 26;
+
         $leaveAmount = $perday * $leaveBalance;
         $total_request_leave = $employee->sick_leave_request_days ?? 0;
         $remaining_leave = $totalLeaveDays - ($balance + $total_request_leave);
@@ -675,6 +677,77 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         $data = TrackingHeading::where('company_id',$company_id)->where('branch_id',$branch_id)->where('sell_p_id',$sell_id)->get();
         return $data;
     }
+
+    function _target_price_by_sell($company_id,$branch_id,$sell_id,$serch_date){
+        if(!empty($serch_date)):
+            $month = date('n',strtotime($serch_date));
+            $data = SalesTargetMaster::where('company_id',$company_id)->where('branch_id',$branch_id)->where('sell_p_id',$sell_id)->where('month',$month)->value('per_day_price');
+            return $data ?? 0;
+        endif;
+       
+    }
+
+    function _is_daily_sales_exists($company_id,$branch_id,$sell_id,$serch_date){
+        if(!empty($serch_date)):
+            $serch_date = date('Y-m-d',strtotime($serch_date));
+            $data = StoreDailySales::where('company_id',$company_id)->where('branch_id',$branch_id)->where('sell_p_id',$sell_id)->whereDate('sales_date',$serch_date)->first();
+            return $data;
+        endif;
+    }
+
+    function _target_total_cal_by_sell($company_id,$branch_id,$sells_id,$serch_date){
+        if(!empty($serch_date)):
+            $month = date('n',strtotime($serch_date));
+            $data = SalesTargetMaster::where('company_id',$company_id)->where('branch_id',$branch_id)->whereIn('sell_p_id',$sells_id)->where('month',$month)->sum('per_day_price');
+            return $data ?? 0;
+        endif;
+       
+    }
+
+    function _dailysale_total_cal($company_id,$branch_id,$sells_id,$serch_date,$type=''){
+        if(!empty($serch_date)):
+            $serch_date = date('Y-m-d',strtotime($serch_date));
+            if($type=='mtd'):
+                $first_date = date('Y-m-01',strtotime($serch_date));
+                $data = StoreDailySales::where('company_id',$company_id)->where('branch_id',$branch_id)->whereIn('sell_p_id',$sells_id)->whereBetween('sales_date',[$first_date,$serch_date])->sum('achieve_target');
+            else:
+                $data = StoreDailySales::where('company_id',$company_id)->where('branch_id',$branch_id)->whereIn('sell_p_id',$sells_id)->whereDate('sales_date',$serch_date)->sum('achieve_target');
+            endif;
+            return $data;
+        endif;   
+    }
+    
+
+    function _dailysale_bill_avg($company_id,$branch_id,$sells_id,$serch_date,$type=''){
+        if(!empty($serch_date)):
+            $serch_date = date('Y-m-d',strtotime($serch_date));
+            if($type=='mtd'):
+                $first_date = date('Y-m-01',strtotime($serch_date));
+                $data = StoreDailySales::where('company_id',$company_id)->where('branch_id',$branch_id)->whereIn('sell_p_id',$sells_id)->whereBetween('sales_date',[$first_date,$serch_date])->whereNotNull('bill_count')->avg('bill_count');
+            else:
+                $data = StoreDailySales::where('company_id',$company_id)->where('branch_id',$branch_id)->whereIn('sell_p_id',$sells_id)->whereDate('sales_date',$serch_date)->whereNotNull('bill_count')->avg('bill_count');
+            endif;
+                return $data;
+        endif;
+       
+    }
+
+    function _calculate_per($total_val,$achieve_val){
+        if(!empty($total_val) && !empty($achieve_val)):
+            if($achieve_val > $total_val):
+                $val =  $achieve_val -  $total_val; 
+                $total = $val / $total_val * 100;
+                $cal_val = '<span class="success_pr">'.number_format($total,2).'% ^ </span>';
+            else:
+                $val =  $total_val -  $achieve_val; 
+                $total = $val / $total_val * 100;  
+                $cal_val = '<span class="nega_pr">'.number_format($total,2).'% ^ </span>';      
+            endif;
+            return $cal_val;
+        endif;
+    }
+
+    
 
     
     

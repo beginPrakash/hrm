@@ -382,6 +382,22 @@ hr.hr_line {
     background-color: #b8b8ff;
 }
 
+h2.sales_title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+span.success_pr {
+    color: #55ce63;
+    font-weight: bold;
+}
+
+span.nega_pr {
+    color: #FF0000;
+    font-weight: bold;
+}
+
 /* .page-wrapper a {
 
     color: #ff9b44;

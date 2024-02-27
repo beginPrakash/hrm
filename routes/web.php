@@ -341,6 +341,7 @@ Route::get('/tracking_heading/statuschange/{id}/{status}', [App\Http\Controllers
 
 //Store manager Daily sales
 Route::match(array('GET','POST'),'/store_daily_sales', [App\Http\Controllers\DailySales::class, 'index'])->name('store_daily_sales.list');
+Route::post('store_daily_sales/save', [App\Http\Controllers\DailySales::class, 'save_store_daily_sales'])->name('store_daily_sales.save');
 
 Route::get('/ind-test/{id}', [App\Http\Controllers\PayrollController::class, 'calculateIndemnity']);
 

@@ -136,6 +136,14 @@ $is_store_user = _is_user_role_owner($user_id);
                             <a class="<?php echo ($page == 'tracking_heading')?'active':'';?>" href="/tracking_heading"><i class="la la-cog"></i> <span>Tracking Heading</span></a>
                     </ul>
                 </li>
+
+                <li class="submenu">
+                    <a href="#"><i class="la la-cog"></i> <span>UpSelling</span> <span class="menu-arrow"></span></a>
+                    <ul style="display: none;">
+                            <a class="<?php echo ($page == 'up_selling_period')?'active':'';?>" href="/up_selling_period"><i class="la la-cog"></i> <span>Selling Period</span></a>
+                            <a class="<?php echo ($page == 'upselling_heading')?'active':'';?>" href="/upselling_heading"><i class="la la-cog"></i> <span>UpSelling Score Heading</span></a>
+                    </ul>
+                </li>
                 <?php } ?>
             </ul>
         </div>

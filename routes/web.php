@@ -328,7 +328,6 @@ Route::match(array('GET','POST'),'/sales_target', [App\Http\Controllers\SalesTar
 Route::post('/sales_target/branchlistbycompany', [App\Http\Controllers\SalesTarget::class, 'branchlistbycompany'])->name('sales_target.branchlistbycompany');
 Route::post('/sales_target/sellplistbycompany', [App\Http\Controllers\SalesTarget::class, 'sellplistbycompany'])->name('sales_target.sellplistbycompany');
 Route::post('/sales_target/store', [App\Http\Controllers\SalesTarget::class, 'store'])->name('sales_target.store');
-});
 
 //Tracking Heading
 Route::match(array('GET','POST'),'/tracking_heading', [App\Http\Controllers\TrackingHeading::class, 'index'])->name('tracking_heading.list');
@@ -344,6 +343,29 @@ Route::match(array('GET','POST'),'/store_daily_sales', [App\Http\Controllers\Dai
 Route::post('store_daily_sales/save', [App\Http\Controllers\DailySales::class, 'save_store_daily_sales'])->name('store_daily_sales.save');
 
 Route::get('/ind-test/{id}', [App\Http\Controllers\PayrollController::class, 'calculateIndemnity']);
+
+//User Selling Period Mangement
+Route::match(array('GET','POST'),'/up_selling_period', [App\Http\Controllers\UpSellingPeriod::class, 'index'])->name('up_selling_period.list');
+Route::post('/up_selling_period/store', [App\Http\Controllers\UpSellingPeriod::class, 'store'])->name('up_selling_period.store');
+Route::post('/up_selling_period/detail', [App\Http\Controllers\UpSellingPeriod::class, 'getsellingdetaiById'])->name('getusersellingdetaiById');
+Route::post('/up_selling_period/delete', [App\Http\Controllers\UpSellingPeriod::class, 'delete'])->name('up_selling_period.delete');
+Route::get('/up_selling_period/statuschange/{id}/{status}', [App\Http\Controllers\UpSellingPeriod::class, 'statuschange'])->name('up_selling_period.statuschange');
+
+//Upselling Heading
+Route::match(array('GET','POST'),'/upselling_heading', [App\Http\Controllers\UpsellingHeading::class, 'index'])->name('upselling_heading.list');
+Route::post('/upselling_heading/store', [App\Http\Controllers\UpsellingHeading::class, 'store'])->name('upselling_heading.store');
+Route::post('/upselling_heading/detail', [App\Http\Controllers\UpsellingHeading::class, 'getsellingdetaiById'])->name('getupsetrackingdetaiById');
+Route::post('/upselling_heading/delete', [App\Http\Controllers\UpsellingHeading::class, 'delete'])->name('upselling_heading.delete');
+Route::get('/upselling_heading/statuschange/{id}/{status}', [App\Http\Controllers\UpsellingHeading::class, 'statuschange'])->name('upselling_heading.statuschange');
+
+
+//Store manager User Daily sales
+Route::match(array('GET','POST'),'/userstore_daily_sales', [App\Http\Controllers\UserDailySales::class, 'index'])->name('userstore_daily_sales.list');
+Route::post('userstore_daily_sales/save', [App\Http\Controllers\UserDailySales::class, 'save_store_daily_sales'])->name('userstore_daily_sales.save');
+
+});
+
+
 
 
 // Route::post('/generate-list', [App\Http\Controllers\CronjobController::class, 'salaryOvertime']);

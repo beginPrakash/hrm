@@ -12,10 +12,10 @@
         <div class="page-header">
             <div class="row align-items-center">
                 <div class="col">
-                    <h3 class="page-title">Tracking Heading</h3>
+                    <h3 class="page-title">Upselling Score Heading</h3>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="admin-dashboard.php">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Tracking Heading</li>
+                        <li class="breadcrumb-item active">Upselling Score Heading</li>
                     </ul>
                 </div>
                 
@@ -103,17 +103,19 @@
                                         <td><?php echo e((isset($val->branch_detail) && !empty($val->branch_detail->name)) ? $val->branch_detail->name : ''); ?></td>
                                         <td><?php echo e((isset($val->sellp_detail) && !empty($val->sellp_detail->item_name)) ? $val->sellp_detail->item_name : ''); ?></td>
                                         <td><?php echo e($val->title); ?></td>
+                                        
                                         <td>
                                             <div class="pull-right begin_actions">
-                                                <?php if($val->type != 'default'): ?>
-                                                    <div class="form-check form-switch">
-                                                        <input class="form-check-input" type="checkbox" role="switch" data-url="<?php echo e(route('tracking_heading.statuschange',array($val->id,$val->is_show ?? 0))); ?>" id="flexSwitchCheckChecked" <?php echo e((!empty($val->is_show)) ? 'checked' : ''); ?>>
-                                                    </div>
-                                                    <a href="javascript:void(0);" data-toggle="modal" data-target="#add_Form" class="action-icon edit_branch" data-id="<?php echo e($val->id); ?>"><i class="fa fa-pencil"></i></a>
-                                                    <a href="javascript:void(0);" data-toggle="modal" data-target="#delete_form" class="action-icon delete_branch" data-id="<?php echo e($val->id); ?>"><i class="fa fa-trash"></i></a>
-                                                <?php endif; ?>
+                                            <?php if($val->type != 'default'): ?>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" data-url="<?php echo e(route('upselling_heading.statuschange',array($val->id,$val->is_show ?? 0))); ?>" id="flexSwitchCheckChecked" <?php echo e((!empty($val->is_show)) ? 'checked' : ''); ?>>
+                                                </div>
+                                                <a href="javascript:void(0);" data-toggle="modal" data-target="#add_Form" class="action-icon edit_branch" data-id="<?php echo e($val->id); ?>"><i class="fa fa-pencil"></i></a>
+                                                <a href="javascript:void(0);" data-toggle="modal" data-target="#delete_form" class="action-icon delete_branch" data-id="<?php echo e($val->id); ?>"><i class="fa fa-trash"></i></a>
+                                            <?php endif; ?>   
                                             </div>
                                         </td>
+                                        
                                     </tr>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             <?php endif; ?>
@@ -127,7 +129,7 @@
 
     <!-- Add Selling Period Modal -->
     <div id="add_Form" class="modal custom-modal fade" role="dialog">
-        <?php echo $__env->make('selling_management/tracking_heading_modal', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+        <?php echo $__env->make('up_selling_management/tracking_heading_modal', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     </div>
     <!-- /Add Selling Period Modal -->
     
@@ -143,7 +145,7 @@
                     <div class="modal-btn delete-action">
                         <div class="row">
                             <div class="col-6">
-                              <form action="<?php echo e(route('tracking_heading.delete')); ?>" method="post">
+                              <form action="<?php echo e(route('upselling_heading.delete')); ?>" method="post">
                                     <?php echo csrf_field(); ?>
                                     <input type="hidden" name="selling_id" id="selling_delete_id">
                                     <button type="submit" class="btn btn-primary btn-large continue-btn" style="width: 100%;">Delete</button>
@@ -259,7 +261,7 @@
         $('#add_Form').html('');
         var id= $(this).attr('data-id');
         $.ajax({
-           url: "<?php echo e(route('gettrackingdetaiById')); ?>",
+           url: "<?php echo e(route('getupsetrackingdetaiById')); ?>",
            type: "POST",
            dataType: "json",
            data: {"_token": "<?php echo e(csrf_token()); ?>", id:id},
@@ -288,4 +290,4 @@
     });
 
 </script>
-<?php /**PATH C:\wamp64_new\www\hrm\resources\views/selling_management/tracking_heading.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\wamp64_new\www\hrm\resources\views/up_selling_management/tracking_heading.blade.php ENDPATH**/ ?>

@@ -49,14 +49,27 @@
                 <div class="modal-body">
                     <form action="/designationInsert" method="post" id="addForm">
                         @csrf
-                        <div class="form-group">
-                            <label>Job title Name <span class="text-danger">*</span></label>
-                            <input class="form-control" type="text" name="designation" id="designation">
-                        </div>
-                        <div class="form-group">
-                            <label>Multi User <i class="fa fa-info-circle" title="Can add multiple users to this designation."></i></label>
-                            <br>
-                            <input type="checkbox" name="multi_user" value="1" checked>
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 col-lg-12">
+                                <div class="form-group">
+                                    <label>Job title Name <span class="text-danger">*</span></label>
+                                    <input class="form-control" type="text" name="designation" id="designation">
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <div class="form-group">
+                                    <label>Multi User <i class="fa fa-info-circle" title="Can add multiple users to this designation."></i></label>
+                                    <br>
+                                    <input type="checkbox" name="multi_user" value="1" checked>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <div class="form-group">
+                                    <br>
+                                    <input type="checkbox" name="is_sales" value="1">
+                                    <label>Sales</label>   
+                                </div>
+                            </div>
                         </div>
                         <!-- <div class="form-group">
                             <label>Department <span class="text-danger">*</span></label>
@@ -98,16 +111,29 @@
                 <div class="modal-body">
                 <form action="/designationUpdate" method="post" id="editForm">
                             @csrf
-                        <div class="form-group">
-                            <label>Job title Name <span class="text-danger">*</span></label>
-                            <input class="form-control" value="" id="designations_name" name="designations_name" type="text">
-                            <input class="form-control" value="" id="designations_id" name="designations_id" type="hidden">
-                        </div>
-                        <div class="form-group">
-                            <label>Multi User <i class="fa fa-info-circle" title="Can add multiple users to this designation."></i></label>
-                            <br>
-                            <input type="checkbox" name="multi_user" id="multi_user" value="1" checked>
-                        </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-12 col-lg-12">
+                                    <div class="form-group">
+                                        <label>Job title Name <span class="text-danger">*</span></label>
+                                        <input class="form-control" value="" id="designations_name" name="designations_name" type="text">
+                                        <input class="form-control" value="" id="designations_id" name="designations_id" type="hidden">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-6 col-lg-6">
+                                    <div class="form-group">
+                                        <label>Multi User <i class="fa fa-info-circle" title="Can add multiple users to this designation."></i></label>
+                                        <br>
+                                        <input type="checkbox" name="multi_user" id="multi_user" value="1" checked>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-6 col-lg-6">
+                                    <div class="form-group">
+                                        <br>
+                                        <input type="checkbox" name="is_sales" id="is_sales" value="1">
+                                        <label>Sales</label>   
+                                    </div>
+                                </div>
+                            </div>
                         <!-- <div class="form-group">
                             <label>Department <span class="text-danger">*</span></label>
                             <select class="form-control select" id="edit_department" name="department"> -->
@@ -237,6 +263,13 @@
                 if(value==1)
                 {
                     $('#multi_user').prop('checked', true);
+                }
+            }
+            if(key=='is_sales')
+            {
+                if(value==1)
+                {
+                    $('#is_sales').prop('checked', true);
                 }
             }
             // if(key=='department')

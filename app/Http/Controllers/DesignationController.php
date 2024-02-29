@@ -78,6 +78,7 @@ class DesignationController extends Controller
         $insertArray = array(
             'name'  =>  $_POST['designation'],
             'multi_user'  =>  (isset($_POST['multi_user']))?$_POST['multi_user']:0,
+            'is_sales'  =>  (isset($_POST['is_sales']))?$_POST['is_sales']:0,
             // 'department'  =>  $_POST['department'],
             'company_id'    =>  $company_id,
             'created_at'  =>  date('Y-m-d h:i:s')
@@ -92,6 +93,7 @@ class DesignationController extends Controller
         $updateArray = array(
             'name' => $_POST['designations_name'],
             'multi_user'  =>  (isset($_POST['multi_user']))?$_POST['multi_user']:0,
+            'is_sales'  =>  (isset($_POST['is_sales']))?$_POST['is_sales']:0,
             // 'department'  =>  $_POST['department'],
             'updated_at'  =>  date('Y-m-d h:i:s')
         );

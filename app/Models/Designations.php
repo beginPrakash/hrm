@@ -9,7 +9,7 @@ class Designations extends Model
 {
     use HasFactory;
     protected $fillable = [
-		'name', 'company_id','status',
+		'name', 'company_id','status','is_sales'
 	];
 
     public function Department()

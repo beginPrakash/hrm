@@ -6,9 +6,9 @@ use App\Models\SellingPeriod as SellingPeriodModel;
 use App\Models\TrackingHeading as TrackingHeadingModel;
 use Session, DB;
 use App\Models\Employee;
-use App\Models\StoreDailySales;
+use App\MOdels\StoreDailySales;
 
-class DailySales extends Controller
+class UserDailySales extends Controller
 {
     public function __construct()
     {
@@ -24,7 +24,9 @@ class DailySales extends Controller
         $user = Employee::with('employee_branch')->where('user_id',$user_id)->first();
         $branch_id  = $user->branch ?? '';
         $company_id  = $user->company ?? '';
-        $sell_id_default = SellingPeriodModel::where('company_id',$company_id)->where('branch_id',$branch_id)->orderBy('id','asc')->pluck('id')->join(',');;
+        $designation  = $user->designation ?? '';
+        $same_branch_users = Employee::where('branch',$branch_id)->where('company',$company_id)->where('designation',$designation)->join('designations','employees.designation','designations.id')->where('designations.is_sales','1')->where('employees.user_id','!=',$user_id)->get();
+        $sell_id_default = SellingPeriodModel::where('company_id',$company_id)->where('branch_id',$branch_id)->orderBy('id','asc')->pluck('id')->join(',');
         $sell_id_default = explode(',',$sell_id_default);
         $search['search_date'] = $request->search_date ?? '';
         $search['sells_id'] = $request->sells_id ?? $sell_id_default;
@@ -48,7 +50,7 @@ class DailySales extends Controller
         $mtd_sale = _dailysale_total_cal($company_id,$branch_id,$search['sells_id'],$search['search_date'],'mtd');
         $mtd_vari = $mtd_sale - $mtd_target;
         $mtd_bill_avg  = _dailysale_bill_avg($company_id,$branch_id,$search['sells_id'],$search['search_date'],'mtd');
-        return view('selling_management.store_daily_sales',compact('user','title','sells_p_data','search','search_sells_data','today_target','today_sale','today_vari','today_bill_avg','mtd_target','mtd_sale','mtd_vari','mtd_bill_avg'));
+        return view('up_selling_management.user_daily_sales',compact('same_branch_users','user','title','sells_p_data','search','search_sells_data','today_target','today_sale','today_vari','today_bill_avg','mtd_target','mtd_sale','mtd_vari','mtd_bill_avg'));
     }
 
     public function save_store_daily_sales(Request $request){

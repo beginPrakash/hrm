@@ -24,7 +24,7 @@ use App\Models\Branch;
 use App\Models\SellingPeriod;
 use App\Models\SalesTargetMaster;
 use App\Models\TrackingHeading;
-use App\MOdels\StoreDailySales;
+use App\Models\StoreDailySales;
 
 function getLastId()
 {

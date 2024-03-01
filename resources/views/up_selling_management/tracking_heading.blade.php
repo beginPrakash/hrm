@@ -113,7 +113,6 @@
                                                 
                                             </div>
                                         </td>
-                                        @endif
                                     </tr>
                                 @endforeach
                             @endif
@@ -244,7 +243,7 @@
         }).get().join(',');
         $('#branch_id').val(sel_val);
         $.ajax({
-            url: "{{route('sales_target.sellplistbycompany')}}",
+            url: "{{route('upselling_heading.upsellplistbycompany')}}",
             type: "POST",
             dataType: "json",
             data: {"_token": "{{ csrf_token() }}", sel_val:sel_val,company_id:company_id},

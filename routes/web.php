@@ -338,6 +338,7 @@ Route::get('/tracking_heading/statuschange/{id}/{status}', [App\Http\Controllers
 
 
 
+
 //Store manager Daily sales
 Route::match(array('GET','POST'),'/store_daily_sales', [App\Http\Controllers\DailySales::class, 'index'])->name('store_daily_sales.list');
 Route::post('store_daily_sales/save', [App\Http\Controllers\DailySales::class, 'save_store_daily_sales'])->name('store_daily_sales.save');
@@ -357,7 +358,7 @@ Route::post('/upselling_heading/store', [App\Http\Controllers\UpsellingHeading::
 Route::post('/upselling_heading/detail', [App\Http\Controllers\UpsellingHeading::class, 'getsellingdetaiById'])->name('getupsetrackingdetaiById');
 Route::post('/upselling_heading/delete', [App\Http\Controllers\UpsellingHeading::class, 'delete'])->name('upselling_heading.delete');
 Route::get('/upselling_heading/statuschange/{id}/{status}', [App\Http\Controllers\UpsellingHeading::class, 'statuschange'])->name('upselling_heading.statuschange');
-
+Route::post('/upselling_heading/upsellplistbycompany', [App\Http\Controllers\UpsellingHeading::class, 'upsellplistbycompany'])->name('upselling_heading.upsellplistbycompany');
 
 //Store manager User Daily sales
 Route::match(array('GET','POST'),'/userstore_daily_sales', [App\Http\Controllers\UserDailySales::class, 'index'])->name('userstore_daily_sales.list');

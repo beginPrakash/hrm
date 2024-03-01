@@ -31,7 +31,7 @@ class UpSellingHeading extends Model
     }
 
     public function sellp_detail(){
-        return $this->hasOne('App\Models\SellingPeriod', 'id', 'sell_p_id');
+        return $this->hasOne('App\Models\UpSellingPeriod', 'id', 'sell_p_id');
     }
 
 }

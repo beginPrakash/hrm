@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 use Session;
 use Illuminate\Http\Request;
-use App\Models\SellingPeriod as SellingPeriodModel;
+use App\Models\UpSellingPeriod;
 use App\Models\Residency;
 use App\Models\Branch;
 use App\Models\UpSellingHeading as UpSellingHeadingModel;
@@ -60,8 +60,8 @@ class UpsellingHeading extends Controller
                 if(!empty($selling_ids) && count($selling_ids) > 0):
                     foreach($selling_ids as $key => $val):
                         
-                        $sell_data = SellingPeriodModel::find($val);
-                        $selling_data = SellingPeriodModel::whereIn('company_id',$company_ids)->whereIn('branch_id',$branch_ids)->where('item_name',$sell_data->item_name)->get();
+                        $sell_data = UpSellingPeriod::find($val);
+                        $selling_data = UpSellingPeriod::whereIn('company_id',$company_ids)->whereIn('branch_id',$branch_ids)->where('item_name',$sell_data->item_name)->get();
                         if(!empty($selling_data)):
                             foreach($selling_data as $skey => $sval):
                                 $save_data = new UpSellingHeadingModel();
@@ -126,6 +126,23 @@ class UpsellingHeading extends Controller
             $d->update($data);
         endif;  
         return redirect()->back()->with('success', $message);
+    }
+
+    public function upsellplistbycompany(Request $request)
+    {
+        $branch_ids = $request->sel_val;
+        $company_ids = $request->company_id;
+        $data = UpSellingPeriod::whereIn('company_id',explode(',',$company_ids))->whereIn('branch_id',explode(',',$branch_ids))->groupBy('item_name')->get();
+        $pass_array=array(
+			'data' => $data,
+        );
+        $html =  view('selling_management.sells_p_list', $pass_array )->render();
+		$arr = [
+			'success' => 'true',
+			'html' => $html
+		];
+		return response()->json($arr);
+
     }
         
 }

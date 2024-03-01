@@ -106,16 +106,14 @@
                                         
                                         <td>
                                             <div class="pull-right begin_actions">
-                                            <?php if($val->type != 'default'): ?>
                                                 <div class="form-check form-switch">
                                                     <input class="form-check-input" type="checkbox" role="switch" data-url="<?php echo e(route('upselling_heading.statuschange',array($val->id,$val->is_show ?? 0))); ?>" id="flexSwitchCheckChecked" <?php echo e((!empty($val->is_show)) ? 'checked' : ''); ?>>
                                                 </div>
                                                 <a href="javascript:void(0);" data-toggle="modal" data-target="#add_Form" class="action-icon edit_branch" data-id="<?php echo e($val->id); ?>"><i class="fa fa-pencil"></i></a>
                                                 <a href="javascript:void(0);" data-toggle="modal" data-target="#delete_form" class="action-icon delete_branch" data-id="<?php echo e($val->id); ?>"><i class="fa fa-trash"></i></a>
-                                            <?php endif; ?>   
+                                                
                                             </div>
                                         </td>
-                                        
                                     </tr>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             <?php endif; ?>
@@ -246,7 +244,7 @@
         }).get().join(',');
         $('#branch_id').val(sel_val);
         $.ajax({
-            url: "<?php echo e(route('sales_target.sellplistbycompany')); ?>",
+            url: "<?php echo e(route('upselling_heading.upsellplistbycompany')); ?>",
             type: "POST",
             dataType: "json",
             data: {"_token": "<?php echo e(csrf_token()); ?>", sel_val:sel_val,company_id:company_id},

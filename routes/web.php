@@ -328,6 +328,7 @@ Route::match(array('GET','POST'),'/sales_target', [App\Http\Controllers\SalesTar
 Route::post('/sales_target/branchlistbycompany', [App\Http\Controllers\SalesTarget::class, 'branchlistbycompany'])->name('sales_target.branchlistbycompany');
 Route::post('/sales_target/sellplistbycompany', [App\Http\Controllers\SalesTarget::class, 'sellplistbycompany'])->name('sales_target.sellplistbycompany');
 Route::post('/sales_target/store', [App\Http\Controllers\SalesTarget::class, 'store'])->name('sales_target.store');
+Route::post('/sales_target/delete', [App\Http\Controllers\SalesTarget::class, 'delete'])->name('sales_target.delete');
 
 //Tracking Heading
 Route::match(array('GET','POST'),'/tracking_heading', [App\Http\Controllers\TrackingHeading::class, 'index'])->name('tracking_heading.list');

@@ -182,11 +182,12 @@
                                                             <div class="row">
                                                                 <h3>{{$val->item_name}} Sale and tracking</h3>
                                                                 <h4>Daily Sales</h4>
-                                                                <form action="{{'store_daily_sales.save'}}" class="daily_sales_form_{{$val->id}}">
+                                                                <form action="{{route('store_daily_sales.list')}}" method="post" class="daily_sales_form_{{$val->id}}">
                                                                     @csrf
                                                                     @php $is_daily_sales_exists = _is_daily_sales_exists($val->company_id,$val->branch_id,$val->id,$search['search_date']); @endphp
                                                                     <input type="hidden" name="sells_p_id" value="{{$val->id}}">
                                                                     <input type="hidden" name="serch_date" value="{{$search['search_date'] ?? ''}}">
+                                                                    <input type="hidden" name="sl_id" value="{{serialize($search['sells_id']) ?? ''}}">
                                                                     <div class="col-md-3">
                                                                         <div class="form-group">
                                                                             <label>Sales</label>
@@ -249,7 +250,7 @@
                                                                     <div class="col-md-3">
                                                                         <div class="form-group">
                                                                         <label></label>
-                                                                            <button type="button" class="btn btn-primary submit-btn save_store_btn" data-id="{{$val->id}}">Save</button>
+                                                                            <button type="submit" class="btn btn-primary submit-btn save_store_btn" data-id="{{$val->id}}">Save</button>
                                                                         </div>
                                                                     </div>
                                                                 </form>
@@ -304,21 +305,21 @@
          $('.achieve_target_'+id).val($(this).val());
     });
 
-    $(document).on('click','.save_store_btn',function(){
-        var id= $(this).attr('data-id');
-        $.ajax({
-           url: "{{route('store_daily_sales.save')}}",
-           type: "POST",
-           dataType: "json",
-           data: $('.daily_sales_form_'+id).serialize(),
-           success:function(response)
-            {
-                if(response.sal_id != ''){
-                    $('.daily_sales_'+id).val(response.sal_id);
-                }
-            }
-        });
-    });
+    // $(document).on('click','.save_store_btn',function(){
+    //     var id= $(this).attr('data-id');
+    //     $.ajax({
+    //        url: "{{route('store_daily_sales.list')}}",
+    //        type: "POST",
+    //        dataType: "json",
+    //        data: $('.daily_sales_form_'+id).serialize(),
+    //        success:function(response)
+    //         {
+    //             if(response.sal_id != ''){
+    //                 $('.daily_sales_'+id).val(response.sal_id);
+    //             }
+    //         }
+    //     });
+    // });
 
     $(".allowfloatnumber").keypress(function (eve) {
         if ((eve.which != 46 || $(this).val().indexOf('.') != -1) && (eve.which < 48 || eve.which > 57) || (eve.which == 46 && $(this).caret().start == 0)) {

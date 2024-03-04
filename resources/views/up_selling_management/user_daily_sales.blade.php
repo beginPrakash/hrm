@@ -180,9 +180,7 @@
             <div class="row align-items-center">
                 <div class="col">  
                     @if(isset($search_sells_data) && count($search_sells_data) > 0)
-                        @foreach($search_sells_data as $key => $val)
-                        @php $target_price = _target_price_by_sell($val->company_id,$val->branch_id,$val->id,$search['search_date']); @endphp
-                            @if(!empty($target_price))    
+                        @foreach($search_sells_data as $key => $val)   
                                 <div class="card target_sectiondiv">
                                     <div class="card-body">
                                     
@@ -193,19 +191,21 @@
                                                             <div class="row">
                                                                 <h3>{{$val->item_name}} Sale and tracking</h3>
                                                                 <h4>Daily Sales</h4>
-                                                                <form action="{{'store_daily_sales.save'}}" class="daily_sales_form_{{$val->id}}">
+                                                                <form action="{{'userstore_daily_sales.save'}}" class="daily_sales_form_{{$val->id}}">
                                                                     @csrf
                                                                     @php $is_daily_sales_exists = _is_daily_sales_exists($val->company_id,$val->branch_id,$val->id,$search['search_date']); @endphp
                                                                     <input type="hidden" name="sells_p_id" value="{{$val->id}}">
                                                                     <input type="hidden" name="serch_date" value="{{$search['search_date'] ?? ''}}">
                                                                     <div class="col-md-3">
                                                                         <div class="form-group">
-                                                                            <label>Sales</label>
+                                                                            <label>Target</label>
                                                                             <input type="text" name="achieve_target" class="form-control allowfloatnumber achieve_tar" data-id="{{$val->id}}" value="{{$is_daily_sales_exists->achieve_target ?? ''}}">
-                                                                            <input type="hidden" class="achieve_target_{{$val->id}}" value="{{$is_daily_sales_exists->achieve_target ?? ''}}">
-                                                                            <input type="hidden" name="target_price" value="{{$target_price}}">
-                                                                            <span class="target_diff_pan">Target {{$target_price}} KWD</span>
-                                                                            <input type="hidden" name="daily_sales_id" class="daily_sales_{{$val->id}}" value="{{$is_daily_sales_exists->id ?? ''}}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group">
+                                                                            <label>Sales</label>
+                                                                            <input type="text" name="sales_val" class="form-control allowfloatnumber sales_val" data-id="{{$val->id}}" value="{{$is_daily_sales_exists->achieve_target ?? ''}}">
                                                                         </div>
                                                                     </div>
                                                                     @if($val->is_bill_count == '1')
@@ -213,15 +213,21 @@
                                                                         <div class="form-group">
                                                                             <label>Bill Count #C.A</label>
                                                                             <input type="text" name="bill_count" class="form-control allowfloatnumber bill_count_div" data-id="{{$val->id}}" value="{{$is_daily_sales_exists->bill_count ?? ''}}">
-                                                                            <input type="hidden" name="bill_count_avg" class="bill_count_avg_div">
-                                                                            <span class="bill_count_span">@if(isset($is_daily_sales_exists->avg_bill_count) && !empty($is_daily_sales_exists->avg_bill_count)) Avg Bill @endif {{$is_daily_sales_exists->avg_bill_count ?? ''}}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    @endif
+                                                                    @if($val->is_cc == '1')
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group">
+                                                                            <label>CC #C.A</label>
+                                                                            <input type="text" name="cc_count" class="form-control allowfloatnumber bill_count_div" data-id="{{$val->id}}" value="{{$is_daily_sales_exists->cc_count ?? ''}}">
                                                                         </div>
                                                                     </div>
                                                                     @endif
                                                                 </div>    
-                                                                    <h4>Daily Tracking</h4>
+                                                                    <h4>Upselling Score</h4>
                                                                     <div class="row">
-                                                                    @php $heading_list = _tracking_heading_by_speriod($val->company_id,$val->branch_id,$val->id);@endphp
+                                                                    @php $heading_list = _upselling_heading_by_speriod($val->company_id,$val->branch_id,$val->id);@endphp
                                                                     @if(isset($heading_list) && count($heading_list) > 0)
                                                                         @foreach($heading_list as $hkey => $hval)
                                                                         @php $selected = ''; @endphp
@@ -233,9 +239,9 @@
                                                                                 @foreach($headings as $ehkey => $ehval)
                                                                                     @if($ehval->id == $hval->id)
                                                                                         <input type="hidden" name="tracking_id" value="{{$hval->id}}">
-                                                                                        <div class="col-md-3">
+                                                                                        <div class="col-md-6">
                                                                                             <div class="form-group">
-                                                                                                <label>{{ucfirst($hval->title)}}</label>
+                                                                                                <label>{{ucfirst($hval->title)}} {{(!empty($hval->parent_id)) ? 'Achieved' : 'Target'}}</label>
                                                                                                 <input type="hidden" name="heading_price[{{$hkey}}][id]" value="{{$hval->id}}">
                                                                                                 <input type="text" name="heading_price[{{$hkey}}][price]" class="form-control allowfloatnumber" value="{{$ehval->price}}">
                                                                                             </div>
@@ -245,9 +251,9 @@
                                                                             @endif
                                                                         @else
                                                                         <input type="hidden" name="tracking_id" value="{{$hval->id}}">
-                                                                                <div class="col-md-3">
+                                                                                <div class="col-md-6">
                                                                                     <div class="form-group">
-                                                                                        <label>{{ucfirst($hval->title)}}</label>
+                                                                                        <label>{{ucfirst($hval->title)}} {{(!empty($hval->parent_id)) ? 'Achieved' : 'Target'}}</label>
                                                                                         <input type="hidden" name="heading_price[{{$hkey}}][id]" value="{{$hval->id}}">
                                                                                         <input type="text" name="heading_price[{{$hkey}}][price]" class="form-control allowfloatnumber">
                                                                                     </div>
@@ -272,7 +278,6 @@
                                     
                                     </div>
                                 </div>
-                            @endif
                         @endforeach
                     @endif
                 </div>

@@ -186,11 +186,12 @@
                                                             <div class="row">
                                                                 <h3><?php echo e($val->item_name); ?> Sale and tracking</h3>
                                                                 <h4>Daily Sales</h4>
-                                                                <form action="<?php echo e('store_daily_sales.save'); ?>" class="daily_sales_form_<?php echo e($val->id); ?>">
+                                                                <form action="<?php echo e(route('store_daily_sales.list')); ?>" method="post" class="daily_sales_form_<?php echo e($val->id); ?>">
                                                                     <?php echo csrf_field(); ?>
                                                                     <?php $is_daily_sales_exists = _is_daily_sales_exists($val->company_id,$val->branch_id,$val->id,$search['search_date']); ?>
                                                                     <input type="hidden" name="sells_p_id" value="<?php echo e($val->id); ?>">
                                                                     <input type="hidden" name="serch_date" value="<?php echo e($search['search_date'] ?? ''); ?>">
+                                                                    <input type="hidden" name="sl_id" value="<?php echo e(serialize($search['sells_id']) ?? ''); ?>">
                                                                     <div class="col-md-3">
                                                                         <div class="form-group">
                                                                             <label>Sales</label>
@@ -253,7 +254,7 @@
                                                                     <div class="col-md-3">
                                                                         <div class="form-group">
                                                                         <label></label>
-                                                                            <button type="button" class="btn btn-primary submit-btn save_store_btn" data-id="<?php echo e($val->id); ?>">Save</button>
+                                                                            <button type="submit" class="btn btn-primary submit-btn save_store_btn" data-id="<?php echo e($val->id); ?>">Save</button>
                                                                         </div>
                                                                     </div>
                                                                 </form>
@@ -308,21 +309,21 @@
          $('.achieve_target_'+id).val($(this).val());
     });
 
-    $(document).on('click','.save_store_btn',function(){
-        var id= $(this).attr('data-id');
-        $.ajax({
-           url: "<?php echo e(route('store_daily_sales.save')); ?>",
-           type: "POST",
-           dataType: "json",
-           data: $('.daily_sales_form_'+id).serialize(),
-           success:function(response)
-            {
-                if(response.sal_id != ''){
-                    $('.daily_sales_'+id).val(response.sal_id);
-                }
-            }
-        });
-    });
+    // $(document).on('click','.save_store_btn',function(){
+    //     var id= $(this).attr('data-id');
+    //     $.ajax({
+    //        url: "<?php echo e(route('store_daily_sales.list')); ?>",
+    //        type: "POST",
+    //        dataType: "json",
+    //        data: $('.daily_sales_form_'+id).serialize(),
+    //        success:function(response)
+    //         {
+    //             if(response.sal_id != ''){
+    //                 $('.daily_sales_'+id).val(response.sal_id);
+    //             }
+    //         }
+    //     });
+    // });
 
     $(".allowfloatnumber").keypress(function (eve) {
         if ((eve.which != 46 || $(this).val().indexOf('.') != -1) && (eve.which < 48 || eve.which > 57) || (eve.which == 46 && $(this).caret().start == 0)) {

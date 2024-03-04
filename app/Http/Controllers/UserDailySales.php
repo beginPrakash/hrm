@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-use App\Models\SellingPeriod as SellingPeriodModel;
+use App\Models\UpSellingPeriod as UpSellingPeriodModel;
 use App\Models\TrackingHeading as TrackingHeadingModel;
 use Session, DB;
 use App\Models\Employee;
@@ -26,7 +26,7 @@ class UserDailySales extends Controller
         $company_id  = $user->company ?? '';
         $designation  = $user->designation ?? '';
         $same_branch_users = Employee::where('branch',$branch_id)->where('company',$company_id)->where('designation',$designation)->join('designations','employees.designation','designations.id')->where('designations.is_sales','1')->where('employees.user_id','!=',$user_id)->get();
-        $sell_id_default = SellingPeriodModel::where('company_id',$company_id)->where('branch_id',$branch_id)->orderBy('id','asc')->pluck('id')->join(',');
+        $sell_id_default = UpSellingPeriodModel::where('company_id',$company_id)->where('branch_id',$branch_id)->orderBy('id','asc')->pluck('id')->join(',');
         $sell_id_default = explode(',',$sell_id_default);
         $search['search_date'] = $request->search_date ?? '';
         $search['sells_id'] = $request->sells_id ?? $sell_id_default;
@@ -37,10 +37,11 @@ class UserDailySales extends Controller
         $branch_id  = $user->branch ?? '';
         $company_id  = $user->company ?? '';
         //get sells period by login user branch and company
-        $sells_p_data = SellingPeriodModel::where('company_id',$company_id)->where('branch_id',$branch_id)->orderBy('id','asc')->pluck('item_name','id');
+        $sells_p_data = UpSellingPeriodModel::where('company_id',$company_id)->where('branch_id',$branch_id)->orderBy('id','asc')->pluck('item_name','id');
         if(!empty($search['sells_id'])):
-            $search_sells_data = SellingPeriodModel::whereIn('id',$search['sells_id'])->orderBy('id','asc')->get();
+            $search_sells_data = UpSellingPeriodModel::whereIn('id',$search['sells_id'])->orderBy('id','asc')->get();
         endif;
+
         $today_target = _target_total_cal_by_sell($company_id,$branch_id,$search['sells_id'],$search['search_date']);
         $today_sale = _dailysale_total_cal($company_id,$branch_id,$search['sells_id'],$search['search_date']);
         $today_vari = $today_sale - $today_target;
@@ -56,7 +57,7 @@ class UserDailySales extends Controller
     public function save_store_daily_sales(Request $request){
         $user_id  = Session::get('user_id');
         $heading_price = $request->heading_price;
-        $sells_p_detail = SellingPeriodModel::find($request->sells_p_id);
+        $sells_p_detail = UpSellingPeriodModel::find($request->sells_p_id);
         if(!empty($sells_p_detail)):
             if(!empty($request->daily_sales_id)):
                 $save_data =StoreDailySales::find($request->daily_sales_id);

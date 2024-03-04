@@ -75,7 +75,7 @@ class SalesTarget extends Controller
 
         $arr = [
             'sal_id' => $save_data->id ?? '',
-			'success' => 'true',
+			'msg' => 'Data Saved Successfully',
 		];
 		return response()->json($arr);
        
@@ -118,9 +118,14 @@ class SalesTarget extends Controller
     
 
     public function delete(Request $request){
-        $id = $request->selling_id ?? '';
-        SellingPeriod::where('id',$id)->delete();
-        return redirect()->back()->with('success','Data deleted successfully');
+        $id = unserialize($request->sale_id) ?? '';
+        $month = $request->month ?? '';
+        SalesTargetMaster::whereIn('sell_p_id',$id)->where('month',$month)->delete();
+        $arr = [
+			'success' => 'true',
+			'msg' => 'Data Deleted Successfully'
+		];
+		return response()->json($arr);
     }
 
     public function statuschange($id='',$status=''){

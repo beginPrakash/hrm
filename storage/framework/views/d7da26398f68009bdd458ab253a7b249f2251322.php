@@ -8,7 +8,10 @@
 
     <!-- Page Content -->
     <div class="content container-fluid">
-        <?php echo $__env->make('flash-message', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>   
+        <div class="alert alert-success alert-block sale_suc_msg" style="display:none">
+            <button type="button" class="close" data-bs-dismiss="alert">×</button>    
+            <strong class="succ_msg"></strong>
+        </div>   
         <!-- Page Header -->
         <div class="page-header">
             <div class="row align-items-center">
@@ -237,7 +240,7 @@
                                                                     </div>
                                                                 </div>
 
-                                                                <div class="pro-edit"><a href="javascript:void(0);" class="delete_target_sec" data-id="<?php echo e($bkey); ?>"><i class="fa fa-close"></i></a></div>
+                                                                <div class="pro-edit"><a href="javascript:void(0);" class="delete_target_sec" data-id="<?php echo e($bkey); ?>" data-sale_id="<?php echo e(serialize($search['sells_list']) ?? ''); ?>" data-month="<?php echo e($search['month'] ?? ''); ?>"><i class="fa fa-close"></i></a></div>
                                                             </div>
                                                         </div>
                                                     </div>                                                 
@@ -347,9 +350,10 @@
            data: $('.store_form_'+id).serialize(),
            success:function(response)
             {
-                console.log('.sales_tar_id_'+id);
                 if(response.sal_id != ''){
                     $('.sales_tar_id_'+id).val(response.sal_id);
+                    $('.sale_suc_msg').show();
+                    $('.succ_msg').text(response.msg);
                 }
             }
         });
@@ -389,16 +393,34 @@
         var target_val = $(this).val();
         var id = $(this).attr('data-id');
         var cal_val = target_val / days;
-
-        $(this).after('<span class="period_span">'+cal_val.toFixed(2)+' Per Day</span>');
+        
+        if(parseInt(cal_val) > 0){
+            $(this).after('<span class="period_span">'+cal_val.toFixed(2)+' Per Day</span>');
+        }
         $(this).parent().find('.sell_p_perday_'+id).val(cal_val);
         
     });
 
     $(document).on('click','.delete_target_sec',function(){
         var id = $(this).attr('data-id');
+        var sale_id = $(this).attr('data-sale_id');
+        var month = $(this).attr('data-month');
+        $.ajax({
+           url: "<?php echo e(route('sales_target.delete')); ?>",
+           type: "POST",
+           dataType: "json",
+           data: {"_token": "<?php echo e(csrf_token()); ?>", sale_id:sale_id,month:month},
+           success:function(response)
+            {
+                //if(sale_id != ''){
+                    $('.sale_suc_msg').show();
+                    $('.succ_msg').text(response.msg);
+                //}
+            }
+        });
         $('.target_sectiondiv'+id).remove();
     });
+
     var totalPrice = 0;
     
     $('.period_cost').keydown(function(eve){
@@ -415,9 +437,12 @@
         queryArr = queryArr.map(Number);
 
         var total = queryArr.reduce(function(a,b){  return a+b },0)
-
-        $(this).parents().find('.total_period_'+id).html(total.toFixed(2)+' Per Day');
-        
+console.log(total);
+        if(parseInt(total) > 0){
+            $(this).parents().find('.total_period_'+id).html(total.toFixed(2)+' Per Day');
+        }else{
+            $(this).parents().find('.total_period_'+id).html('');
+        }
     });
    
 </script>

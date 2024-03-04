@@ -25,6 +25,7 @@ use App\Models\SellingPeriod;
 use App\Models\SalesTargetMaster;
 use App\Models\TrackingHeading;
 use App\Models\StoreDailySales;
+use App\Models\UpSellingHeading;
 
 function getLastId()
 {
@@ -669,12 +670,18 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
     }
 
     function _get_sales_master_sum_by_id($company_id,$branch_id,$sell_id,$month){
-        $data = SalesTargetMaster::where('company_id',$company_id)->where('branch_id',$branch_id)->where('month',$month)->sum('per_day_price');
+        $s_id = SellingPeriod::where('id',$sell_id)->value('id');
+        $data = SalesTargetMaster::where('company_id',$company_id)->where('branch_id',$branch_id)->where('sell_p_id',$s_id)->where('month',$month)->sum('per_day_price');
         return $data;
     }
 
     function _tracking_heading_by_speriod($company_id,$branch_id,$sell_id){
         $data = TrackingHeading::where('company_id',$company_id)->where('branch_id',$branch_id)->where('sell_p_id',$sell_id)->get();
+        return $data;
+    }
+
+    function _upselling_heading_by_speriod($company_id,$branch_id,$sell_id){
+        $data = UpSellingHeading::where('company_id',$company_id)->where('branch_id',$branch_id)->where('sell_p_id',$sell_id)->get();
         return $data;
     }
 
@@ -741,7 +748,7 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
             else:
                 $val =  $total_val -  $achieve_val; 
                 $total = $val / $total_val * 100;  
-                $cal_val = '<span class="nega_pr">'.number_format($total,2).'% ^ </span>';      
+                $cal_val = '<span class="nega_pr">'.number_format($total,2).'% ⌄ </span>';      
             endif;
             return $cal_val;
         endif;

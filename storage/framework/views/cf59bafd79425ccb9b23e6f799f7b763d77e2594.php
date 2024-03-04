@@ -184,9 +184,7 @@
             <div class="row align-items-center">
                 <div class="col">  
                     <?php if(isset($search_sells_data) && count($search_sells_data) > 0): ?>
-                        <?php $__currentLoopData = $search_sells_data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <?php $target_price = _target_price_by_sell($val->company_id,$val->branch_id,$val->id,$search['search_date']); ?>
-                            <?php if(!empty($target_price)): ?>    
+                        <?php $__currentLoopData = $search_sells_data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>   
                                 <div class="card target_sectiondiv">
                                     <div class="card-body">
                                     
@@ -204,12 +202,14 @@
                                                                     <input type="hidden" name="serch_date" value="<?php echo e($search['search_date'] ?? ''); ?>">
                                                                     <div class="col-md-3">
                                                                         <div class="form-group">
-                                                                            <label>Sales</label>
+                                                                            <label>Target</label>
                                                                             <input type="text" name="achieve_target" class="form-control allowfloatnumber achieve_tar" data-id="<?php echo e($val->id); ?>" value="<?php echo e($is_daily_sales_exists->achieve_target ?? ''); ?>">
-                                                                            <input type="hidden" class="achieve_target_<?php echo e($val->id); ?>" value="<?php echo e($is_daily_sales_exists->achieve_target ?? ''); ?>">
-                                                                            <input type="hidden" name="target_price" value="<?php echo e($target_price); ?>">
-                                                                            <span class="target_diff_pan">Target <?php echo e($target_price); ?> KWD</span>
-                                                                            <input type="hidden" name="daily_sales_id" class="daily_sales_<?php echo e($val->id); ?>" value="<?php echo e($is_daily_sales_exists->id ?? ''); ?>">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group">
+                                                                            <label>Sales</label>
+                                                                            <input type="text" name="sales_val" class="form-control allowfloatnumber sales_val" data-id="<?php echo e($val->id); ?>" value="<?php echo e($is_daily_sales_exists->achieve_target ?? ''); ?>">
                                                                         </div>
                                                                     </div>
                                                                     <?php if($val->is_bill_count == '1'): ?>
@@ -217,15 +217,21 @@
                                                                         <div class="form-group">
                                                                             <label>Bill Count #C.A</label>
                                                                             <input type="text" name="bill_count" class="form-control allowfloatnumber bill_count_div" data-id="<?php echo e($val->id); ?>" value="<?php echo e($is_daily_sales_exists->bill_count ?? ''); ?>">
-                                                                            <input type="hidden" name="bill_count_avg" class="bill_count_avg_div">
-                                                                            <span class="bill_count_span"><?php if(isset($is_daily_sales_exists->avg_bill_count) && !empty($is_daily_sales_exists->avg_bill_count)): ?> Avg Bill <?php endif; ?> <?php echo e($is_daily_sales_exists->avg_bill_count ?? ''); ?></span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <?php endif; ?>
+                                                                    <?php if($val->is_cc == '1'): ?>
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group">
+                                                                            <label>CC #C.A</label>
+                                                                            <input type="text" name="cc_count" class="form-control allowfloatnumber bill_count_div" data-id="<?php echo e($val->id); ?>" value="<?php echo e($is_daily_sales_exists->cc_count ?? ''); ?>">
                                                                         </div>
                                                                     </div>
                                                                     <?php endif; ?>
                                                                 </div>    
-                                                                    <h4>Daily Tracking</h4>
+                                                                    <h4>Upselling Score</h4>
                                                                     <div class="row">
-                                                                    <?php $heading_list = _tracking_heading_by_speriod($val->company_id,$val->branch_id,$val->id);?>
+                                                                    <?php $heading_list = _upselling_heading_by_speriod($val->company_id,$val->branch_id,$val->id);?>
                                                                     <?php if(isset($heading_list) && count($heading_list) > 0): ?>
                                                                         <?php $__currentLoopData = $heading_list; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $hkey => $hval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                                         <?php $selected = ''; ?>
@@ -237,9 +243,9 @@
                                                                                 <?php $__currentLoopData = $headings; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ehkey => $ehval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                                                     <?php if($ehval->id == $hval->id): ?>
                                                                                         <input type="hidden" name="tracking_id" value="<?php echo e($hval->id); ?>">
-                                                                                        <div class="col-md-3">
+                                                                                        <div class="col-md-6">
                                                                                             <div class="form-group">
-                                                                                                <label><?php echo e(ucfirst($hval->title)); ?></label>
+                                                                                                <label><?php echo e(ucfirst($hval->title)); ?> <?php echo e((!empty($hval->parent_id)) ? 'Achieved' : 'Target'); ?></label>
                                                                                                 <input type="hidden" name="heading_price[<?php echo e($hkey); ?>][id]" value="<?php echo e($hval->id); ?>">
                                                                                                 <input type="text" name="heading_price[<?php echo e($hkey); ?>][price]" class="form-control allowfloatnumber" value="<?php echo e($ehval->price); ?>">
                                                                                             </div>
@@ -249,9 +255,9 @@
                                                                             <?php endif; ?>
                                                                         <?php else: ?>
                                                                         <input type="hidden" name="tracking_id" value="<?php echo e($hval->id); ?>">
-                                                                                <div class="col-md-3">
+                                                                                <div class="col-md-6">
                                                                                     <div class="form-group">
-                                                                                        <label><?php echo e(ucfirst($hval->title)); ?></label>
+                                                                                        <label><?php echo e(ucfirst($hval->title)); ?> <?php echo e((!empty($hval->parent_id)) ? 'Achieved' : 'Target'); ?></label>
                                                                                         <input type="hidden" name="heading_price[<?php echo e($hkey); ?>][id]" value="<?php echo e($hval->id); ?>">
                                                                                         <input type="text" name="heading_price[<?php echo e($hkey); ?>][price]" class="form-control allowfloatnumber">
                                                                                     </div>
@@ -276,7 +282,6 @@
                                     
                                     </div>
                                 </div>
-                            <?php endif; ?>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     <?php endif; ?>
                 </div>

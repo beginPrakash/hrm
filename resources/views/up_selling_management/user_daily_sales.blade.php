@@ -19,7 +19,7 @@
         </div>    
         <!-- /Page Header -->
         <!-- Search Filter -->
-        <form method="post" action="{{route('store_daily_sales.list')}}" id="search_form">
+        <form method="post" action="{{route('userstore_daily_sales.list')}}" id="search_form">
             @csrf
             <div class="row">
                 <div class="col">
@@ -80,7 +80,7 @@
                 </div>
                 <div class="col-sm-6 col-md-2 srch_btn">
                     <div class="d-grid"> 
-                        <button type="submit" class="btn add-btn"><i class="fa fa-arrow"></i>Search</button> 
+                        <button type="submit" id="fwb" class="btn add-btn"><i class="fa fa-search"></i>Search</button> 
                     </div>  
                 </div>
             </div>
@@ -89,99 +89,65 @@
             <div class="row align-items-center">
                 <div class="col-sm-3">
                     <div class="card dash-widget mb-0">
-                        <div class="card-body py-4">
+                        <div class="py-4">
                             <div class="dash-widget-info text-center">
-                                <h2 class="sales_title">Today Target</h2>
-                                <span>{{number_format($today_target ?? 0,2)}} KWD</span>
+                                <h2 class="sales_title">Daily Target</h2>
+                                <span>{{number_format($daily_target ?? 0,2)}} KWD</span>
+                                <hr>
+                                <b>MTD</b><span>{{number_format($mtd_target ?? 0,2)}} KWD</span>
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>  
                 <div class="col-sm-3">
                     <div class="card dash-widget mb-0">
-                        <div class="card-body py-4">
+                        <div class="py-4">
                             <div class="dash-widget-info text-center">
-                                <h2 class="sales_title">Today Sales</h2>
-                                <span>{{number_format($today_sale ?? 0,2)}} KWD</span>
-                                @if($today_target != $today_sale)
-                                @php $calculate_per = _calculate_per($today_target,$today_sale); @endphp
-                                {!!$calculate_per ?? '' !!}
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="card dash-widget mb-0">
-                        <div class="card-body py-4">
-                            <div class="dash-widget-info text-center">
-                                <h2 class="sales_title">Today Variance</h2>
-                                <span>{{number_format($today_vari ?? 0,2)}} KWD</span>
-                                {!!$calculate_per ?? '' !!}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="card dash-widget mb-0">
-                        <div class="card-body py-4">
-                            <div class="dash-widget-info text-center">
-                                <h2 class="sales_title">Today Bill Avr</h2>
-                                <span>{{number_format($today_bill_avg ?? 0,2)}} KWD</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="card dash-widget mb-0">
-                        <div class="card-body py-4">
-                            <div class="dash-widget-info text-center">
-                                <h2 class="sales_title">MTD Target</h2>
-                                <span>{{number_format($mtd_target ?? 0,2)}} KWD</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="card dash-widget mb-0">
-                        <div class="card-body py-4">
-                            <div class="dash-widget-info text-center">
-                                <h2 class="sales_title">MTD Sale</h2>
-                                <span>{{number_format($mtd_sale ?? 0,2)}} KWD</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="card dash-widget mb-0">
-                        <div class="card-body py-4">
-                            <div class="dash-widget-info text-center">
-                                <h2 class="sales_title">MTD Variance</h2>
-                                <span>{{number_format($mtd_vari ?? 0,2)}} KWD</span>
+                                <h2 class="sales_title">Daily Sales</h2>
+                                <span>{{number_format($daily_sale ?? 0,2)}} KWD</span>
+                                    @php $calculate_per = _calculate_per($daily_target,$daily_sale); @endphp
+                                    {!!$calculate_per!!}
+                                <hr>
+                                <b>MTD</b><span>{{number_format($mtd_sale ?? 0,2)}} KWD</span>
                                 @php $calculate_per = _calculate_per($mtd_target,$mtd_sale); @endphp
-                                {!!$calculate_per!!}
+                                    {!!$calculate_per!!}
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-3">
                     <div class="card dash-widget mb-0">
-                        <div class="card-body py-4">
+                        <div class="py-4">
                             <div class="dash-widget-info text-center">
-                                <h2 class="sales_title">MTD Bill Avr</h2>
-                                <span>{{number_format($mtd_bill_avg ?? 0,2)}} KWD</span>
+                                <h2 class="sales_title">Daily Score</h2>
+                                <span>{{number_format($daily_score ?? 0,2)}}</span>
+                                <hr>
+                                <b>MTD Average</b><span>{{number_format($mtd_score ?? 0,2)}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="card dash-widget mb-0">
+                        <div class="py-4">
+                            <div class="dash-widget-info text-center">
+                                <h2 class="sales_title">Complaint</h2>
+                                <span>{{$daily_cc ?? 0}}</span>
+                                <hr>
+                                <b>MTD Total</b><span>{{$mtd_cc ?? 0}}</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="page-header">
+        <div class="page-header sales_target">
             <div class="row align-items-center">
                 <div class="col">  
                     @if(isset($search_sells_data) && count($search_sells_data) > 0)
-                        @foreach($search_sells_data as $key => $val)   
-                                <div class="card target_sectiondiv">
+                        @foreach($search_sells_data as $key => $val)  
+                            <h4>{{$val->item_name}} Sale and tracking</h4> 
+                                <div class="card target_sectiondiv0">
                                     <div class="card-body">
                                     
                                             <div class="row">
@@ -189,23 +155,28 @@
                                                     <div class="profile-view">
                                                         <div class="profile-basic">
                                                             <div class="row">
-                                                                <h3>{{$val->item_name}} Sale and tracking</h3>
-                                                                <h4>Daily Sales</h4>
-                                                                <form action="{{'userstore_daily_sales.save'}}" class="daily_sales_form_{{$val->id}}">
+                                                                
+                                                                <h3>Daily Sales</h3>
+                                                                <form action="{{route('userstore_daily_sales.list')}}" method="post" class="daily_sales_form_{{$val->id}}">
                                                                     @csrf
-                                                                    @php $is_daily_sales_exists = _is_daily_sales_exists($val->company_id,$val->branch_id,$val->id,$search['search_date']); @endphp
+                                                                    @php $is_daily_sales_exists = _is_upseldaily_sales_exists($val->company_id,$val->branch_id,$val->id,$search['user_id'],$search['search_date']); @endphp
                                                                     <input type="hidden" name="sells_p_id" value="{{$val->id}}">
+                                                                    <input type="hidden" name="daily_sales_id" value="{{$is_daily_sales_exists->id ?? ''}}">
+                                                                    <input type="hidden" name="is_post" value="1">
                                                                     <input type="hidden" name="serch_date" value="{{$search['search_date'] ?? ''}}">
+                                                                    <input type="hidden" name="user_id" value="{{$search['user_id'] ?? ''}}">
+                                                                    <input type="hidden" name="s_id" value="{{serialize($search['sells_id']) ?? ''}}">
+                                                                    
                                                                     <div class="col-md-3">
                                                                         <div class="form-group">
                                                                             <label>Target</label>
-                                                                            <input type="text" name="achieve_target" class="form-control allowfloatnumber achieve_tar" data-id="{{$val->id}}" value="{{$is_daily_sales_exists->achieve_target ?? ''}}">
+                                                                            <input type="text" name="achieve_target" class="form-control allowfloatnumber achieve_tar" data-id="{{$val->id}}" value="{{$is_daily_sales_exists->target_price ?? ''}}">
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-3">
                                                                         <div class="form-group">
                                                                             <label>Sales</label>
-                                                                            <input type="text" name="sales_val" class="form-control allowfloatnumber sales_val" data-id="{{$val->id}}" value="{{$is_daily_sales_exists->achieve_target ?? ''}}">
+                                                                            <input type="text" name="sales_val" class="form-control allowfloatnumber sales_val" data-id="{{$val->id}}" value="{{$is_daily_sales_exists->sale_price ?? ''}}">
                                                                         </div>
                                                                     </div>
                                                                     @if($val->is_bill_count == '1')
@@ -225,7 +196,7 @@
                                                                     </div>
                                                                     @endif
                                                                 </div>    
-                                                                    <h4>Upselling Score</h4>
+                                                                    <h3>Upselling Score</h3>
                                                                     <div class="row">
                                                                     @php $heading_list = _upselling_heading_by_speriod($val->company_id,$val->branch_id,$val->id);@endphp
                                                                     @if(isset($heading_list) && count($heading_list) > 0)
@@ -259,14 +230,20 @@
                                                                                     </div>
                                                                                 </div>
                                                                         @endif
-                                                                        
+                                                                      
                                                                         @endforeach
                                                                         
                                                                     @endif
+                                                                  
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group">
+                                                                            <label>{{$is_daily_sales_exists->total_cal ?? 0}}</label>
+                                                                        </div>
+                                                                    </div>
                                                                     <div class="col-md-3">
                                                                         <div class="form-group">
                                                                         <label></label>
-                                                                            <button type="button" class="btn btn-primary submit-btn save_store_btn" data-id="{{$val->id}}">Save</button>
+                                                                            <button type="submit" class="btn btn-primary submit-btn save_store_btn" data-id="{{$val->id}}">Save</button>
                                                                         </div>
                                                                     </div>
                                                                 </form>
@@ -275,7 +252,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                    
                                     </div>
                                 </div>
                         @endforeach
@@ -325,21 +301,6 @@
          $('.achieve_target_'+id).val($(this).val());
     });
 
-    $(document).on('click','.save_store_btn',function(){
-        var id= $(this).attr('data-id');
-        $.ajax({
-           url: "{{route('store_daily_sales.save')}}",
-           type: "POST",
-           dataType: "json",
-           data: $('.daily_sales_form_'+id).serialize(),
-           success:function(response)
-            {
-                if(response.sal_id != ''){
-                    $('.daily_sales_'+id).val(response.sal_id);
-                }
-            }
-        });
-    });
 
     $(".allowfloatnumber").keypress(function (eve) {
         if ((eve.which != 46 || $(this).val().indexOf('.') != -1) && (eve.which < 48 || eve.which > 57) || (eve.which == 46 && $(this).caret().start == 0)) {

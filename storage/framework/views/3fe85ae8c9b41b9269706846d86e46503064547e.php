@@ -64,6 +64,7 @@ $is_store_user = _is_user_role_owner($user_id);
                         <?php if(!empty($is_store_user)): ?>
                         <li><a class="<?php echo ($page == 'user_scheduling')?'active':'';?>" href="/user_scheduling">Scheduling</a></li>
                         <li><a class="<?php echo ($page == 'store_daily_sales')?'active':'';?>" href="/store_daily_sales">Daily Sales</a></li>
+                        <li><a class="<?php echo ($page == 'userstore_daily_sales')?'active':'';?>" href="/userstore_daily_sales">Daily Sales and Upselling</a></li>
                         <?php endif; ?>
                     </ul>
                 </li>

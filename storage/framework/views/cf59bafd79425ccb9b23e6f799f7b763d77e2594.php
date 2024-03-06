@@ -19,7 +19,7 @@
         </div>    
         <!-- /Page Header -->
         <!-- Search Filter -->
-        <form method="post" action="<?php echo e(route('store_daily_sales.list')); ?>" id="search_form">
+        <form method="post" action="<?php echo e(route('userstore_daily_sales.list')); ?>" id="search_form">
             <?php echo csrf_field(); ?>
             <div class="row">
                 <div class="col">
@@ -81,7 +81,7 @@
                 </div>
                 <div class="col-sm-6 col-md-2 srch_btn">
                     <div class="d-grid"> 
-                        <button type="submit" class="btn add-btn"><i class="fa fa-arrow"></i>Search</button> 
+                        <button type="submit" id="fwb" class="btn add-btn"><i class="fa fa-search"></i>Search</button> 
                     </div>  
                 </div>
             </div>
@@ -90,79 +90,29 @@
             <div class="row align-items-center">
                 <div class="col-sm-3">
                     <div class="card dash-widget mb-0">
-                        <div class="card-body py-4">
+                        <div class="py-4">
                             <div class="dash-widget-info text-center">
-                                <h2 class="sales_title">Today Target</h2>
-                                <span><?php echo e(number_format($today_target ?? 0,2)); ?> KWD</span>
+                                <h2 class="sales_title">Daily Target</h2>
+                                <span><?php echo e(number_format($daily_target ?? 0,2)); ?> KWD</span>
+                                <hr>
+                                <b>MTD</b><span><?php echo e(number_format($mtd_target ?? 0,2)); ?> KWD</span>
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>  
                 <div class="col-sm-3">
                     <div class="card dash-widget mb-0">
-                        <div class="card-body py-4">
+                        <div class="py-4">
                             <div class="dash-widget-info text-center">
-                                <h2 class="sales_title">Today Sales</h2>
-                                <span><?php echo e(number_format($today_sale ?? 0,2)); ?> KWD</span>
-                                <?php if($today_target != $today_sale): ?>
-                                <?php $calculate_per = _calculate_per($today_target,$today_sale); ?>
-                                <?php echo $calculate_per ?? ''; ?>
+                                <h2 class="sales_title">Daily Sales</h2>
+                                <span><?php echo e(number_format($daily_sale ?? 0,2)); ?> KWD</span>
+                                    <?php $calculate_per = _calculate_per($daily_target,$daily_sale); ?>
+                                    <?php echo $calculate_per; ?>
 
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="card dash-widget mb-0">
-                        <div class="card-body py-4">
-                            <div class="dash-widget-info text-center">
-                                <h2 class="sales_title">Today Variance</h2>
-                                <span><?php echo e(number_format($today_vari ?? 0,2)); ?> KWD</span>
-                                <?php echo $calculate_per ?? ''; ?>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="card dash-widget mb-0">
-                        <div class="card-body py-4">
-                            <div class="dash-widget-info text-center">
-                                <h2 class="sales_title">Today Bill Avr</h2>
-                                <span><?php echo e(number_format($today_bill_avg ?? 0,2)); ?> KWD</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="card dash-widget mb-0">
-                        <div class="card-body py-4">
-                            <div class="dash-widget-info text-center">
-                                <h2 class="sales_title">MTD Target</h2>
-                                <span><?php echo e(number_format($mtd_target ?? 0,2)); ?> KWD</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="card dash-widget mb-0">
-                        <div class="card-body py-4">
-                            <div class="dash-widget-info text-center">
-                                <h2 class="sales_title">MTD Sale</h2>
-                                <span><?php echo e(number_format($mtd_sale ?? 0,2)); ?> KWD</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="card dash-widget mb-0">
-                        <div class="card-body py-4">
-                            <div class="dash-widget-info text-center">
-                                <h2 class="sales_title">MTD Variance</h2>
-                                <span><?php echo e(number_format($mtd_vari ?? 0,2)); ?> KWD</span>
+                                <hr>
+                                <b>MTD</b><span><?php echo e(number_format($mtd_sale ?? 0,2)); ?> KWD</span>
                                 <?php $calculate_per = _calculate_per($mtd_target,$mtd_sale); ?>
-                                <?php echo $calculate_per; ?>
+                                    <?php echo $calculate_per; ?>
 
                             </div>
                         </div>
@@ -170,22 +120,37 @@
                 </div>
                 <div class="col-sm-3">
                     <div class="card dash-widget mb-0">
-                        <div class="card-body py-4">
+                        <div class="py-4">
                             <div class="dash-widget-info text-center">
-                                <h2 class="sales_title">MTD Bill Avr</h2>
-                                <span><?php echo e(number_format($mtd_bill_avg ?? 0,2)); ?> KWD</span>
+                                <h2 class="sales_title">Daily Score</h2>
+                                <span><?php echo e(number_format($daily_score ?? 0,2)); ?></span>
+                                <hr>
+                                <b>MTD Average</b><span><?php echo e(number_format($mtd_score ?? 0,2)); ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="card dash-widget mb-0">
+                        <div class="py-4">
+                            <div class="dash-widget-info text-center">
+                                <h2 class="sales_title">Complaint</h2>
+                                <span><?php echo e($daily_cc ?? 0); ?></span>
+                                <hr>
+                                <b>MTD Total</b><span><?php echo e($mtd_cc ?? 0); ?></span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="page-header">
+        <div class="page-header sales_target">
             <div class="row align-items-center">
                 <div class="col">  
                     <?php if(isset($search_sells_data) && count($search_sells_data) > 0): ?>
-                        <?php $__currentLoopData = $search_sells_data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>   
-                                <div class="card target_sectiondiv">
+                        <?php $__currentLoopData = $search_sells_data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>  
+                            <h4><?php echo e($val->item_name); ?> Sale and tracking</h4> 
+                                <div class="card target_sectiondiv0">
                                     <div class="card-body">
                                     
                                             <div class="row">
@@ -193,23 +158,28 @@
                                                     <div class="profile-view">
                                                         <div class="profile-basic">
                                                             <div class="row">
-                                                                <h3><?php echo e($val->item_name); ?> Sale and tracking</h3>
-                                                                <h4>Daily Sales</h4>
-                                                                <form action="<?php echo e('store_daily_sales.save'); ?>" class="daily_sales_form_<?php echo e($val->id); ?>">
+                                                                
+                                                                <h3>Daily Sales</h3>
+                                                                <form action="<?php echo e(route('userstore_daily_sales.list')); ?>" method="post" class="daily_sales_form_<?php echo e($val->id); ?>">
                                                                     <?php echo csrf_field(); ?>
-                                                                    <?php $is_daily_sales_exists = _is_daily_sales_exists($val->company_id,$val->branch_id,$val->id,$search['search_date']); ?>
+                                                                    <?php $is_daily_sales_exists = _is_upseldaily_sales_exists($val->company_id,$val->branch_id,$val->id,$search['user_id'],$search['search_date']); ?>
                                                                     <input type="hidden" name="sells_p_id" value="<?php echo e($val->id); ?>">
+                                                                    <input type="hidden" name="daily_sales_id" value="<?php echo e($is_daily_sales_exists->id ?? ''); ?>">
+                                                                    <input type="hidden" name="is_post" value="1">
                                                                     <input type="hidden" name="serch_date" value="<?php echo e($search['search_date'] ?? ''); ?>">
+                                                                    <input type="hidden" name="user_id" value="<?php echo e($search['user_id'] ?? ''); ?>">
+                                                                    <input type="hidden" name="s_id" value="<?php echo e(serialize($search['sells_id']) ?? ''); ?>">
+                                                                    
                                                                     <div class="col-md-3">
                                                                         <div class="form-group">
                                                                             <label>Target</label>
-                                                                            <input type="text" name="achieve_target" class="form-control allowfloatnumber achieve_tar" data-id="<?php echo e($val->id); ?>" value="<?php echo e($is_daily_sales_exists->achieve_target ?? ''); ?>">
+                                                                            <input type="text" name="achieve_target" class="form-control allowfloatnumber achieve_tar" data-id="<?php echo e($val->id); ?>" value="<?php echo e($is_daily_sales_exists->target_price ?? ''); ?>">
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-3">
                                                                         <div class="form-group">
                                                                             <label>Sales</label>
-                                                                            <input type="text" name="sales_val" class="form-control allowfloatnumber sales_val" data-id="<?php echo e($val->id); ?>" value="<?php echo e($is_daily_sales_exists->achieve_target ?? ''); ?>">
+                                                                            <input type="text" name="sales_val" class="form-control allowfloatnumber sales_val" data-id="<?php echo e($val->id); ?>" value="<?php echo e($is_daily_sales_exists->sale_price ?? ''); ?>">
                                                                         </div>
                                                                     </div>
                                                                     <?php if($val->is_bill_count == '1'): ?>
@@ -229,7 +199,7 @@
                                                                     </div>
                                                                     <?php endif; ?>
                                                                 </div>    
-                                                                    <h4>Upselling Score</h4>
+                                                                    <h3>Upselling Score</h3>
                                                                     <div class="row">
                                                                     <?php $heading_list = _upselling_heading_by_speriod($val->company_id,$val->branch_id,$val->id);?>
                                                                     <?php if(isset($heading_list) && count($heading_list) > 0): ?>
@@ -263,14 +233,20 @@
                                                                                     </div>
                                                                                 </div>
                                                                         <?php endif; ?>
-                                                                        
+                                                                      
                                                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                                         
                                                                     <?php endif; ?>
+                                                                  
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group">
+                                                                            <label><?php echo e($is_daily_sales_exists->total_cal ?? 0); ?></label>
+                                                                        </div>
+                                                                    </div>
                                                                     <div class="col-md-3">
                                                                         <div class="form-group">
                                                                         <label></label>
-                                                                            <button type="button" class="btn btn-primary submit-btn save_store_btn" data-id="<?php echo e($val->id); ?>">Save</button>
+                                                                            <button type="submit" class="btn btn-primary submit-btn save_store_btn" data-id="<?php echo e($val->id); ?>">Save</button>
                                                                         </div>
                                                                     </div>
                                                                 </form>
@@ -279,7 +255,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                    
                                     </div>
                                 </div>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -329,21 +304,6 @@
          $('.achieve_target_'+id).val($(this).val());
     });
 
-    $(document).on('click','.save_store_btn',function(){
-        var id= $(this).attr('data-id');
-        $.ajax({
-           url: "<?php echo e(route('store_daily_sales.save')); ?>",
-           type: "POST",
-           dataType: "json",
-           data: $('.daily_sales_form_'+id).serialize(),
-           success:function(response)
-            {
-                if(response.sal_id != ''){
-                    $('.daily_sales_'+id).val(response.sal_id);
-                }
-            }
-        });
-    });
 
     $(".allowfloatnumber").keypress(function (eve) {
         if ((eve.which != 46 || $(this).val().indexOf('.') != -1) && (eve.which < 48 || eve.which > 57) || (eve.which == 46 && $(this).caret().start == 0)) {

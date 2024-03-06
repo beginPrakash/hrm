@@ -26,6 +26,7 @@ use App\Models\SalesTargetMaster;
 use App\Models\TrackingHeading;
 use App\Models\StoreDailySales;
 use App\Models\UpSellingHeading;
+use App\Models\DailySalesTargetUpselling;
 
 function getLastId()
 {
@@ -702,10 +703,76 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         endif;
     }
 
+    function _is_upseldaily_sales_exists($company_id,$branch_id,$sell_id,$usr_id,$serch_date){
+       
+        if(!empty($serch_date)):
+            $serch_date = date('Y-m-d',strtotime($serch_date));
+            $data = DailySalesTargetUpselling::where('company_id',$company_id)->where('user_id',$usr_id)->where('branch_id',$branch_id)->where('sell_p_id',$sell_id)->whereDate('sales_date',$serch_date)->first();
+            return $data;
+        endif;
+    }
+
+    
+
     function _target_total_cal_by_sell($company_id,$branch_id,$sells_id,$serch_date){
         if(!empty($serch_date)):
             $month = date('n',strtotime($serch_date));
             $data = SalesTargetMaster::where('company_id',$company_id)->where('branch_id',$branch_id)->whereIn('sell_p_id',$sells_id)->where('month',$month)->sum('per_day_price');
+            return $data ?? 0;
+        endif;  
+    }
+
+    function _updailytarget_total_cal_by_sell($company_id,$branch_id,$sells_id,$serch_date,$user_id,$type=''){
+        if(!empty($serch_date)):
+            $serch_date = date('Y-m-d',strtotime($serch_date));
+            if($type=='mtd'):
+                $first_date = date('Y-m-01',strtotime($serch_date));
+                $data = DailySalesTargetUpselling::where('company_id',$company_id)->where('branch_id',$branch_id)->whereIn('sell_p_id',$sells_id)->whereBetween('sales_date',[$first_date,$serch_date])->where('user_id',$user_id)->sum('target_price');
+            else:
+                $data = DailySalesTargetUpselling::where('company_id',$company_id)->where('branch_id',$branch_id)->whereIn('sell_p_id',$sells_id)->where('sales_date',$serch_date)->where('user_id',$user_id)->sum('target_price');
+            endif;
+            return $data ?? 0;
+        endif;
+       
+    }
+
+    function _updailysale_total_cal_by_sell($company_id,$branch_id,$sells_id,$serch_date,$user_id,$type=''){
+        if(!empty($serch_date)):
+            $serch_date = date('Y-m-d',strtotime($serch_date));
+            if($type=='mtd'):
+                $first_date = date('Y-m-01',strtotime($serch_date));
+                $data = DailySalesTargetUpselling::where('company_id',$company_id)->where('branch_id',$branch_id)->whereIn('sell_p_id',$sells_id)->whereBetween('sales_date',[$first_date,$serch_date])->where('user_id',$user_id)->sum('sale_price');
+            else:
+                $data = DailySalesTargetUpselling::where('company_id',$company_id)->where('branch_id',$branch_id)->whereIn('sell_p_id',$sells_id)->where('sales_date',$serch_date)->where('user_id',$user_id)->sum('sale_price');
+            endif;
+            return $data ?? 0;
+        endif;
+       
+    }
+
+    function _updailycc_count_cal_by_sell($company_id,$branch_id,$sells_id,$serch_date,$user_id,$type=''){
+        if(!empty($serch_date)):
+            $serch_date = date('Y-m-d',strtotime($serch_date));
+            if($type=='mtd'):
+                $first_date = date('Y-m-01',strtotime($serch_date));
+                $data = DailySalesTargetUpselling::where('company_id',$company_id)->where('branch_id',$branch_id)->whereIn('sell_p_id',$sells_id)->whereBetween('sales_date',[$first_date,$serch_date])->where('user_id',$user_id)->sum('cc_count');
+            else:
+                $data = DailySalesTargetUpselling::where('company_id',$company_id)->where('branch_id',$branch_id)->whereIn('sell_p_id',$sells_id)->where('sales_date',$serch_date)->where('user_id',$user_id)->sum('cc_count');
+            endif;
+            return $data ?? 0;
+        endif;
+       
+    }
+
+    function _updailyscore_avg($company_id,$branch_id,$sells_id,$serch_date,$user_id,$type=''){
+        if(!empty($serch_date)):
+            $serch_date = date('Y-m-d',strtotime($serch_date));
+            if($type=='mtd'):
+                $first_date = date('Y-m-01',strtotime($serch_date));
+                $data = DailySalesTargetUpselling::where('company_id',$company_id)->where('branch_id',$branch_id)->whereIn('sell_p_id',$sells_id)->whereBetween('sales_date',[$first_date,$serch_date])->where('user_id',$user_id)->avg('total_cal');
+            else:
+                $data = DailySalesTargetUpselling::where('company_id',$company_id)->where('branch_id',$branch_id)->whereIn('sell_p_id',$sells_id)->where('sales_date',$serch_date)->where('user_id',$user_id)->avg('total_cal');
+            endif;
             return $data ?? 0;
         endif;
        
@@ -744,11 +811,11 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
             if($achieve_val > $total_val):
                 $val =  $achieve_val -  $total_val; 
                 $total = $val / $total_val * 100;
-                $cal_val = '<span class="success_pr">'.number_format($total,2).'% ^ </span>';
+                $cal_val = '<span class="success_pr">'.number_format($total,2).'%</span>';
             else:
                 $val =  $total_val -  $achieve_val; 
                 $total = $val / $total_val * 100;  
-                $cal_val = '<span class="nega_pr">'.number_format($total,2).'% ⌄ </span>';      
+                $cal_val = '<span class="nega_pr">'.number_format($total,2).'%</span>';      
             endif;
             return $cal_val;
         endif;

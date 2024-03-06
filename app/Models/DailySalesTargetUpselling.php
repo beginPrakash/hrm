@@ -19,8 +19,7 @@ class DailySalesTargetUpselling extends Model
         'sale_price',
         'bill_count',
         'cc_count',
-        'target_heading_price',
-        'achieve_heading_price',
+        'headings',
         'total_cal',
         'action_by'
 	];

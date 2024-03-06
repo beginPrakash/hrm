@@ -51,22 +51,48 @@
 .table .form-check-input {
   height: 20px;
 }
+
+.p0 { padding: 0px !important;}
 .begin_actions {
   display: flex;  
   align-items: flex-end;
   gap: 15px;
 }
+.nega_pr::after {
+  content: "\f0da";
+  float: right;
+  border: none;
+  font-family: 'FontAwesome';
+  transform: rotate(90deg);
+  width: 20px;
+  font-size: 21px;
+}
+.success_pr::after {
+  content: "\f0da";
+  float: right;
+  border: none;
+  font-family: 'FontAwesome';
+  transform: rotate(270deg);
+  width: 20px;
+  font-size: 21px;
+}
+
 .begin_actions a {
   font-size: 25px;
   margin-right: 12px;
 }
-.dropdown-toggle {
+.page-wrapper .dropdown-toggle {
   width: 100%;
   font-size: 15px !important;
-  border: 1px solid #ced4da !important;
+  border: 1px solid #dcdcdc !important;
   height: 50px;
   padding: 10px 10px 10px 10px !important;
   text-align: left !important;
+  background: #fff;
+  border-radius: 4px;
+}
+.analytics-boxes .col-sm-6 span {
+  font-size: 14px;
 }
 .checkbox-menu li label {
   font-size: 15px;

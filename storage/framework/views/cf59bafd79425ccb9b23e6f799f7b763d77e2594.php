@@ -37,7 +37,7 @@
                 <div class="col-sm-6 col-md-3"> 
                     <div class="form-group form-focus select-focus">
                         <select class="selectwith_search" name="user_id">
-                            <option value="">Select User</option>
+                            <!-- <option value="">Select User</option> -->
                             <?php foreach ($same_branch_users as $key => $val) {?>
                                 <option value="<?php echo e($val->id); ?>" <?php echo (isset($search['user_id']) && $search['user_id']==$val->id)?'selected':''; ?>><?php echo e($val->first_name); ?></option>
                             <?php } ?>

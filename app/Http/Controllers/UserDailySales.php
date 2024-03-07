@@ -45,7 +45,7 @@ class UserDailySales extends Controller
        // dd($search);
         //save data
         if($request->is_post == '1'):
-            $search['search_date'] = $request->serch_date ?? '';
+            $search['search_date'] = $request->serch_date ?? date('Y-m-d');
             $search['user_id'] = $request->user_id ?? '';
             $search['sells_id'] = unserialize($request->s_id) ?? $sell_id_default;
 
@@ -55,7 +55,7 @@ class UserDailySales extends Controller
                 $save_data = new DailySalesTargetUpselling();
             endif;
             $heading_price = $request->heading_price;
-            $targ_arr = [];
+            $target_arr = [];
             $achieve_arr = [];
             if(!empty($heading_price) && count($heading_price) > 0):
                 foreach($heading_price as $key => $val):
@@ -67,8 +67,12 @@ class UserDailySales extends Controller
                     endif;
                 endforeach;
             endif;
+            if(!empty($target_arr)):
             $total_target_price = array_sum($target_arr);
+            endif;
+            if(!empty($total_achieve_price)):
             $total_achieve_price = array_sum($achieve_arr);
+            endif;
             if(!empty($total_target_price) && !empty($total_achieve_price)):
                 $total_cal = $total_achieve_price / $total_target_price * 100/10;
             endif;
@@ -77,7 +81,7 @@ class UserDailySales extends Controller
             $save_data->branch_id = $sells_p_detail->branch_id;
             $save_data->sell_p_id = $sells_p_detail->id;
             $save_data->user_id = $request->user_id;
-            $save_data->sales_date = date('Y-m-d',strtotime($request->serch_date));
+            $save_data->sales_date = (isset($request->serch_date) && !empty($request->serch_date)) ? date('Y-m-d',strtotime($request->serch_date)) : date('Y-m-d');
             $save_data->target_price = $request->achieve_target;
             $save_data->sale_price = $request->sales_val;
             $save_data->bill_count = $request->bill_count;

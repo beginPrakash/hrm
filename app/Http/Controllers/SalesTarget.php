@@ -102,7 +102,7 @@ class SalesTarget extends Controller
     {
         $branch_ids = $request->sel_val;
         $company_ids = $request->company_id;
-        $data = SellingPeriod::whereIn('company_id',explode(',',$company_ids))->whereIn('branch_id',explode(',',$branch_ids))->groupBy('item_name')->get();
+        $data = SellingPeriod::whereIn('company_id',explode(',',$company_ids))->whereIn('branch_id',explode(',',$branch_ids))->where('is_show','1')->groupBy('item_name')->get();
         $pass_array=array(
 			'data' => $data,
         );

@@ -644,7 +644,7 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
 
     function _get_sellingperiod_by_comapny($id,$company_id,$branch_id){
         $s_name = SellingPeriod::where('id',$id)->value('item_name');
-        $data = SellingPeriod::where('item_name',$s_name)->where('company_id',$company_id)->where('branch_id',$branch_id)->value('item_name');
+        $data = SellingPeriod::where('item_name',$s_name)->where('company_id',$company_id)->where('branch_id',$branch_id)->where('is_show','1')->value('item_name');
         return $data ?? '';
     }
     
@@ -797,9 +797,9 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
             $serch_date = date('Y-m-d',strtotime($serch_date));
             if($type=='mtd'):
                 $first_date = date('Y-m-01',strtotime($serch_date));
-                $data = StoreDailySales::where('company_id',$company_id)->where('branch_id',$branch_id)->whereIn('sell_p_id',$sells_id)->whereBetween('sales_date',[$first_date,$serch_date])->whereNotNull('bill_count')->avg('bill_count');
+                $data = StoreDailySales::where('company_id',$company_id)->where('branch_id',$branch_id)->whereIn('sell_p_id',$sells_id)->whereBetween('sales_date',[$first_date,$serch_date])->whereNotNull('avg_bill_count')->avg('avg_bill_count');
             else:
-                $data = StoreDailySales::where('company_id',$company_id)->where('branch_id',$branch_id)->whereIn('sell_p_id',$sells_id)->whereDate('sales_date',$serch_date)->whereNotNull('bill_count')->avg('bill_count');
+                $data = StoreDailySales::where('company_id',$company_id)->where('branch_id',$branch_id)->whereIn('sell_p_id',$sells_id)->whereDate('sales_date',$serch_date)->whereNotNull('avg_bill_count')->avg('avg_bill_count');
             endif;
                 return $data;
         endif;
@@ -818,6 +818,19 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
                 $cal_val = '<span class="nega_pr">'.number_format($total,2).'%</span>';      
             endif;
             return $cal_val;
+        endif;
+    }
+
+    
+    function _is_user_sale_designation($user_id){
+        $emp_data = Employee::where('user_id',$user_id)->select('designation','branch','company','company')->first();
+        $branch_id  = $emp_data->branch ?? '';
+        $company_id  = $emp_data->company ?? '';
+        $designation  = $emp_data->designation ?? '';
+        $is_sales = Employee::where('branch',$branch_id)->where('company',$company_id)->where('designation',$designation)->join('designations','employees.designation','designations.id')->where('designations.is_sales','1')->first();
+
+        if(!empty($is_sales)):
+            return $is_sales;
         endif;
     }
 

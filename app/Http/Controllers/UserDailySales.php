@@ -26,7 +26,7 @@ class UserDailySales extends Controller
         $company_id  = $user->company ?? '';
         $designation  = $user->designation ?? '';
         $same_branch_users = Employee::where('branch',$branch_id)->where('company',$company_id)->where('designation',$designation)->join('designations','employees.designation','designations.id')->where('designations.is_sales','1')->where('employees.user_id','!=',$user_id)->select('employees.id as id','employees.first_name as first_name')->get();
-        $sell_id_default = UpSellingPeriodModel::where('company_id',$company_id)->where('branch_id',$branch_id)->orderBy('id','asc')->pluck('id')->join(',');
+        $sell_id_default = UpSellingPeriodModel::where('company_id',$company_id)->where('is_show','1')->where('branch_id',$branch_id)->orderBy('id','asc')->pluck('id')->join(',');
         $sell_id_default = explode(',',$sell_id_default);
         $search['search_date'] = $request->search_date ?? '';
         $search['user_id'] = $request->user_id ?? '';
@@ -38,14 +38,14 @@ class UserDailySales extends Controller
         $branch_id  = $user->branch ?? '';
         $company_id  = $user->company ?? '';
         //get sells period by login user branch and company
-        $sells_p_data = UpSellingPeriodModel::where('company_id',$company_id)->where('branch_id',$branch_id)->orderBy('id','asc')->pluck('item_name','id');
+        $sells_p_data = UpSellingPeriodModel::where('company_id',$company_id)->where('branch_id',$branch_id)->where('is_show','1')->orderBy('id','asc')->pluck('item_name','id');
         if(!empty($search['sells_id'])):
-            $search_sells_data = UpSellingPeriodModel::whereIn('id',$search['sells_id'])->orderBy('id','asc')->get();
+            $search_sells_data = UpSellingPeriodModel::whereIn('id',$search['sells_id'])->where('is_show','1')->orderBy('id','asc')->get();
         endif;
        // dd($search);
         //save data
         if($request->is_post == '1'):
-            $search['search_date'] = $request->serch_date ?? date('Y-m-d');
+            $search['search_date'] = $request->serch_date ?? date('d-m-Y');
             $search['user_id'] = $request->user_id ?? '';
             $search['sells_id'] = unserialize($request->s_id) ?? $sell_id_default;
 

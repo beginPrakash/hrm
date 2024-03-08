@@ -393,10 +393,7 @@
         var target_val = $(this).val();
         var id = $(this).attr('data-id');
         var cal_val = target_val / days;
-        
-        if(parseInt(cal_val) > 0){
-            $(this).after('<span class="period_span">'+cal_val.toFixed(2)+' Per Day</span>');
-        }
+        $(this).after('<span class="period_span">'+cal_val.toFixed(2)+' Per Day</span>');
         $(this).parent().find('.sell_p_perday_'+id).val(cal_val);
         
     });
@@ -437,7 +434,6 @@
         queryArr = queryArr.map(Number);
 
         var total = queryArr.reduce(function(a,b){  return a+b },0)
-console.log(total);
         if(parseInt(total) > 0){
             $(this).parents().find('.total_period_'+id).html(total.toFixed(2)+' Per Day');
         }else{

@@ -7,6 +7,8 @@
 </style>
 <?php
 $username = Session::get('username');
+$user_id = Session::get('user_id');
+$is_user_sale_designation = _is_user_sale_designation($user_id);
 ?>
 <div class="page-wrapper">
 
@@ -107,6 +109,31 @@ $username = Session::get('username');
                 </div>
             </div>
         </div> -->
+
+        @if(!empty($is_user_sale_designation))
+        <div class="row three-box-main">
+            <div class="col-md-4 col-sm-4 col-lg-4 col-xl-4">
+                <div class="card dash-widget three-box " data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <div class="card-body">
+                        <span class="dash-widget-icon"><i class="fa fa-tree" aria-hidden="true"></i></span>
+                        <div class="dash-widget-info pl-2" style="text-align: left;">
+                            <h4>
+                            @php 
+                                $e_sal = (isset($sched_data[0]->employee_salary) && !empty($sched_data[0]->employee_salary)) ? $sched_data[0]->employee_salary->basic_salary : 0;
+                                $cal_leave = (isset($balance_annual_leave_total) && $balance_annual_leave_total['totalLeaveDays']>0 )?$balance_annual_leave_total['totalLeaveDays']:0; 
+                                $used_leave = $sched_data[0]->used_leave ?? 0;
+                                $bal_leave = (int)($cal_leave - $used_leave);
+                            @endphp     
+                            {{number_format(_calculate_salary_by_days($e_sal,$bal_leave ?? 0),2)}} KWD
+                            </h4>
+                            <h4>{{$bal_leave ?? 0}} DAYS</h4>
+                            <span>Annual leave</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
         @if($is_admin != 1)
         <div class="row">
             <div class="col-md-12">

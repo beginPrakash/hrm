@@ -24,9 +24,9 @@ class DailySales extends Controller
         $user = Employee::with('employee_branch')->where('user_id',$user_id)->first();
         $branch_id  = $user->branch ?? '';
         $company_id  = $user->company ?? '';
-        $sell_id_default = SellingPeriodModel::where('company_id',$company_id)->where('branch_id',$branch_id)->orderBy('id','asc')->pluck('id')->join(',');;
+        $sell_id_default = SellingPeriodModel::where('company_id',$company_id)->where('branch_id',$branch_id)->where('is_show','1')->orderBy('id','asc')->pluck('id')->join(',');;
         $sell_id_default = explode(',',$sell_id_default);
-        $search['search_date'] = $request->search_date ?? '';
+        $search['search_date'] = $request->search_date ?? date('d-m-Y');
         $search['sells_id'] = $request->sells_id ?? $sell_id_default;
         $search_sells_data = [];
 
@@ -35,9 +35,9 @@ class DailySales extends Controller
         $branch_id  = $user->branch ?? '';
         $company_id  = $user->company ?? '';
         //get sells period by login user branch and company
-        $sells_p_data = SellingPeriodModel::where('company_id',$company_id)->where('branch_id',$branch_id)->orderBy('id','asc')->pluck('item_name','id');
+        $sells_p_data = SellingPeriodModel::where('company_id',$company_id)->where('branch_id',$branch_id)->where('is_show','1')->orderBy('id','asc')->pluck('item_name','id');
         if(!empty($search['sells_id'])):
-            $search_sells_data = SellingPeriodModel::whereIn('id',$search['sells_id'])->orderBy('id','asc')->get();
+            $search_sells_data = SellingPeriodModel::whereIn('id',$search['sells_id'])->where('is_show','1')->orderBy('id','asc')->get();
         endif;
         $heading_price = $request->heading_price;
         $sells_p_detail = SellingPeriodModel::find($request->sells_p_id);
@@ -50,7 +50,7 @@ class DailySales extends Controller
             else:
                 $save_data = new StoreDailySales();
             endif;
-           
+
             $save_data->company_id = $sells_p_detail->company_id;
             $save_data->branch_id = $sells_p_detail->branch_id;
             $save_data->sell_p_id = $sells_p_detail->id;
@@ -58,7 +58,7 @@ class DailySales extends Controller
             $save_data->achieve_target = $request->achieve_target;
             $save_data->bill_count = $request->bill_count;
             $save_data->target_price = $request->target_price;
-            $save_data->avg_bill_count = $request->bill_count;
+            $save_data->avg_bill_count = $request->bill_count_avg;
             $save_data->headings = json_encode($heading_price);
             $save_data->action_by = $user_id;
             $save_data->save();

@@ -67,10 +67,11 @@ class UserDailySales extends Controller
                     endif;
                 endforeach;
             endif;
+           
             if(!empty($target_arr)):
             $total_target_price = array_sum($target_arr);
             endif;
-            if(!empty($total_achieve_price)):
+            if(!empty($achieve_arr)):
             $total_achieve_price = array_sum($achieve_arr);
             endif;
             if(!empty($total_target_price) && !empty($total_achieve_price)):

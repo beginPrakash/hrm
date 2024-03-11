@@ -25,7 +25,7 @@
         <!-- Search Filter -->
         <form method="post" action="{{route('selling_period.list')}}" id="search_form">
             @csrf
-            <div class="row filter-row">
+            <div class="row">
                 <div class="col-sm-6 col-md-3"> 
                     <div class="form-group form-focus select-focus">
                         <div class="dropdown">

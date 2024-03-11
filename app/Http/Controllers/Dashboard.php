@@ -14,13 +14,18 @@ use App\Models\EmployeeIndemnity;
 use App\Models\AttendanceDetails;
 use App\Models\Departments;
 use App\Models\Shifting;
+use App\Models\UpSellingPeriod;
+use App\Models\DailySalesTargetUpselling;
 
 class Dashboard extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $lastclockout = [];
+        $search = [];
+        
         $current_date = Carbon::today();
+        $search['search_date'] = $request->search_date ?? date('d-m-Y'); 
         $after_date = Carbon::today()->addDay(7);
         $user_id  = Session::get('user_id');
         //$sched_data = Scheduling::whereDate('shift_on', '>=', date($current_date))->whereDate('shift_on', '<', date($after_date))->where('employee',$user_id)->get();
@@ -74,9 +79,56 @@ class Dashboard extends Controller
         $depwhere = array('status' => 'active');
         $department   = Departments::where($depwhere)->get();
         $shifts       = Shifting::where('status', 'active')->get();
-        
-        return view('dashboard',compact('sched_data','user_id','balance_annual_leave_total','annual_leave_list','balance_sick_leave_total','sick_leave_list','totpayable','firstclockin','lastclockout','holidayWork','user','indemnityDetails','department','shifts'));
+        //sales data
+        $branch_id  = $user->branch ?? '';
+        $company_id  = $user->company ?? '';
+        $uid  = $user->id ?? '';
+        $sell_id_default = UpSellingPeriod::where('company_id',$company_id)->where('is_show','1')->where('branch_id',$branch_id)->orderBy('id','asc')->pluck('id')->join(',');
+        $sell_id_default = explode(',',$sell_id_default);
+        $daily_target = _updailytarget_total_cal_by_sell($company_id,$branch_id,$sell_id_default,$search['search_date'],$uid);
+        $mtd_target = _updailytarget_total_cal_by_sell($company_id,$branch_id,$sell_id_default,$search['search_date'],$uid,'mtd');
+        $daily_sale = _updailysale_total_cal_by_sell($company_id,$branch_id,$sell_id_default,$search['search_date'],$uid);
+        $mtd_sale = _updailysale_total_cal_by_sell($company_id,$branch_id,$sell_id_default,$search['search_date'],$uid,'mtd');
+        $daily_cc = _updailycc_count_cal_by_sell($company_id,$branch_id,$sell_id_default,$search['search_date'],$uid);
+        $mtd_cc = _updailycc_count_cal_by_sell($company_id,$branch_id,$sell_id_default,$search['search_date'],$uid,'mtd');
+        $daily_score = _updailyscore_avg($company_id,$branch_id,$sell_id_default,$search['search_date'],$uid);
+        $mtd_score = _updailyscore_avg($company_id,$branch_id,$sell_id_default,$search['search_date'],$uid,'mtd');
+        //search sdaily sale data
+        $serch_date = date('Y-m-d',strtotime($search['search_date']));
+        $from_date = date('Y-m-d', strtotime($serch_date . " -3 days"));
+        $date_list = _displayDates($from_date,$serch_date);
+        return view('dashboard',compact('company_id','uid','branch_id','date_list','sched_data','search','user_id','balance_annual_leave_total','annual_leave_list','balance_sick_leave_total','sick_leave_list','totpayable','firstclockin','lastclockout','holidayWork','user','indemnityDetails','department','shifts','daily_target','mtd_target','daily_sale','mtd_sale','daily_cc','mtd_cc','daily_score','mtd_score','sell_id_default'));
     }  
+
+    public function search_sales(Request $request){
+        $search_date = $request->date_val ?? date('d-m-Y');
+        $user_id  = Session::get('user_id');
+        $user = Employee::where('user_id',$user_id)->first();
+        $branch_id  = $user->branch ?? '';
+        $company_id  = $user->company ?? '';
+        $uid  = $user->id ?? '';
+        $sell_id_default = unserialize($request->sell_id_default);
+         //search sdaily sale data
+         $serch_date = date('Y-m-d',strtotime($search_date));
+         $from_date = date('Y-m-d', strtotime($serch_date . " -3 days"));
+         $date_list = _displayDates($from_date,$serch_date);
+         $search['search_date'] = $search_date;
+         $pass_array=array(
+			'date_list' => $date_list,
+            'search' => $search,
+            'company_id'=>$company_id,
+            'branch_id'=>$branch_id,
+            'uid'=>$uid,
+            'sell_id_default' => $sell_id_default,
+        );
+         $html =  view('up_selling_management.search_modal', $pass_array )->render();
+
+         $arr = [
+             'success' => 'true',
+             'html' => $html
+         ];
+         return response()->json($arr);
+        }
 
     public function calculateIndemnity($user_id)
     {

@@ -6,6 +6,7 @@ use App\Models\UpSellingPeriod as UpSellingPeriodModel;
 use App\Models\Residency;
 use App\Models\Branch;
 use Session;
+use App\Models\UpSellingHeading as UpSellingHeadingModel;
 
 class UpSellingPeriod extends Controller
 {
@@ -88,6 +89,7 @@ class UpSellingPeriod extends Controller
 
     public function delete(Request $request){
         $id = $request->selling_id ?? '';
+        UpSellingHeadingModel::where('sell_p_id',$id)->delete();
         UpSellingPeriodModel::where('id',$id)->delete();
         return redirect()->back()->with('success','Data deleted successfully');
     }

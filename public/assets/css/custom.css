@@ -397,6 +397,17 @@ span.nega_pr {
     color: #FF0000;
     font-weight: bold;
 }
+.vertical {
+    border-left: 1px solid #ff9b44;
+    height: 95px;
+    padding-left: 10px;
+}
+
+.search_div i.fa.fa-clock-o {
+    margin-left: -5px;
+    width: 14px;
+    padding-right: 18px;
+}
 
 /* .page-wrapper a {
 

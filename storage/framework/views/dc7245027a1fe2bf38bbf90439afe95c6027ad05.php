@@ -62,72 +62,95 @@ $is_user_sale_designation = _is_user_sale_designation($user_id);
             </div>
         </div>
         <!-- /Page Header -->
+        <!-- Search Filter -->
+        <form method="post" action="<?php echo e(route('dashboard')); ?>" id="search_form">
+            <?php echo csrf_field(); ?>
+            <div class="row">            
+                <div class="col-sm-6 col-md-2">  
+                    <div class="form-group form-focus focused">
+                        <div class="cal-icon">
+                            <input class="form-control floating datetimepicker" type="text" name="search_date" id="search_date" value="<?php echo (isset($search['search_date']) && !empty($search['search_date']))? $search['search_date']: date('d-m-Y'); ?>">
+                        </div>
+                        <label class="focus-label">From</label>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-2 srch_btn">
+                    <div class="d-grid"> 
+                        <button type="submit" id="fwb" class="btn add-btn"><i class="fa fa-search"></i>Search</button> 
+                    </div>  
+                </div>
+            </div>
+        </form>
 
-        <!-- <div class="row">
-            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
-                <div class="card dash-widget">
-                    <div class="card-body">
-                        <span class="dash-widget-icon"><i class="fa fa-cubes"></i></span>
-                        <div class="dash-widget-info">
-                            <h3>112</h3>
-                            <span>Projects</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
-                <div class="card dash-widget">
-                    <div class="card-body">
-                        <span class="dash-widget-icon"><i class="fa fa-usd"></i></span>
-                        <div class="dash-widget-info">
-                            <h3>44</h3>
-                            <span>Clients</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
-                <div class="card dash-widget">
-                    <div class="card-body">
-                        <span class="dash-widget-icon"><i class="fa fa-diamond"></i></span>
-                        <div class="dash-widget-info">
-                            <h3>37</h3>
-                            <span>Tasks</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
-                <div class="card dash-widget">
-                    <div class="card-body">
-                        <span class="dash-widget-icon"><i class="fa fa-user"></i></span>
-                        <div class="dash-widget-info">
-                            <h3>218</h3>
-                            <span>Employees</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
 
         <?php if(!empty($is_user_sale_designation)): ?>
-        <div class="row three-box-main">
-            <div class="col-md-4 col-sm-4 col-lg-4 col-xl-4">
-                <div class="card dash-widget three-box " data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    <div class="card-body">
-                        <span class="dash-widget-icon"><i class="fa fa-tree" aria-hidden="true"></i></span>
-                        <div class="dash-widget-info pl-2" style="text-align: left;">
-                            <h4>
-                            <?php 
-                                $e_sal = (isset($sched_data[0]->employee_salary) && !empty($sched_data[0]->employee_salary)) ? $sched_data[0]->employee_salary->basic_salary : 0;
-                                $cal_leave = (isset($balance_annual_leave_total) && $balance_annual_leave_total['totalLeaveDays']>0 )?$balance_annual_leave_total['totalLeaveDays']:0; 
-                                $used_leave = $sched_data[0]->used_leave ?? 0;
-                                $bal_leave = (int)($cal_leave - $used_leave);
-                            ?>     
-                            <?php echo e(number_format(_calculate_salary_by_days($e_sal,$bal_leave ?? 0),2)); ?> KWD
-                            </h4>
-                            <h4><?php echo e($bal_leave ?? 0); ?> DAYS</h4>
-                            <span>Annual leave</span>
+        <div class="page-header">
+            <div class="row align-items-center  upselling-wrapper">
+                
+                    <div class="col-sm-3">
+                        <div class="card dash-widget mb-0">
+                            <div class="py-4">
+                            <a href="#" data-toggle="modal" data-target="#search_modal">
+                                <div class="dash-widget-info text-center">
+                                    <h2 class="sales_title">Daily Target</h2>
+                                    <span><?php echo e(number_format($daily_target ?? 0,2)); ?> KWD</span>
+                                    <div class="mtd-data">
+                                        <b>MTD</b>
+                                        <span><?php echo e(number_format($mtd_target ?? 0,2)); ?> KWD</span>
+                                    </div>
+                                </div>
+                            </a>
+                            </div>
+                        </div>
+                    </div> 
+               
+                <div class="col-sm-3">
+                    <div class="card dash-widget mb-0">
+                        <div class="py-4">
+                            <a href="#" data-toggle="modal" data-target="#search_modal">
+                                <div class="dash-widget-info text-center">
+                                    <h2 class="sales_title">Daily Sales</h2>
+                                    <span><?php echo e(number_format($daily_sale ?? 0,2)); ?> KWD</span>
+                                        <?php $calculate_per = _calculate_per($daily_target,$daily_sale); ?>
+                                        <?php echo $calculate_per; ?>
+
+                                    <div class="mtd-data">
+                                        <b>MTD</b>
+                                        <span><?php echo e(number_format($mtd_sale ?? 0,2)); ?> KWD</span>
+                                        <?php $calculate_per = _calculate_per($mtd_target,$mtd_sale); ?>
+                                        <?php echo $calculate_per; ?>
+
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="card dash-widget mb-0">
+                        <div class="py-4">
+                            <div class="dash-widget-info text-center">
+                                <h2 class="sales_title">Daily Score</h2>
+                                <span><?php echo e(number_format($daily_score ?? 0,2)); ?></span>
+                                <div class="mtd-data">
+                                    <b>MTD Average</b>
+                                    <span><?php echo e(number_format($mtd_score ?? 0,2)); ?></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="card dash-widget mb-0">
+                        <div class="py-4">
+                            <div class="dash-widget-info text-center">
+                                <h2 class="sales_title">Complaint</h2>
+                                <span><?php echo e($daily_cc ?? 0); ?></span>
+                                <div class="mtd-data">
+                                    <b>MTD Total</b>
+                                    <span><?php echo e($mtd_cc ?? 0); ?></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -215,7 +238,7 @@ $is_user_sale_designation = _is_user_sale_designation($user_id);
                                                             ?>
                                     <div class="user-add-shedule-list">
                                         <h2>
-                                            <a href="javascript:void(0);" class="editSchedule" data-bs-toggle="modal" data-bs-target="#edit_schedule" data-data="<?php echo $encodedData; ?>" style="border:2px dashed #1eb53a">
+                                            <a href="javascript:void(0);" class="editSchedule" data-toggle="modal" data-target="#edit_schedule" data-data="<?php echo $encodedData; ?>" style="border:2px dashed #1eb53a">
                                                 <span class="username-info m-b-10">
                                                     <?php echo $sched; ?>
                                                 </span>
@@ -243,7 +266,7 @@ $is_user_sale_designation = _is_user_sale_designation($user_id);
                                                                 {
                                                             ?>
                                     <div class="user-add-shedule-list">
-                                        <!-- <a href="#"  data-bs-toggle="modal" data-bs-target="#add_schedule" class="addSchedule" data-data="<?php echo $encodedData; ?>">
+                                        <!-- <a href="#"  data-toggle="modal" data-target="#add_schedule" class="addSchedule" data-data="<?php echo $encodedData; ?>">
                                                                     <span><i class="fa fa-plus"></i></span>
                                                                     </a> -->
                                     </div>
@@ -269,7 +292,7 @@ $is_user_sale_designation = _is_user_sale_designation($user_id);
         <div class="row three-box-main">
             <?php if($is_admin != 1): ?>
             <div class="col-md-4 col-sm-4 col-lg-4 col-xl-4">
-                <div class="card dash-widget three-box " data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <div class="card dash-widget three-box " data-toggle="modal" data-target="#exampleModal">
                     <div class="card-body">
                         <span class="dash-widget-icon"><i class="fa fa-tree" aria-hidden="true"></i></span>
                         <div class="dash-widget-info pl-2" style="text-align: left;">
@@ -289,7 +312,7 @@ $is_user_sale_designation = _is_user_sale_designation($user_id);
                 </div>
             </div>
             <div class="col-md-4 col-sm-4 col-lg-4 col-xl-4">
-                <div class="card dash-widget three-box" data-bs-toggle="modal" data-bs-target="#phleaveModal">
+                <div class="card dash-widget three-box" data-toggle="modal" data-target="#phleaveModal">
                     <div class="card-body">
                         <span class="dash-widget-icon"><i class="fa fa-briefcase" aria-hidden="true"></i></span>
                         <div class="dash-widget-info pl-2" style="text-align: left;">
@@ -306,7 +329,7 @@ $is_user_sale_designation = _is_user_sale_designation($user_id);
                 </div>
             </div>
             <div class="col-md-4 col-sm-4 col-lg-4 col-xl-4">
-                <div class="card dash-widget three-box" data-bs-toggle="modal" data-bs-target="#sickleaveModal">
+                <div class="card dash-widget three-box" data-toggle="modal" data-target="#sickleaveModal">
                     <div class="card-body">
                         <span class="dash-widget-icon"><i class="fa fa-bed" aria-hidden="true"></i></span>
                         <div class="dash-widget-info pl-2" style="text-align: left;">
@@ -326,13 +349,16 @@ $is_user_sale_designation = _is_user_sale_designation($user_id);
     </div>
     <!-- /Page Content -->
 
+    <div id="search_modal" class="modal custom-modal fade " role="dialog">
+        <?php echo $__env->make('up_selling_management/search_modal', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    </div>
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="exampleModalLabel">Annual leave</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body py-4">
                     <table width="100%" class="table-striped custom-table">
@@ -373,7 +399,7 @@ $is_user_sale_designation = _is_user_sale_designation($user_id);
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="sickleaveModalLabel">Sick leave</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body py-4">
                     <table width="100%" class="table-striped custom-table">
@@ -413,7 +439,7 @@ $is_user_sale_designation = _is_user_sale_designation($user_id);
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="phleaveModalLabel">Public Holidays</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body py-4">
                     <table width="100%" class="table-striped custom-table">
@@ -476,7 +502,7 @@ $is_user_sale_designation = _is_user_sale_designation($user_id);
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">View Schedule</h5>
-                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -612,6 +638,8 @@ $is_user_sale_designation = _is_user_sale_designation($user_id);
 
 </div>
 <?php echo $__env->make('includes/footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>;
+<link href="<?php echo e(asset('assets/css/bootstrap-new.css')); ?>" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.js"></script>
 <script type="text/javascript">
     $('#annual_data').hide();
     $('#sick_data').hide(); // Fix the typo here
@@ -690,4 +718,19 @@ $is_user_sale_designation = _is_user_sale_designation($user_id);
         var formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0]+' '+timeparts[1];
         return formattedDate;
     }
+    $(document).on('click','.serc_btn',function(){
+        var date_val = $('#searchsale_date').val();
+        var sell_id_default = $('#sell_id_default').val();
+        $.ajax({
+            url: "<?php echo e(route('dashboard.search_sales')); ?>",
+            type: "POST",
+            dataType: "json",
+            data: {"_token": "<?php echo e(csrf_token()); ?>", date_val:date_val,sell_id_default:sell_id_default},
+            success:function(response)
+                {
+                    $('#search_modal').html('');
+                    $('#search_modal').html(response.html).fadeIn();
+                }
+        });
+    })
 </script><?php /**PATH C:\wamp64_new\www\hrm\resources\views/dashboard.blade.php ENDPATH**/ ?>

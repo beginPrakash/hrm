@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Models\SellingPeriod as SellingPeriodModel;
 use App\Models\Residency;
 use App\Models\Branch;
+use App\Models\TrackingHeading as TrackingHeadingModel;
 
 class SellingPeriod extends Controller
 {
@@ -83,6 +84,7 @@ class SellingPeriod extends Controller
 
     public function delete(Request $request){
         $id = $request->selling_id ?? '';
+        TrackingHeadingModel::where('sell_p_id',$id)->delete();
         SellingPeriodModel::where('id',$id)->delete();
         return redirect()->back()->with('success','Data deleted successfully');
     }

@@ -76,7 +76,18 @@
   width: 20px;
   font-size: 21px;
 }
-
+.mtd-data {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 11px;
+  border-top: 1px solid #ccc;
+  margin-top: 11px;
+  padding-top: 10px;
+}
+.upselling-wrapper .dash-widget b {
+  margin-right: 12px;
+}
 .begin_actions a {
   font-size: 25px;
   margin-right: 12px;

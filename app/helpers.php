@@ -712,7 +712,38 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         endif;
     }
 
-    
+
+    function compareByTimeStamp($time1, $time2) 
+{ 
+    if (strtotime($time1) < strtotime($time2)) 
+        return 1; 
+    else if (strtotime($time1) > strtotime($time2))  
+        return -1; 
+    else
+        return 0; 
+}
+
+    function _displayDates($date1, $date2, $format = 'Y-m-d' ) {
+        $dates = array();
+        $current = strtotime($date1);
+        $date2 = strtotime($date2);
+        $stepVal = '+1 day';
+        while( $current <= $date2 ) {
+           $dates[] = date($format, $current);
+           $current = strtotime($stepVal, $current);
+        }
+        usort($dates, "compareByTimeStamp"); 
+  
+        return $dates;
+      }
+
+      function _find_upsales_detail_by_date($company_id,$branch_id,$uid,$sell_id_default,$search_date){
+        $search_date = date('Y-m-d',strtotime($search_date));
+        $search_data = DailySalesTargetUpselling::where('company_id',$company_id)->where('user_id',$uid)
+                        ->where('branch_id',$branch_id)->where('sell_p_id',$sell_id_default)
+                        ->whereDate('sales_date',$search_date)->first();
+        return $search_data;
+      }
 
     function _target_total_cal_by_sell($company_id,$branch_id,$sells_id,$serch_date){
         if(!empty($serch_date)):
@@ -807,6 +838,7 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
     }
 
     function _calculate_per($total_val,$achieve_val){
+        $cal_val = '';
         if(!empty($total_val) && !empty($achieve_val)):
             if($achieve_val > $total_val):
                 $val =  $achieve_val -  $total_val; 
@@ -815,7 +847,9 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
             else:
                 $val =  $total_val -  $achieve_val; 
                 $total = $val / $total_val * 100;  
-                $cal_val = '<span class="nega_pr">'.number_format($total,2).'%</span>';      
+                if(!empty($total)):
+                    $cal_val = '<span class="nega_pr">'.number_format($total,2).'%</span>';
+                endif;      
             endif;
             return $cal_val;
         endif;

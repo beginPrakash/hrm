@@ -25,7 +25,7 @@
         <!-- Search Filter -->
         <form method="post" action="<?php echo e(route('selling_period.list')); ?>" id="search_form">
             <?php echo csrf_field(); ?>
-            <div class="row filter-row">
+            <div class="row">
                 <div class="col-sm-6 col-md-3"> 
                     <div class="form-group form-focus select-focus">
                         <div class="dropdown">
@@ -105,13 +105,12 @@
                                         <td><?php echo e($val->title); ?></td>
                                         <td>
                                             <div class="pull-right begin_actions">
-                                                <?php if($val->type != 'default'): ?>
-                                                    <div class="form-check form-switch">
-                                                        <input class="form-check-input" type="checkbox" role="switch" data-url="<?php echo e(route('tracking_heading.statuschange',array($val->id,$val->is_show ?? 0))); ?>" id="flexSwitchCheckChecked" <?php echo e((!empty($val->is_show)) ? 'checked' : ''); ?>>
-                                                    </div>
-                                                    <a href="javascript:void(0);" data-toggle="modal" data-target="#add_Form" class="action-icon edit_branch" data-id="<?php echo e($val->id); ?>"><i class="fa fa-pencil"></i></a>
-                                                    <a href="javascript:void(0);" data-toggle="modal" data-target="#delete_form" class="action-icon delete_branch" data-id="<?php echo e($val->id); ?>"><i class="fa fa-trash"></i></a>
-                                                <?php endif; ?>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" data-url="<?php echo e(route('tracking_heading.statuschange',array($val->id,$val->is_show ?? 0))); ?>" id="flexSwitchCheckChecked" <?php echo e((!empty($val->is_show)) ? 'checked' : ''); ?>>
+                                                </div>
+                                                <a href="javascript:void(0);" data-toggle="modal" data-target="#add_Form" class="action-icon edit_branch" data-id="<?php echo e($val->id); ?>"><i class="fa fa-pencil"></i></a>
+                                                <a href="javascript:void(0);" data-toggle="modal" data-target="#delete_form" class="action-icon delete_branch" data-id="<?php echo e($val->id); ?>"><i class="fa fa-trash"></i></a>
+                                                
                                             </div>
                                         </td>
                                     </tr>

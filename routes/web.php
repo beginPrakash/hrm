@@ -30,7 +30,8 @@ Route::get('/', [AuthenticatedSessionController::class, 'create']);
 
 Route::group(['middleware' => 'auth'], function () {
 	
-	Route::get('/dashboard', [Dashboard::class, 'index'])->name('dashboard');
+	Route::match(array('GET','POST'),'/dashboard', [Dashboard::class, 'index'])->name('dashboard');
+	Route::post('/search_sales', [Dashboard::class, 'search_sales'])->name('dashboard.search_sales');
 
 	//Employees
 	Route::match(array('GET','POST'),'/employee', [EmployeeController::class, 'index']);
@@ -353,7 +354,7 @@ Route::post('/up_selling_period/detail', [App\Http\Controllers\UpSellingPeriod::
 Route::post('/up_selling_period/delete', [App\Http\Controllers\UpSellingPeriod::class, 'delete'])->name('up_selling_period.delete');
 Route::get('/up_selling_period/statuschange/{id}/{status}', [App\Http\Controllers\UpSellingPeriod::class, 'statuschange'])->name('up_selling_period.statuschange');
 
-//Upselling Heading
+//Upselling Heading.
 Route::match(array('GET','POST'),'/upselling_heading', [App\Http\Controllers\UpsellingHeading::class, 'index'])->name('upselling_heading.list');
 Route::post('/upselling_heading/store', [App\Http\Controllers\UpsellingHeading::class, 'store'])->name('upselling_heading.store');
 Route::post('/upselling_heading/detail', [App\Http\Controllers\UpsellingHeading::class, 'getsellingdetaiById'])->name('getupsetrackingdetaiById');

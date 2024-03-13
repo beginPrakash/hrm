@@ -804,6 +804,7 @@ class AttendanceController extends Controller
         echo json_encode('done');
         // return redirect('/attendance')->with('success','Attendance updated successfully!');
     }
+    
 
     public function create_attendance_by_date(Request $request){
         $userDetails = Employee::where("user_id", $request->attnUserId)->where('status','active')->first();

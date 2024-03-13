@@ -16,6 +16,11 @@ $(document).on('change', '#designation', function() {
 
     //for multi user check
 });
+
+$(document).on('click','#analytic_btn',function(){
+    var url = $(this).attr('data-url');
+    window.location.href = url;
+});
 </script>
 <script>
 // $(document).on('change', '#company', function() {

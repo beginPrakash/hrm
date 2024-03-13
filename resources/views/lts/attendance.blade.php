@@ -432,4 +432,16 @@ $maxDays=date('t', strtotime($start_date));
        });
    }
 
+   $(document).on('click','.manual_att_btn',function(){
+        var form = $('#create_attn_form');
+        $.ajax({
+           type: "POST",
+           url: "{{ route('create_attendance_by_date') }}",
+           data: form.serialize(), // serializes the form's elements.
+           success: function( msg ) {
+               console.log(msg);
+           }
+       });
+   });
+
 </script>

@@ -9,6 +9,7 @@
 $username = Session::get('username');
 $user_id = Session::get('user_id');
 $is_user_sale_designation = _is_user_sale_designation($user_id);
+$get_analytics = _get_analytics('show_analytics');
 ?>
 <div class="page-wrapper">
 
@@ -62,6 +63,9 @@ $is_user_sale_designation = _is_user_sale_designation($user_id);
             </div>
         </div>
         <!-- /Page Header -->
+        
+        <?php if($get_analytics == '1'): ?>
+        <?php if(!empty($is_user_sale_designation)): ?>
         <!-- Search Filter -->
         <form method="post" action="<?php echo e(route('dashboard')); ?>" id="search_form">
             <?php echo csrf_field(); ?>
@@ -81,81 +85,103 @@ $is_user_sale_designation = _is_user_sale_designation($user_id);
                 </div>
             </div>
         </form>
-
-
-        <?php if(!empty($is_user_sale_designation)): ?>
         <div class="page-header">
-            <div class="row align-items-center  upselling-wrapper">
-                
-                    <div class="col-sm-3">
-                        <div class="card dash-widget mb-0">
-                            <div class="py-4">
-                            <a href="#" data-toggle="modal" data-target="#search_modal">
-                                <div class="dash-widget-info text-center">
-                                    <h2 class="sales_title">Daily Target</h2>
-                                    <span><?php echo e(number_format($daily_target ?? 0,2)); ?> KWD</span>
-                                    <div class="mtd-data">
-                                        <b>MTD</b>
-                                        <span><?php echo e(number_format($mtd_target ?? 0,2)); ?> KWD</span>
+            <section id="demos">
+            <div class="row">
+                <div class="large-12 columns">
+                    <div class="owl-carousel owl-theme">
+                        <div class="item">
+                            <div class="row align-items-center  upselling-wrapper">
+                                <div class="col-sm-3">
+                                    <div class="card dash-widget mb-0">
+                                        <div class="py-4">
+                                        <a href="#" data-toggle="modal" data-target="#search_modal">
+                                            <div class="dash-widget-info text-center">
+                                                <h2 class="sales_title">Daily Target</h2>
+                                                <span><?php echo e(number_format($daily_target ?? 0,2)); ?> KWD</span>
+                                                <div class="mtd-data">
+                                                    <b>MTD</b>
+                                                    <span><?php echo e(number_format($mtd_target ?? 0,2)); ?> KWD</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        </div>
+                                    </div>
+                                </div> 
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="row align-items-center  upselling-wrapper">
+                                <div class="col-sm-3">
+                                    <div class="card dash-widget mb-0">
+                                        <div class="py-4">
+                                            <a href="#" data-toggle="modal" data-target="#search_modal">
+                                                <div class="dash-widget-info text-center">
+                                                    <h2 class="sales_title">Daily Sales</h2>
+                                                    <span><?php echo e(number_format($daily_sale ?? 0,2)); ?> KWD</span>
+                                                        <?php $calculate_per = _calculate_per($daily_target,$daily_sale); ?>
+                                                        <?php echo $calculate_per; ?>
+
+                                                    <div class="mtd-data">
+                                                        <b>MTD</b>
+                                                        <span><?php echo e(number_format($mtd_sale ?? 0,2)); ?> KWD</span>
+                                                        <?php $calculate_per = _calculate_per($mtd_target,$mtd_sale); ?>
+                                                        <?php echo $calculate_per; ?>
+
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
-                            </a>
                             </div>
                         </div>
-                    </div> 
-               
-                <div class="col-sm-3">
-                    <div class="card dash-widget mb-0">
-                        <div class="py-4">
-                            <a href="#" data-toggle="modal" data-target="#search_modal">
-                                <div class="dash-widget-info text-center">
-                                    <h2 class="sales_title">Daily Sales</h2>
-                                    <span><?php echo e(number_format($daily_sale ?? 0,2)); ?> KWD</span>
-                                        <?php $calculate_per = _calculate_per($daily_target,$daily_sale); ?>
-                                        <?php echo $calculate_per; ?>
-
-                                    <div class="mtd-data">
-                                        <b>MTD</b>
-                                        <span><?php echo e(number_format($mtd_sale ?? 0,2)); ?> KWD</span>
-                                        <?php $calculate_per = _calculate_per($mtd_target,$mtd_sale); ?>
-                                        <?php echo $calculate_per; ?>
-
+                        <div class="item">
+                            <div class="row align-items-center  upselling-wrapper">
+                                <div class="col-sm-3">
+                                    <div class="card dash-widget mb-0">
+                                        <div class="py-4">
+                                            <div class="dash-widget-info text-center">
+                                                <h2 class="sales_title">Daily Score</h2>
+                                                <span><?php echo e(number_format($daily_score ?? 0,2)); ?></span>
+                                                <div class="mtd-data">
+                                                    <b>MTD Average</b>
+                                                    <span><?php echo e(number_format($mtd_score ?? 0,2)); ?></span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </a>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="card dash-widget mb-0">
-                        <div class="py-4">
-                            <div class="dash-widget-info text-center">
-                                <h2 class="sales_title">Daily Score</h2>
-                                <span><?php echo e(number_format($daily_score ?? 0,2)); ?></span>
-                                <div class="mtd-data">
-                                    <b>MTD Average</b>
-                                    <span><?php echo e(number_format($mtd_score ?? 0,2)); ?></span>
+                        <div class="item">
+                            <div class="row align-items-center  upselling-wrapper">
+                                <div class="col-sm-3">
+                                    <div class="card dash-widget mb-0">
+                                        <div class="py-4">
+                                            <div class="dash-widget-info text-center">
+                                                <h2 class="sales_title">Complaint</h2>
+                                                <span><?php echo e($daily_cc ?? 0); ?></span>
+                                                <div class="mtd-data">
+                                                    <b>MTD Total</b>
+                                                    <span><?php echo e($mtd_cc ?? 0); ?></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="card dash-widget mb-0">
-                        <div class="py-4">
-                            <div class="dash-widget-info text-center">
-                                <h2 class="sales_title">Complaint</h2>
-                                <span><?php echo e($daily_cc ?? 0); ?></span>
-                                <div class="mtd-data">
-                                    <b>MTD Total</b>
-                                    <span><?php echo e($mtd_cc ?? 0); ?></span>
-                                </div>
-                            </div>
-                        </div>
+                        
+                        
+
                     </div>
                 </div>
             </div>
+        </section>
+            
         </div>
+        <?php endif; ?>
         <?php endif; ?>
         <?php if($is_admin != 1): ?>
         <div class="row">
@@ -638,8 +664,12 @@ $is_user_sale_designation = _is_user_sale_designation($user_id);
 
 </div>
 <?php echo $__env->make('includes/footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>;
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" integrity="sha512-tS3S5qG0BlhnQROyJXvNjeEM4UpMXHrQfTGmbQ1gKmelCxlSEBUaxhRBj/EFTzpbP4RVSrpEikbmdJobCvhE3g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css" integrity="sha512-sMXtMNL1zRzolHYKEujM2AqCLUR9F2C4/05cdbxjjLSRvMQIciEPCQZo++nk7go3BtSuK9kfa/s+a4f4i5pLkw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link href="<?php echo e(asset('assets/css/bootstrap-new.css')); ?>" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.js" integrity="sha512-gY25nC63ddE0LcLPhxUJGFxa2GoIyA5FLym4UJqHDEMHjp8RET6Zn/SHo1sltt3WuVtqfyxECP38/daUc/WVEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js" integrity="sha512-bPs7Ae6pVvhOSiIcyUClR7/q2OAsRiovw4vAkX+zJbw3ShAeeqezq50RIIcIURq7Oa20rW2n2q+fyXBNcU9lrw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript">
     $('#annual_data').hide();
     $('#sick_data').hide(); // Fix the typo here
@@ -732,5 +762,24 @@ $is_user_sale_designation = _is_user_sale_designation($user_id);
                     $('#search_modal').html(response.html).fadeIn();
                 }
         });
+    })
+
+    $('.owl-carousel').owlCarousel({
+        loop:true,
+        margin:0,
+        nav:true,
+        responsiveClass: true,
+        dots: false,
+        responsive: {
+            0: {
+            items: 1,
+            },
+            4: {
+            items: 1,
+            },
+            1000: {
+            items: 4,
+            }
+        }
     })
 </script><?php /**PATH C:\wamp64_new\www\hrm\resources\views/dashboard.blade.php ENDPATH**/ ?>

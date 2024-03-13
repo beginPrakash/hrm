@@ -47,7 +47,7 @@
 
                         <br>
 
-                    <button class="btn btn-info pull-right mb-3 text-white">Update</button>
+                    <button type="button" class="btn btn-info pull-right mb-3 text-white manual_att_btn">Update</button>
 
 
 

@@ -9,6 +9,7 @@ use App\Models\Residency;
 use App\Models\CompanyDocFiles;
 use App\Models\Branch;
 use App\Models\RegistrationType;
+use App\Models\SettingsModel;
 
 class SettingsController extends Controller
 {
@@ -36,6 +37,19 @@ class SettingsController extends Controller
         $title = $this->title.' Update';
         $residency = Residency::where('id',$request->id)->first();
         return view('settings.residencysettingsUpdate', compact('title', 'residency'));
+    }
+
+    public function changeanalytic_status(Request $request){
+        $check_data = SettingsModel::where('key','show_analytics')->value('value');
+        if($check_data == 1):
+            $status = 0;
+        else:
+            $status = 1;
+        endif;
+        $save_data = SettingsModel::where('key','show_analytics')->first();
+        $save_data->value = $status;
+        $save_data->save();
+        return redirect()->back();
     }
 
     public function companySettingsUpdate(Request $request)

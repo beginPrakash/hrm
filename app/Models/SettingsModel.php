@@ -7,5 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class SettingsModel extends Model
 {
-    use HasFactory;
+    protected $table = 'settings';
+    public $timestamps = true;
+    protected $fillable = [
+        'key',
+        'value'
+	];
+
+    protected $dates = ['deleted_at'];
 }

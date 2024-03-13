@@ -27,6 +27,7 @@ use App\Models\TrackingHeading;
 use App\Models\StoreDailySales;
 use App\Models\UpSellingHeading;
 use App\Models\DailySalesTargetUpselling;
+use App\Models\SettingsModel;
 
 function getLastId()
 {
@@ -38,6 +39,11 @@ function getLastId()
 function getInformation()
 {
     return 'hi';
+}
+
+function _get_analytics($key){
+    $data = SettingsModel::where('key',$key)->value('value');
+    return $data;
 }
 
 function calculateSalaryByFilter($user_id,$empid,$mid,$year,$type='')

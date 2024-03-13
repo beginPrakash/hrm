@@ -7,6 +7,7 @@ $page = $components[1];
 $is_admin = Session::get('is_admin');
 $user_id = Session::get('user_id');
 $is_store_user = _is_user_role_owner($user_id);
+$get_analytics = _get_analytics('show_analytics');
 ?>
 <style>
     .active-ho-jao {
@@ -24,6 +25,8 @@ $is_store_user = _is_user_role_owner($user_id);
                 </li>
                 <?php if($is_admin > 0) { ?>
                 <li class="submenu">
+                
+                    
                     <?php
                         $mangae_edbr = request()->is("employee*") || request()->is("department*") || request()->is("designation*") || request()->is("branch*") || request()->is("residency*") || request()->is("subresidency*");
                     ?>
@@ -145,6 +148,14 @@ $is_store_user = _is_user_role_owner($user_id);
                     </ul>
                 </li>
                 <?php } ?>
+
+                <?php if($is_admin > 0): ?>  
+                <li class="menu-title"> 
+                    <div class="form-check form-switch">
+                        <span>Show Analytics</span><input class="form-check-input" type="checkbox" role="switch" data-url="<?php echo e(route('settings.changeanalytic_status')); ?>" id="analytic_btn" <?php echo e((!empty($get_analytics)) ? 'checked' : ''); ?>>
+                    </div>
+                </li>     
+                <?php endif; ?>
             </ul>
         </div>
     </div>

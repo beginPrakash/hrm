@@ -366,6 +366,9 @@ Route::post('/upselling_heading/upsellplistbycompany', [App\Http\Controllers\Ups
 Route::match(array('GET','POST'),'/userstore_daily_sales', [App\Http\Controllers\UserDailySales::class, 'index'])->name('userstore_daily_sales.list');
 Route::post('userstore_daily_sales/save', [App\Http\Controllers\UserDailySales::class, 'save_store_daily_sales'])->name('userstore_daily_sales.save');
 
+
+//settings
+Route::get('changeanalytic_status', [App\Http\Controllers\SettingsController::class, 'changeanalytic_status'])->name('settings.changeanalytic_status');
 });
 
 

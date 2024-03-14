@@ -17,7 +17,10 @@ $maxDays=date('t', strtotime($start_date));
    <!-- Page Wrapper -->
             <div class="page-wrapper">
                 <div class="content container-fluid">
-                
+                <div class="alert alert-success alert-block att_suc_msg" style="display:none">
+                    <button type="button" class="close" data-bs-dismiss="alert">×</button>    
+                    <strong class="succ_msg"></strong>
+                </div>   
                     <?php echo $__env->make('flash-message', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>   
                     <!-- Page Header -->
                     <?php echo $__env->make('includes/breadcrumbs', ['title' => $title], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
@@ -221,7 +224,7 @@ $maxDays=date('t', strtotime($start_date));
                                                         }
                                                     }
                                                     
-                                                    echo '<td>'.$tdValue.'</td>';
+                                                    echo '<td class="'.$employee->user_id.'_'.$i.'">'.$tdValue.'</td>';
                                                 }
                                                 ?>
                                             </tr>
@@ -425,9 +428,11 @@ $maxDays=date('t', strtotime($start_date));
            type: "POST",
            url: "<?php echo e(url('approveOt/')); ?>",
            data: {attnUserId:attnUserId, attnDate:attnDate, ottime:ottime, approve_status:approve_status, approve_remark:approve_remark, start_time:start_time, end_time:end_time,schd_start_date:schd_start_date,schd_end_date:schd_end_date, "_token": "<?php echo e(csrf_token()); ?>"},
-           success: function( msg ) {
-               alert( 'Data approved successfully.' );
-               location.reload();
+           success: function( response ) {
+                $('#attendance_info').modal('hide');
+                $('.'+response.td_id).html(response.td_val);
+                $('.att_suc_msg').show();
+                $('.succ_msg').text(response.msg);
            }
        });
    }
@@ -438,8 +443,11 @@ $maxDays=date('t', strtotime($start_date));
            type: "POST",
            url: "<?php echo e(route('create_attendance_by_date')); ?>",
            data: form.serialize(), // serializes the form's elements.
-           success: function( msg ) {
-               console.log(msg);
+           success: function( response ) {
+                $('#attendance_info').modal('hide');
+                $('.'+response.td_id).html(response.td_val);
+                $('.att_suc_msg').show();
+                $('.succ_msg').text(response.msg);
            }
        });
    });

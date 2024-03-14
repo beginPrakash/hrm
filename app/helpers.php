@@ -874,6 +874,67 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         endif;
     }
 
+    function _get_att_icon($userId,$attnDate){
+        $emp_detail = Employee::where('user_id',$userId)->where('status','active')->first();
+        $emloyeeAttendance = AttendanceDetails::where('user_id', $userId)->where('employee_id', $emp_detail->emp_generated_id)->whereDate('attendance_on', $attnDate)->where('punch_state','clockin')->first();
+                                                  
+        // get shift details
+        $shiftDetails = Scheduling::where('employee',$emp_detail->user_id)->where('shift_on', date('Y-m-d',strtotime($attnDate)))->where('status','active')->get()->first();
+
+        $tdValue = '';
+
+        if(!empty($shiftDetails) && (in_array($shiftDetails->shift, array(3))))
+        {
+            $tdValue = 'FS';
+        }
+        else
+        {
+            if(empty($emloyeeAttendance))
+            {
+                
+                $encoded = base64_encode(json_encode($attnDate.'/'.$emp_detail->user_id));
+                $tdValue = getAttendanceText($shiftDetails,$encoded);
+            }
+            else
+            {
+                if($emloyeeAttendance->day_type === 'off' && ($emloyeeAttendance->attendance_time === '0'))
+                {
+                    //echo($emloyeeAttendance->id);
+                    $encoded = base64_encode(json_encode($attnDate.'/'.$emp_detail->user_id));
+                    $tdValue = getAttendanceText($shiftDetails,$encoded);
+                }
+                else
+                {
+                    $encoded = base64_encode(json_encode($attnDate.'/'.$emp_detail->user_id));
+
+                    $firstclockin = AttendanceDetails::where('user_id', $emp_detail->user_id)->where('employee_id', $emp_detail->emp_generated_id)->where('punch_state', 'clockin')->whereDate('attendance_on', $attnDate)->first();
+                    $lastclockout = AttendanceDetails::where('atte_ref_id', $firstclockin->id)->where('punch_state', 'clockout')->first();
+                    $shcolor = '';
+                    $shicon = '';
+                    $flag = 0;
+
+                    $minStartTime_24 = (isset($shiftDetails->min_start_time))?date('H:i', strtotime($shiftDetails->min_start_time)):'0';
+                    $maxStartTime_24 = (isset($shiftDetails->max_start_time))?date('H:i', strtotime($shiftDetails->max_start_time)):'0';
+                    $minEndTime_24 = (isset($shiftDetails->min_end_time))?date('H:i', strtotime($shiftDetails->min_end_time)):'0';
+                    $maxEndTime_24 = (isset($shiftDetails->max_end_time))?date('H:i', strtotime($shiftDetails->max_end_time)):'0';
+                    if((isset($firstclockin->attendance_time) && checkDateTimeInBetween($firstclockin->attendance_time, $minStartTime_24, $maxStartTime_24)==1) && (isset($lastclockout->attendance_time) && checkDateTimeInBetween($lastclockout->attendance_time, $minEndTime_24, $maxEndTime_24)==1))
+                    {
+                        $shcolor = 'text-success';
+                        $shicon = 'fa-check';
+                    }else{
+                        $shcolor = 'text-warning';
+                        $shicon = 'fa-info-circle';
+                        $flag = 1;
+                    }
+
+                    
+                    $tdValue = '<a href="javascript:void(0);" class="popupAttn" data-id="'.$encoded.'"><i class="fa '.$shicon.' '.$shcolor.'"></i></a>';
+                }
+            }
+        }
+        return $tdValue;
+    }
+
     
 
     

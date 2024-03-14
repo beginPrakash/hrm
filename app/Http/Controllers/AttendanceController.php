@@ -801,10 +801,23 @@ class AttendanceController extends Controller
                 endif;
             endif;  
         endif;
-        echo json_encode('done');
+        
+        $userId = intval($request->attnUserId);
+
+        $attnDate = str_replace('"','',preg_replace('/\\\\/', '', $request->attnDate));
+        $td_val = _get_att_icon($userId,$attnDate);
+        $td_id = $userId.'_'.date('j', strtotime($attnDate));
+        $arr = [
+            'success' => 'true',
+            'msg'=>'Attendance updated successfully!',
+            'td_val' => $td_val,
+            'td_id' => $td_id
+        ];
+        return response()->json($arr);
+        
         // return redirect('/attendance')->with('success','Attendance updated successfully!');
     }
-    
+
 
     public function create_attendance_by_date(Request $request){
         $userDetails = Employee::where("user_id", $request->attnUserId)->where('status','active')->first();
@@ -892,7 +905,21 @@ class AttendanceController extends Controller
                 endif;
             endif;  
         endif;
-        return redirect()->back()->with('success','Attendance created successfully');
+
+        $userId = intval($request->attnUserId);
+
+        $attnDate = str_replace('"','',preg_replace('/\\\\/', '', $request->attnDate));
+        $td_val = _get_att_icon($userId,$attnDate);
+        $td_id = $userId.'_'.date('j', strtotime($attnDate));
+        $arr = [
+            'success' => 'true',
+            'msg'=>'Attendance saved successfully!',
+            'td_val' => $td_val,
+            'td_id' => $td_id
+        ];
+        return response()->json($arr);
+            //echo json_encode($html);
+        //return redirect()->back()->with('success','Attendance created successfully');
     }
 
     public function save_clock_data(Request $request,$type){

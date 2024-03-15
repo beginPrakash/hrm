@@ -77,6 +77,27 @@ $maxDays=date('t', strtotime($start_date));
                                     <label class="focus-label">Select Year</label>
                                 </div>
                             </div>
+                            <div class="col-sm-6 col-md-3"> 
+                                <div class="form-group form-focus select-focus">
+                                    <select id="multiple-checkboxes" name="branch[]" multiple="multiple"> 
+                                        <option value="">Select Branch</option> 
+                                        <?php if(isset($branch_list) && count($branch_list) > 0): ?>
+                                            <?php $__currentLoopData = $branch_list; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <?php if(isset($branch) && !empty($branch)): ?>
+                                                <?php
+                                                if (in_array($key, $branch)) { 
+                                                    $selected = 'selected';
+                                                } else { 
+                                                    $selected = '';
+                                                } 
+                                                ?>
+                                            <?php endif; ?>
+                                                <option value="<?php echo e($key); ?>" <?php echo e($selected ?? ''); ?>><?php echo e($val); ?></option>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                        <?php endif; ?> 
+                                    </select>  
+                                </div> 
+                            </div>
                             <div class="col-sm-6 col-md-3">  
                                 <div class="d-grid">
                                     <button type="submit" class="btn btn-success" name="search" value="search"> Search </button>  
@@ -321,13 +342,21 @@ $maxDays=date('t', strtotime($start_date));
 <!-- end main wrapper-->
 
 <?php echo $__env->make('includes/footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script> 
 <script type="text/javascript">
 
     $('.selectwith_search').select2({
 		minimumResultsForSearch: 1,
 		width: '100%'
 	});
+    $("#multiple-checkboxes").select2({
+			closeOnSelect : false,
+			placeholder : "Select Branch",
+			allowHtml: true,
+			allowClear: true,
+			tags: true ,
+            width: '100%'
+		});
     $(document).ready(function() {
         $("#addAttendance").validate({
             rules: {

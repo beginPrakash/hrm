@@ -77,6 +77,27 @@ $maxDays=date('t', strtotime($start_date));
                                     <label class="focus-label">Select Year</label>
                                 </div>
                             </div>
+                            <div class="col-sm-6 col-md-3"> 
+                                <div class="form-group form-focus select-focus">
+                                    <select id="multiple-checkboxes" name="branch[]" multiple="multiple"> 
+                                        <option value="">Select Branch</option> 
+                                        @if(isset($branch_list) && count($branch_list) > 0)
+                                            @foreach($branch_list as $key => $val)
+                                            @if(isset($branch) && !empty($branch))
+                                                @php
+                                                if (in_array($key, $branch)) { 
+                                                    $selected = 'selected';
+                                                } else { 
+                                                    $selected = '';
+                                                } 
+                                                @endphp
+                                            @endif
+                                                <option value="{{$key}}" {{$selected ?? ''}}>{{$val}}</option>
+                                            @endforeach
+                                        @endif 
+                                    </select>  
+                                </div> 
+                            </div>
                             <div class="col-sm-6 col-md-3">  
                                 <div class="d-grid">
                                     <button type="submit" class="btn btn-success" name="search" value="search"> Search </button>  
@@ -321,13 +342,21 @@ $maxDays=date('t', strtotime($start_date));
 <!-- end main wrapper-->
 
 @include('includes/footer')
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script> 
 <script type="text/javascript">
 
     $('.selectwith_search').select2({
 		minimumResultsForSearch: 1,
 		width: '100%'
 	});
+    $("#multiple-checkboxes").select2({
+			closeOnSelect : false,
+			placeholder : "Select Branch",
+			allowHtml: true,
+			allowClear: true,
+			tags: true ,
+            width: '100%'
+		});
     $(document).ready(function() {
         $("#addAttendance").validate({
             rules: {

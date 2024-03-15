@@ -5,7 +5,7 @@ use DB;
 use Session;
 use DateTime;
 use Illuminate\Http\Request;
-
+use App\Models\Branch;
 use App\Models\Residency;
 use App\Models\Attendance;
 use App\Models\AttendanceDetails;
@@ -53,12 +53,22 @@ class AttendanceController extends Controller
                 $where['user_id'] = $_POST['employee'];
                 $emp = $_POST['employee'];
             }
+            
        // }
-
-        $attEmployees = Employee::where($where)->where('status', '!=', 'deleted')->get();
+        $branch = [];
+        $attEmployees = Employee::where($where)->where('status', '!=', 'deleted');
+        if(isset($_POST['branch']) && count($_POST['branch']) > 0)
+            {
+                $branch = $_POST['branch'];
+                $attEmployees = $attEmployees->whereIn('branch',$_POST['branch']);
+            }
+        $attEmployees = $attEmployees->get();
         $allEmployees = Employee::where('status', 'active')->get();
-
-        return view('lts.attendance', compact('title', 'attEmployees', 'allEmployees', 'year', 'month', 'emp'));
+        $branch_list = Branch::where('status','active')->pluck('name','id');
+        if(empty($emp) && empty($branch)):
+            $attEmployees = [];
+        endif;
+        return view('lts.attendance', compact('title', 'attEmployees', 'allEmployees', 'year', 'month', 'emp','branch_list','branch'));
     }
 
    

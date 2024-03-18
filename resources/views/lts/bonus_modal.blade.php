@@ -17,6 +17,9 @@
             title:  {
                 required : true
             },
+            remarks:  {
+                required : true
+            },
         },    
         messages: {
             employee_id: {
@@ -31,6 +34,9 @@
             },
             title: {
                 required : 'Title is required',
+            },
+            remarks: {
+                required : 'Remarks is required',
             }
         },
         errorPlacement: function (error, element) {
@@ -79,7 +85,11 @@
                 </div>
                 <div class="form-group">
                     <label>Title <span class="text-danger">*</span></label>
-                    <textarea rows="4" class="form-control" name="title" id="title">{{$bonusData->title ?? ''}}</textarea>
+                    <input type="text" class="form-control" name="title" id="title" value="{{$bonusData->title ?? ''}}">
+                </div>
+                <div class="form-group">
+                    <label>Remarks <span class="text-danger">*</span></label>
+                    <textarea rows="4" class="form-control" name="remarks" id="remarks">{{$bonusData->remarks ?? ''}}</textarea>
                 </div>
                 <div class="submit-section">
                     <button class="btn btn-primary submit-btn" type="submit" id="addBonusBtn">Submit</button>

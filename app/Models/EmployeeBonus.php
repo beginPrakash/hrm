@@ -10,7 +10,7 @@ class EmployeeBonus extends Model
     protected $table = 'employee_bonus';
     public $timestamps = true;
     protected $fillable = [
-		'employee_id' ,'bonus_date','bonus_amount','title' 
+		'employee_id' ,'bonus_date','bonus_amount','title','remarks' 
     ];
 
     public function employee(){

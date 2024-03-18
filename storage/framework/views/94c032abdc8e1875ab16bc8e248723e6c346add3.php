@@ -19,7 +19,12 @@
                                 </ul>
                             </div>
                             <div class="col-auto float-end ms-auto">
+                                
+                                
                                 <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_leave"><i class="fa fa-plus"></i> Add Bonus</a>
+                                <a href="#" class="btn add-btn m-r-5" data-bs-toggle="modal" data-bs-target="#import_bonus"> Import Bonus</a>
+                                <a href="<?php echo e(route('bonus_export')); ?>" class="btn add-btn m-r-5"><i class="fa fa-download"></i>Sample CSV</a>
+                                
                             </div>
                         </div>
                     </div>
@@ -29,10 +34,25 @@
                     <form action="/bonus" method="post">
                         <?php echo csrf_field(); ?>
                         <div class="row filter-row">
-                            
+                            <div class="col-sm-6 col-md-3">  
+                                <div class="form-group form-focus focused">
+                                    <div class="cal-icon">
+                                        <input class="form-control floating datetimepicker" type="text" name="from_date" id="from_date" value="<?php echo (isset($search['from_date']) && !empty($search['from_date'])) ? $search['from_date'] : ''; ?>">
+                                    </div>
+                                    <label class="focus-label">From Date</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-md-3">  
+                                <div class="form-group form-focus focused">
+                                    <div class="cal-icon">
+                                        <input class="form-control floating datetimepicker to_date" type="text" name="to_date" id="to_date" value="<?php echo (isset($search['to_date']) && !empty($search['to_date'])) ? $search['to_date'] : ''; ?>">
+                                    </div>
+                                    <label class="focus-label">To Date</label>
+                                </div>
+                            </div>
                             <div class="col-sm-6 col-md-4">  
                                 <div class="form-group form-focus focused">
-                                    <input class="form-control" type="text" name="search_text" id="search_text" placeholder="Search by userId and name" value="<?php echo e($serach_text ?? ''); ?>">
+                                    <input class="form-control" type="text" name="search_text" id="search_text" placeholder="Search by userId and name" value="<?php echo (isset($search['search_text']) && !empty($search['search_text'])) ? $search['search_text'] : ''; ?>">
                                     <label class="focus-label">Employee Name</label>
                                 </div>
                             </div>
@@ -122,6 +142,36 @@
                     </div>
                 </div>
                 <!-- /Delete Bonus Modal -->
+
+                <!-- Import Bonus Modal -->
+                <div class="modal custom-modal fade" id="import_bonus" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <div class="form-header">
+                                    <h3>Import Bonus</h3>
+                                </div>
+                                <div class="modal-btn import-action">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <form action="/bonus_import" method="post" enctype="multipart/form-data">
+                                                <?php echo csrf_field(); ?>
+                                                <div class="form-group">
+                                                    <label>Import File <span class="text-danger">*</span></label>
+                                                    <input class="form-control" value="" readonly type="file" name="bonus_file">
+                                                </div>
+                                                <div class="submit-section">
+                                                    <button class="btn btn-primary submit-btn">Submit</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Import Bonus Modal -->
    
             </div>
             <!-- /Page Wrapper -->
@@ -149,6 +199,9 @@
             title:  {
                 required : true
             },
+            remarks:  {
+                required : true
+            },
         },    
         messages: {
             employee_id: {
@@ -163,6 +216,9 @@
             },
             title: {
                 required : 'Title is required',
+            },
+            remarks: {
+                required : 'Remarks is required',
             }
         },
         errorPlacement: function (error, element) {
@@ -199,6 +255,7 @@
             $('#bonus_date').val('');
             $('#bonus_amount').val(0);
             $('#title').val('');
+            $('#remarks').val('');
             $('.leave_m_title').text('Add Bonus');
         });
        

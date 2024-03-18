@@ -31,7 +31,22 @@
     margin: 0 0 30px;
 
 }
-
+.owl-item .card:hover {
+    background: #fd7167;
+    text-decoration: none !important;
+    color: #fff;
+    
+}
+.card:hover a {
+    text-decoration: none;
+    color: #fff;
+}
+.owl-item .card {
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    box-shadow: none;
+}
 
 
 .main_button {

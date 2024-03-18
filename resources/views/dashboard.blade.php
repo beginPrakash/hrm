@@ -92,7 +92,7 @@ $get_analytics = _get_analytics('show_analytics');
                     <div class="owl-carousel owl-theme">
                         <div class="item">
                             <div class="row align-items-center  upselling-wrapper">
-                                <div class="col-sm-3">
+                                <div class="col-sm-10">
                                     <div class="card dash-widget mb-0">
                                         <div class="py-4">
                                         <a href="#" data-toggle="modal" data-target="#search_modal">
@@ -112,7 +112,7 @@ $get_analytics = _get_analytics('show_analytics');
                         </div>
                         <div class="item">
                             <div class="row align-items-center  upselling-wrapper">
-                                <div class="col-sm-3">
+                                <div class="col-sm-10">
                                     <div class="card dash-widget mb-0">
                                         <div class="py-4">
                                             <a href="#" data-toggle="modal" data-target="#search_modal">
@@ -136,7 +136,7 @@ $get_analytics = _get_analytics('show_analytics');
                         </div>
                         <div class="item">
                             <div class="row align-items-center  upselling-wrapper">
-                                <div class="col-sm-3">
+                                <div class="col-sm-10">
                                     <div class="card dash-widget mb-0">
                                         <div class="py-4">
                                             <div class="dash-widget-info text-center">
@@ -154,7 +154,7 @@ $get_analytics = _get_analytics('show_analytics');
                         </div>
                         <div class="item">
                             <div class="row align-items-center  upselling-wrapper">
-                                <div class="col-sm-3">
+                                <div class="col-sm-10">
                                     <div class="card dash-widget mb-0">
                                         <div class="py-4">
                                             <div class="dash-widget-info text-center">

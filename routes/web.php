@@ -205,6 +205,8 @@ Route::match(array('GET','POST'),'/bonus',[BonusController::class, 'index'])->na
 Route::post('/store_bonus',[BonusController::class, 'store'] )->name('bonus.store');
 Route::post('/bonus_details',[BonusController::class, 'details'] );
 Route::post('/delete_bonus',[BonusController::class, 'delete_bonus'] );
+Route::get('/bonus_export',[BonusController::class, 'bonus_export'] )->name('bonus_export');
+Route::post('/bonus_import',[BonusController::class, 'bonus_import'] )->name('bonus_import');
 
 Route::match(array('GET','POST'),'/deduction',[DeductionController::class, 'index'])->name('deduction');
 Route::post('/store_deduction',[DeductionController::class, 'store'] )->name('deduction.store');

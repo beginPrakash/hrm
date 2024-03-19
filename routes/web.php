@@ -12,6 +12,7 @@ use App\Http\Controllers\SchedulingController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\DeductionController;
+use App\Http\Controllers\MasterOvertimeController;
 use App\Http\Controllers\Dashboard;
 use Illuminate\Support\Facades\Route;
 
@@ -212,6 +213,13 @@ Route::match(array('GET','POST'),'/deduction',[DeductionController::class, 'inde
 Route::post('/store_deduction',[DeductionController::class, 'store'] )->name('deduction.store');
 Route::post('/deduction_details',[DeductionController::class, 'details'] );
 Route::post('/delete_deduction',[DeductionController::class, 'delete_deduction'] );
+
+Route::match(array('GET','POST'),'/master_ot',[MasterOvertimeController::class, 'index'])->name('master_ot');
+Route::post('/master_ot/store_overtime',[MasterOvertimeController::class, 'store'] )->name('master_ot.store');
+Route::post('/master_ot/overtime_details',[MasterOvertimeController::class, 'details'] )->name('master_ot.details');
+Route::post('/master_ot/delete_overtime',[MasterOvertimeController::class, 'delete_overtime'] )->name('master_ot.delete');
+Route::get('/master_ot/overtime_export',[MasterOvertimeController::class, 'overtime_export'] )->name('master_ot_export');
+Route::post('/master_ot/overtime_import',[MasterOvertimeController::class, 'overtime_import'] )->name('master_ot_import');
 
 
 // ****************************** Policies Module ****************************** //

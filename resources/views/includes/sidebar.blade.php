@@ -93,6 +93,7 @@ $get_analytics = _get_analytics('show_analytics');
                         <li><a class="<?php echo ($page == 'payroll-items')?'active':'';?>" href="/payroll-items"> Payroll Items </a></li>
                         <?php if($is_admin > 0) { ?>
                         <li><a class="<?php echo ($page == 'bonus' )?'active':'';?>" href="/bonus">Bonus</a></li>
+                        <li><a class="<?php echo ($page == 'master_ot' )?'active':'';?>" href="/master_ot">Overtime</a></li>
                         <li><a class="<?php echo ($page == 'deduction')?'active':'';?>" href="/deduction">Deduction</a></li>
                         <?php } ?>
                     </ul>

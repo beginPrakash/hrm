@@ -101,8 +101,10 @@
                                     <th>Sr.No</th>
                                     <th>Employee ID</th>
                                     <th>Employee Name</th>
-                                    <th>Overtime Hours</th>
-                                    <th>Overtime Amount</th>
+                                    <th>OT Hours</th>
+                                    <th>OT Amount</th>
+                                    <th>Manual OT Hours</th>
+                                    <th>Manual OT Amount</th>
                                     <th>Bonus</th>
                                     <th>Total Earning</th>
                                 </tr>
@@ -118,7 +120,7 @@
                             		{ 
                                         $salary_calc = calculateOvertimeByFilter($emp->user_id,$emp->emp_generated_id,$month,$year);
                                         $bonus = calculateBonusByMonth($emp->id,$month,$year);
-                                        $total_earning = $salary_calc['total_salary'] + $bonus;
+                                        $total_earning = $salary_calc['total_salary'] + $salary_calc['total_manual_ot_salary'] + $bonus;
                                     ?>
                                     
                                 <tr>
@@ -129,6 +131,8 @@
                                     <td>{{$emp->first_name}} {{$emp->last_name}}</td>
                                     <td>{{number_format($salary_calc['total_overtime_hours'],1) ?? 0}}</td>
                                     <td>{{number_format($salary_calc['total_salary'],2) ?? 0}}</td>
+                                    <td>{{number_format($salary_calc['total_manual_overtime_hours'],1) ?? 0}}</td>
+                                    <td>{{number_format($salary_calc['total_manual_ot_salary'],2) ?? 0}}</td>
                                     <td>{{$bonus}}</td>
                                     <td>{{number_format($total_earning,2) ?? 0}}</td>
                                 </tr>

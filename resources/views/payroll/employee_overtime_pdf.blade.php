@@ -81,7 +81,8 @@
                     @php $total_allowence = total_allowence_withput_food($val->id); @endphp
                         @if($val->branch_name == $bval->branch_name)
                         @php $bonus = calculateBonusByMonth($val->employee_id,$month,$year);
-                                        $total_earning = $val->overtime_amount + $bonus;
+                                        $total_earning = $val->overtime_amount + $val->manual_ot_amount + $bonus;
+                                        $total_sal = $val->overtime_amount + $val->manual_ot_amount;
                                         @endphp
                             <tr>
                                 <td>
@@ -94,7 +95,7 @@
                                     <p>{{$val->name}}</p>
                                 </td>
                                 <td>
-                                    <p>{{ number_format($val->overtime_amount, 2) }}</p> 
+                                    <p>{{ number_format($total_sal, 2) }}</p> 
                                 </td>
                                 <td>
                                     <p>{{$val->food_allowence ?? 0}}</p>

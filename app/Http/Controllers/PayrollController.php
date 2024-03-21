@@ -764,7 +764,8 @@ class PayrollController extends Controller
                         // dd($val);
                             $bonus = calculateBonusByMonth($val->id,$month,$year);
                             $total_sal = $salary_calc['total_salary'] ?? 0;
-                            $total_earning = $total_sal + $bonus;
+                            $total_manual_ot_salary = $salary_calc['total_manual_ot_salary'] ?? 0;
+                            $total_earning = $total_sal + $bonus + $total_manual_ot_salary;
                             $save_data = new EmployeeOvertimeData();
                             $save_data->employee_id = $val->id;
                             $save_data->branch_id = $val->branch;
@@ -776,6 +777,8 @@ class PayrollController extends Controller
                             $save_data->license = (isset($val->employee_details) && !empty($val->employee_details)) ? $val->employee_details->license : '';
                             $save_data->total_overtime_hours = $salary_calc['total_overtime_hours'] ?? 0;
                             $save_data->hourly_salary = $salary_calc['hourly_salary'] ?? 0;
+                            $save_data->manual_ot_hours = $salary_calc['total_manual_overtime_hours'] ?? 0;
+                            $save_data->manual_ot_amount = $salary_calc['total_manual_ot_salary'] ?? 0;
                             $save_data->day_salary = $salary_calc['day_salary'] ?? 0;
                             $save_data->basic_salary = (isset($val->employee_salary) && !empty($val->employee_salary)) ? $val->employee_salary->basic_salary : 0;
                             $save_data->overtime_amount = $salary_calc['total_salary'] ?? 0;

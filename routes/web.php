@@ -204,7 +204,7 @@ Route::post('/post_leave_transaction',[EmployeeController::class, 'post_leave_tr
 
 Route::match(array('GET','POST'),'/bonus',[BonusController::class, 'index'])->name('bonus');
 Route::post('/store_bonus',[BonusController::class, 'store'] )->name('bonus.store');
-Route::post('/bonus_details',[BonusController::class, 'details'] );
+Route::post('/bonus_details',[BonusController::class, 'details'] )->name('bonus_details');
 Route::post('/delete_bonus',[BonusController::class, 'delete_bonus'] );
 Route::get('/bonus_export',[BonusController::class, 'bonus_export'] )->name('bonus_export');
 Route::post('/bonus_import',[BonusController::class, 'bonus_import'] )->name('bonus_import');

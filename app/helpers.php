@@ -28,6 +28,7 @@ use App\Models\StoreDailySales;
 use App\Models\UpSellingHeading;
 use App\Models\DailySalesTargetUpselling;
 use App\Models\SettingsModel;
+use App\Models\EmployeeOvertime;
 
 function getLastId()
 {
@@ -149,6 +150,8 @@ function clockalize($in){
      $startDateOrg =  date('Y-m-d', strtotime('-1 month', strtotime($endDateOrg)));
      $startDateOrg = date('Y-m-d', strtotime('+1 days', strtotime($startDateOrg)));
      $total_calculate_salary = 0;
+     //find employee salary details
+     $employee = Employee::where('user_id',$user_id)->where('emp_generated_id',$empid)->first();
      if(!empty($mid)):
          $commonWorkingHoursDetails = Overtime::first();
          $commonWorkingHours = $commonWorkingHoursDetails->working_hours - 1;
@@ -182,14 +185,45 @@ function clockalize($in){
          endif;
          $total_overtime_hours = $h.'.'.$m;
          $total_overtime_hours = (float)$total_overtime_hours;
-         //find employee salary details
-         $employee = Employee::where('user_id',$user_id)->where('emp_generated_id',$empid)->first();
+         //calculate manual ot
+         $total_manual_overtime_data = EmployeeOvertime::whereBetween('ot_date', [$startDateOrg, $endDateOrg])->where('employee_id',$employee->id ?? '')->whereNotNull('ot_hours')->pluck('ot_hours')->toArray();
+
+         $msum = strtotime('00:00:00');
+         $totalmtime = 0;
+         $man_h = $man_m = 0;
+         if(count($total_manual_overtime_data) > 0): 
+             foreach( $total_manual_overtime_data as $element ) {
+                 $ctime = clockalize($element);
+                 //echo $ctime;exit;
+                 // Converting the time into seconds
+                 $timeinsec = strtotime($ctime) - $msum;
+                 
+                 // Sum the time with previous value
+                 $totalmtime = $totalmtime + $timeinsec;
+                 //echo $totaltime;echo'<pre>';
+             }
+            // dd($totaltime );
+             $man_h = intval($totalmtime / 3600);
+             $totalmtime = $totalmtime - ($man_h * 3600);
+             
+             // Minutes is obtained by dividing
+             // remaining total time with 60
+             $man_m = intval($totalmtime / 60);
+         
+             // Remaining value is seconds
+             $s = $totalmtime - ($man_m * 60);
+         endif;
+         $total_manual_overtime_hours = $man_h.'.'.$man_m;
+         $total_manual_overtime_hours = (float)$total_manual_overtime_hours;
+
+         
          //calculate salary now
          if(!empty($employee)):
              $currentMonthSalary = (isset($employee->employee_salary))?$employee->employee_salary->basic_salary:0;
              $daySalary = ($currentMonthSalary>0)?($currentMonthSalary/$commonWorkingDays):0;
              $hourlySalary = ($daySalary>0)?($daySalary/$commonWorkingHours):0;
              $total_calculate_salary = $total_overtime_hours * $hourlySalary;
+             $total_manual_ot_salary = $total_manual_overtime_hours * $hourlySalary;
          endif;
          $res_arr = [];
          if($type=='report_pdf'):
@@ -197,11 +231,15 @@ function clockalize($in){
              $res_arr['day_salary'] = $daySalary;
              $res_arr['total_overtime_hours'] = $total_overtime_hours;
              $res_arr['total_salary'] = $total_calculate_salary;
+             $res_arr['total_manual_overtime_hours'] = $total_manual_overtime_hours;
+             $res_arr['total_manual_ot_salary'] = $total_manual_ot_salary;
              $res_arr['dates_between'] = $startDateOrg.','.$endDateOrg;
              return $res_arr;
          else:
              $res_arr['total_overtime_hours'] = $total_overtime_hours;
              $res_arr['total_salary'] = $total_calculate_salary;
+             $res_arr['total_manual_overtime_hours'] = $total_manual_overtime_hours;
+             $res_arr['total_manual_ot_salary'] = $total_manual_ot_salary;
              $res_arr['dates_between'] = $startDateOrg.','.$endDateOrg;
              return $res_arr;
          endif;

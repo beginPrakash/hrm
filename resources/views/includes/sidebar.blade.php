@@ -148,6 +148,14 @@ $get_analytics = _get_analytics('show_analytics');
                             <a class="<?php echo ($page == 'upselling_heading')?'active':'';?>" href="/upselling_heading"><i class="la la-cog"></i> <span>UpSelling Score Heading</span></a>
                     </ul>
                 </li>
+
+                <li class="submenu">
+                    <a href="#"><i class="la la-cog"></i> <span>Roles And Permissions</span> <span class="menu-arrow"></span></a>
+                    <ul style="display: none;">
+                            <a class="<?php echo ($page == 'roles')?'active':'';?>" href="/roles"><i class="la la-cog"></i> <span>Role</span></a>
+                    </ul>
+                </li>
+
                 <?php } ?>
 
                 @if($is_admin > 0)  

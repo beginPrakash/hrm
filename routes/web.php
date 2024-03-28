@@ -348,8 +348,25 @@ Route::post('/tracking_heading/detail', [App\Http\Controllers\TrackingHeading::c
 Route::post('/tracking_heading/delete', [App\Http\Controllers\TrackingHeading::class, 'delete'])->name('tracking_heading.delete');
 Route::get('/tracking_heading/statuschange/{id}/{status}', [App\Http\Controllers\TrackingHeading::class, 'statuschange'])->name('tracking_heading.statuschange');
 
+//Leave Mangement Admin
+Route::match(array('GET','POST'),'/leave_management', [App\Http\Controllers\LeaveManagement::class, 'index'])->name('leave_mgmt.list');
+Route::post('/selling_period/store', [App\Http\Controllers\SellingPeriod::class, 'store'])->name('selling_period.store');
+Route::post('/selling_period/detail', [App\Http\Controllers\SellingPeriod::class, 'getsellingdetaiById'])->name('getsellingdetaiById');
+Route::post('/selling_period/delete', [App\Http\Controllers\SellingPeriod::class, 'delete'])->name('selling_period.delete');
+Route::get('/selling_period/statuschange/{id}/{status}', [App\Http\Controllers\SellingPeriod::class, 'statuschange'])->name('selling_period.statuschange');
 
 
+//Roles Mangement Admin
+Route::match(array('GET','POST'),'/roles', [App\Http\Controllers\Roles::class, 'index'])->name('roles.list');
+Route::post('/roles/store', [App\Http\Controllers\Roles::class, 'store'])->name('roles.store');
+Route::post('/roles/details', [App\Http\Controllers\Roles::class, 'details'])->name('roles_details');
+Route::post('/roles/delete', [App\Http\Controllers\Roles::class, 'delete'])->name('roles.delete');
+
+//User Roles Mangement
+Route::match(array('GET','POST'),'/user_roles', [App\Http\Controllers\UserRoles::class, 'index'])->name('user_roles.list');
+Route::post('/user_roles/store', [App\Http\Controllers\UserRoles::class, 'store'])->name('user_roles.store');
+Route::post('/user_roles/details', [App\Http\Controllers\UserRoles::class, 'details'])->name('user_roles_details');
+Route::post('/user_roles/delete', [App\Http\Controllers\UserRoles::class, 'delete'])->name('user_roles.delete');
 
 //Store manager Daily sales
 Route::match(array('GET','POST'),'/store_daily_sales', [App\Http\Controllers\DailySales::class, 'index'])->name('store_daily_sales.list');

@@ -234,7 +234,7 @@
             $('#add_leave').html('');
             var id= $(this).attr('data-id');
             $.ajax({
-            url: '/bonus_details/',
+            url: "<?php echo e(route('bonus_details')); ?>",
             type: "POST",
             dataType: "json",
             data: {"_token": "<?php echo e(csrf_token()); ?>", id:id},

@@ -29,6 +29,7 @@ use App\Models\UpSellingHeading;
 use App\Models\DailySalesTargetUpselling;
 use App\Models\SettingsModel;
 use App\Models\EmployeeOvertime;
+use App\Models\UserRoles;
 
 function getLastId()
 {
@@ -972,6 +973,29 @@ function leaveSalaryCalculate($userId,$month,$daySalary,$totalSalary)
         }
         return $tdValue;
     }
+
+    function _get_company_name_by_uroles($urole_id,$type=''){
+
+        if($type=='name'):
+            $data = UserRoles::where('user_roles.parent_id',$urole_id)->orWhere('user_roles.id',$urole_id)->join('residencies','user_roles.company_id','residencies.id')->select('residencies.name')->get();
+            return $data;
+        else:
+            $data = UserRoles::where('parent_id',$urole_id)->orWhere('id',$urole_id)->selectRaw('GROUP_CONCAT(company_id) as ids')->first();
+            $ids = $data->ids ?? '';
+            $explode_ids = explode(',',$ids);
+            return $explode_ids;
+        endif;
+        
+    }
+
+    function _get_branch_by_uroles($urole_id){
+        $data = UserRoles::where('parent_id',$urole_id)->orWhere('id',$urole_id)->selectRaw('GROUP_CONCAT(branch_id) as ids')->first();
+        $ids = $data->ids ?? '';
+        $explode_ids = explode(',',$ids);
+        return $explode_ids;
+        
+    }
+    
 
     
 
